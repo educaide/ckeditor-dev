@@ -6,7 +6,7 @@
 /* exported CKBUILDER_CONFIG */
 
 var CKBUILDER_CONFIG = {
-	skin: 'moono',
+	skin: 'kama',
 	ignore: [
 		'bender.js',
 		'.bender',
@@ -86,6 +86,20 @@ var CKBUILDER_CONFIG = {
 		templates: 1,
 		toolbar: 1,
 		undo: 1,
-		wysiwygarea: 1
+		wysiwygarea: 1,
+		easbehaviors: 1,
+		easfontsize: 1,
+		easimage: 1,
+		easimagestyle: 1,
+		easintro: 1,
+		easliststyle: 1,
+		easmath: 1,
+		easmathimages: 1,
+		easparbox: 1,
+		easproperties: 1,
+		easspecials: 1,
+		eastable: 1,
+		eastabletoolscustom: 1,
+		easwordstyle: 1
 	}
 };

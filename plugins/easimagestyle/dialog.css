@@ -1,0 +1,42 @@
+body {
+  padding: 2ex;
+}
+
+body, td {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+table {
+  border: 1px solid gray;
+  margin: 1ex 0;
+  width: 100%;
+}
+
+td {
+  padding: 1ex;
+  width:  11.5em;
+  vertical-align: top;
+}
+
+td:first-child {
+  width: 7.5em;
+}
+
+input, select {
+  width: 5em;
+}
+
+input {
+  padding-right: 0.5ex;
+  margin-right: 0.5ex;
+  text-align: right;
+}
+
+.image {
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  color: #aaa;
+  display: inline-block;
+  padding: 0 0.5em;
+}

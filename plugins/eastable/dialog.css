@@ -1,0 +1,128 @@
+body {
+  padding: 2ex;
+}
+
+body, td {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+td, td > div {
+  padding: 0.5ex 0;
+}
+
+td {
+  width:  6em;
+  vertical-align: top;
+}
+
+fieldset {
+  border: 1px solid #ddd;
+  padding: 1ex 2ex;
+  margin: 2ex 0;
+}
+
+.alignmentColumn {
+  display: inline-block;
+  width: 6em;
+}
+
+.alignmentColumn > div {
+  height: 24px;
+  vertical-align: top;
+}
+
+.widthColumn {
+  display: inline-block;
+  width: 13em;
+}
+
+.widthColumn > div {
+  height: 24px;
+  vertical-align: top;
+}
+
+.fwidth {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#alignmentAndWidth {
+  padding-top: 1ex;
+}
+
+#alignmentAndWidth label, #alignmentAndWidth input, #alignmentAndWidth select {
+  vertical-align: top;
+}
+
+#alignmentAndWidth select {
+  position: relative;
+  top: -2px;
+}
+
+td.widthSettings {
+  width: 11em;
+}
+
+.dependent {
+  padding-top: 0.5ex;
+  padding-left: 1.25em;
+  padding-bottom: 1.5ex;
+}
+
+.tabberlive .tabbertab {
+  padding: 1ex 2ex;
+}
+
+.tabbertab.layout input[type=text] {
+  text-align: right;
+}
+
+.tabbertab.layout input[type=text] {
+  width: 3em;
+}
+
+.tabbertab.layout select {
+  width: 4.5em;
+}
+
+.tabbertab.borders fieldset,
+.tabbertab.labels fieldset {
+  padding-top: 2ex;
+}
+
+.tabbertab.borders select {
+  width: 5.5em;
+}
+
+#borders .option {
+  margin-bottom: 1ex;
+}
+
+#previewContainer {
+  border: 1px solid gray;
+  height: 150px;
+  margin: 1em;
+  padding: 2em;
+  width: 200px;
+}
+
+#borderPreview {
+  border: 1px dotted lightgray;
+  border-collapse: collapse;
+  height: 100%;
+  width: 100%;
+}
+
+#borderPreview td {
+  border: 1px dotted lightgray;
+}
+
+.center {
+  text-align: center;
+}
+
+span.font_label {
+  min-width: 70px;
+  display: inline-block;
+}

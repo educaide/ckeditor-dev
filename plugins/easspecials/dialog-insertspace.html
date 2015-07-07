@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/scriptaculous/1.9/scriptaculous.js" type="text/javascript"></script>
+    <script language="javascript" src="dialog-insertspace.js" type="text/javascript"></script>
+    <script language="javascript" src="/javascripts/tabber-minimized.js" type="text/javascript"></script>
+    <link href="http://yui.yahooapis.com/2.7.0/build/reset/reset-min.css" media="screen" rel="stylesheet" type="text/css" />
+  	<link href="/stylesheets/tabber.css" rel="stylesheet" type="text/css" />
+  	<link href="dialog.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <div class="tabber">
+
+      <div class="tabbertab blanks">
+        <h3>Blanks</h3>
+        <fieldset>
+          <table>
+            <tr>
+              <th>&nbsp;</th>
+              <th>Example</th>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="small" id="blankSmall" checked="checked" />
+                <label for="blankSmall">Small</label>
+              </td>
+              <td class="example">
+                Lorem ____ ipsum
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="medium" id="blankMedium" />
+                <label for="blankMedium">Medium</label>
+              </td>
+              <td class="example">
+                Lorem ________ ipsum
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="large" id="blankLarge" />
+                <label for="blankLarge">Large</label>
+              </td>
+              <td class="example">
+                Lorem ____________ ipsum
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="veryLarge" id="blankVeryLarge" />
+                <label for="blankVeryLarge">Very Large</label>
+              </td>
+              <td class="example">
+                Lorem _________________ ipsum
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="line" id="blankLine" />
+                <label for="blankLine">Line</label>
+              </td>
+              <td class="example">
+                <div style="border-bottom: 1px solid black; padding: 0;">&nbsp;</div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="blank" value="fill" id="blankFill" />
+                <label for="blankFill">Fill</label>
+              </td>
+              <td class="example">
+                <table>
+                  <tr>
+                    <td style="padding-bottom: 0">Lorem&nbsp;ipsum&nbsp;</td>
+                    <td style="padding-bottom: 0; width: 100%; border-bottom: 1px solid black">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </div>
+
+      <div class="tabbertab characters">
+        <h3>Spaces</h3>
+        <fieldset>
+          <table>
+            <tr>
+              <th>&nbsp;</th>
+              <th>Example</th>
+              <th>TeX</th>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="space" value="nonBreaking" id="spaceNonBreaking" checked="checked" />
+                <label for="spaceNonBreaking">Non-breaking space</label>
+              </td>
+              <td>m&nbsp;n</td>
+              <td class="tex">~</td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="space" value="thin" id="spaceThin" />
+                <label for="spaceThin">Thinspace</label>
+              </td>
+              <td>m&thinsp;n</td>
+              <td class="tex">\\</td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="space" value="en" id="spaceEn" />
+                <label for="spaceEn">Enspace</label>
+              </td>
+              <td>m&ensp;n</td>
+              <td class="tex">\enspace</td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="space" value="em" id="spaceEm" />
+                <label for="spaceEm">Emspace</label>
+              </td>
+              <td>m &nbsp; &nbsp;n</td>
+              <td class="tex">\quad</td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="space" value="null" id="spaceNull" />
+                <label for="spaceNull">Zero-width joiner</label>
+              </td>
+              <td>m&zwnj;n</td>
+              <td class="tex">\null</td>
+            </tr>
+          </table>
+        </fieldset>
+      </div>
+
+      <div class="tabbertab spaces">
+        <h3>Extra Space</h3>
+        <fieldset>
+          <legend>Mode</legend>
+          <table>
+            <tr>
+              <td>
+                <input type="radio" name="skip" value="horizontal" id="skipHorizontal" checked="checked" />
+                <label for="skipHorizontal">Horizontal</label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="skip" value="vertical" id="skipVertical" />
+                <label for="skipVertical">Vertical</label>
+                <div class="dependent">
+                  <input type="checkbox" class="option" id="collapseWorkspace" />
+                  <label for="collapseWorkspace">Collapse like workspace</label>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+        <fieldset>
+          <legend>Size</legend>
+          <input type="text" id="width" value="1.0" size="2" />
+          <select id="dimension">
+            <option value="in">in</option>
+            <option value="cm">cm</option>
+            <option value="pt">pt</option>
+            <option value="ex">ex</option>
+            <option value="em">em</option>
+          </select>
+        </fieldset>
+      </div>
+
+      <div class="tabbertab paragraphs">
+        <h3>Paragraphs</h3>
+        <fieldset>
+          <table>
+            <tr>
+              <th>&nbsp;</th>
+            </tr>
+            <tr>
+              <td class="tex">
+                <input type="radio" name="para" value="leaveVMode" id="paraLeaveVMode" checked="checked" />
+                <label for="paraLeaveVMode">\leavevmode</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tex">
+                <input type="radio" name="para" value="noIndent" id="paraNoIndent" />
+                <label for="paraNoIndent">\noindent</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tex">
+                <input type="radio" name="para" value="indent" id="paraIndent" />
+                <label for="paraIndent">\indent</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tex">
+                <input type="radio" name="para" value="allowBreak" id="paraAllowBreak" />
+                <label for="paraAllowBreak">\allowbreak</label>
+              </td>
+            </tr>
+            <tr>
+              <td class="tex">
+                <input type="radio" name="para" value="noBreak" id="paraNoBreak" />
+                <label for="paraNoBreak">\nobreak</label>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </div>
+
+    </div>
+  </body>
+</html>

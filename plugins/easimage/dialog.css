@@ -1,0 +1,140 @@
+body, td {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+#browser, .multi, .single {
+  height: 100%;
+  width: 100%;
+}
+
+#browser .single {
+  background-color: #eee;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#browser .list {
+  width: 200px;
+  display: none;
+}
+
+#browser .list ul {
+/*  width: 100%; */
+}
+
+#browser .list ul ul {
+  margin-left: 1em;
+}
+
+#browser .list li > div {
+  cursor: default;
+  padding: 2pt;
+}
+
+#browser .list .selected {
+  background-color: #69c;
+  color: white;
+}
+
+#browser .list .container,
+#browser .multi,
+#browser .single {
+  overflow: auto;
+  height: 100px;
+}
+
+#browser .single {
+  overflow: initial;
+}
+
+#browser tfoot {
+  display: none;
+  height: 8ex;
+}
+
+#browser td {
+  vertical-align: top;
+}
+
+#browser .thumbnail,
+#browser .thumbnail .wrapper {
+  height: 170px;
+  width: 170px;
+}
+
+#browser .thumbnail {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  display: inline-block;
+  margin: 5px;
+  position: relative;
+}
+
+#browser .thumbnail .wrapper {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#browser .meta {
+  background-color: gray;
+  bottom: 0;
+  color: white;
+  display: none;
+  font-size: 80%;
+  opacity: 0.8;
+  padding: 1pt 0;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+#browser .thumbnail.selected .meta,
+#browser .single .meta {
+  display: block;
+}
+
+#browser .thumbnail.selected {
+  background-color: #ddf;
+  border: 1px solid #69c;
+}
+
+#browser .thumbnail img,
+#browser .single img {
+  border: 1px solid #ccc;
+  margin: 9px;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+#browser .single .meta {
+  position: static;
+  font-size: 100%;
+}
+
+#browser .single img {
+  max-width: none;
+  max-height: none;
+}
+
+#browser img {
+  background: transparent url(/images/spinner.gif) center center no-repeat;
+}
+
+#browser .toolbar button,
+#browser #upload-dialog button,
+#browser #upload-dialog input[type='submit'] {
+  padding: 1px 4px;
+}
+
+#browser div.uploads {
+  height: 24px;
+}
+
+#browser #upload-dialog,
+#browser #upload-toolbar {
+  margin-left: 5px;
+}
