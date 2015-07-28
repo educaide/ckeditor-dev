@@ -318,6 +318,13 @@
 			var listIndex = selectedListItems[ i ].getCustomData( 'listarray_index' );
 			listNode = listArray[ listIndex ].parent;
 
+			// EAS_START
+			editor.fire( 'easListChange', {
+				command: this,
+				node: listNode
+			} );
+			// EAS_END
+
 			// Switch to new list node for this particular item.
 			if ( !listNode.is( this.type ) ) {
 				newListNode = doc.createElement( this.type );
@@ -402,6 +409,14 @@
 		var insertAnchor = listContents[ listContents.length - 1 ].getNext(),
 			listNode = doc.createElement( this.type );
 
+		// EAS_START
+		// Allow hooking into list creation process.
+		editor.fire( 'easListCreate', {
+			command: this,
+			node: listNode
+		} );
+		// EAS_END
+
 		listsCreated.push( listNode );
 
 		var contentBlock, listItem;
@@ -475,6 +490,13 @@
 			}
 		}
 
+		// EAS_START
+		// Removes the ENTIRE list, regardless of how many selected items appear in groupObj contents.
+		for ( var i = 0 ; i < listArray.length ; i++ ) {
+			listArray[ i ].indent = -1;
+		}
+		// EAS_END
+
 		var newList = CKEDITOR.plugins.list.arrayToList( listArray, database, null, editor.config.enterMode, groupObj.root.getAttribute( 'dir' ) );
 
 		// Compensate <br> before/after the list node if the surrounds are non-blocks.(#3836)
@@ -520,6 +542,9 @@
 		this.allowedContent = type + ' li';
 		this.requiredContent = type;
 	}
+
+	// Expose the list command so easlistcustom can register its own ones.
+	CKEDITOR.plugins.list.command = listCommand;
 
 	var elementType = CKEDITOR.dom.walker.nodeType( CKEDITOR.NODE_ELEMENT );
 
@@ -649,14 +674,18 @@
 			var listsCreated = [];
 			while ( listGroups.length > 0 ) {
 				groupObj = listGroups.shift();
-				if ( this.state == CKEDITOR.TRISTATE_OFF ) {
+
+				// EAS_START
+				// This block of code replaced the original one.
+				if ( this.easStyle != 'none' ) {
 					if ( listNodeNames[ groupObj.root.getName() ] )
 						changeListType.call( this, editor, groupObj, database, listsCreated );
 					else
 						createList.call( this, editor, groupObj, listsCreated );
-				} else if ( this.state == CKEDITOR.TRISTATE_ON && listNodeNames[ groupObj.root.getName() ] ) {
+				} else {
 					removeList.call( this, editor, groupObj, database );
 				}
+				// EAS_END
 			}
 
 			// For all new lists created, merge into adjacent, same type lists.

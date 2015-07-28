@@ -23,6 +23,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'easimage',
 		'easimagestyle',
 		'easintro',
+		'easlistcustom',
 		'easliststyle',
 		'easmath',
 		'easmathimages',
@@ -40,11 +41,13 @@ CKEDITOR.editorConfig = function( config ) {
 		[ 'EASWordStyle' ],
 		[ 'EASFontSize' ],
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
-		// [ 'EASList' ],
+		[ 'EASList' ],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ]
 	];
 
 	config.skin = 'kama';
+
+	config.allowedContent = true;
 };
 
 // %LEAVE_UNMINIFIED% %REMOVE_LINE%

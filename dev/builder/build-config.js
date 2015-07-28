@@ -49,6 +49,7 @@ var CKBUILDER_CONFIG = {
 		easimage: 1,
 		easimagestyle: 1,
 		easintro: 1,
+		easlistcustom: 1,
 		easliststyle: 1,
 		easmath: 1,
 		easmathimages: 1,
