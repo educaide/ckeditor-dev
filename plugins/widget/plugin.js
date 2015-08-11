@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
@@ -14,7 +14,7 @@
 
 	CKEDITOR.plugins.add( 'widget', {
 		// jscs:disable maximumLineLength
-		lang: 'af,ar,ca,cs,cy,da,de,el,en,en-gb,eo,es,fa,fi,fr,gl,he,hr,hu,it,ja,km,ko,ku,nb,nl,no,pl,pt,pt-br,ru,sk,sl,sq,sv,tr,tt,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'af,ar,bg,ca,cs,cy,da,de,el,en,en-gb,eo,es,fa,fi,fr,gl,he,hr,hu,it,ja,km,ko,ku,lv,nb,nl,no,pl,pt,pt-br,ru,sk,sl,sq,sv,tr,tt,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
 		// jscs:enable maximumLineLength
 		requires: 'lineutils,clipboard',
 		onLoad: function() {
@@ -1989,7 +1989,8 @@
 
 		// Remove widgets which have no corresponding elements in DOM.
 		for ( i in instances ) {
-			if ( !editable.contains( instances[ i ].wrapper ) )
+			// #13410 Remove widgets that are ready. This prevents from destroying widgets that are during loading process.
+			if ( instances[ i ].isReady() && !editable.contains( instances[ i ].wrapper ) )
 				this.destroy( instances[ i ], true );
 		}
 
@@ -2415,6 +2416,11 @@
 							// Allow drop line inside, but never before or after nested editable (#12006).
 							if ( Widget.isDomNestedEditable( el ) )
 								return;
+
+							// Do not allow droping inside the widget being dragged (#13397).
+							if ( widgetsRepo._.draggedWidget.wrapper.contains( el ) ) {
+								return;
+							}
 
 							// If element is nested editable, make sure widget can be dropped there (#12006).
 							var nestedEditable = Widget.getNestedEditable( editable, el );
