@@ -193,7 +193,7 @@
       }
 
       evt.data = evt.data.replace(pattern, '$1');
-    });
+    }, null, null, 999 );
   }
 
   // originally from http://snipplr.com/view/19815/walking-the-dom/
