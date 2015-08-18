@@ -1,132 +1,703 @@
 /*
-Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
 */
+
+@font-face {
+    font-family: "EducAide";
+    src: url("/unicode.eot");
+    src: local("?"), url("/unicode.ttf") format("truetype");
+/*    src: url('/unicode.eot') format('eot'), url('/unicode.ttf') format('truetype');*/
+    font-weight: normal;
+    font-style: normal;
+}
 
 body
 {
 	/* Font */
-	font-family: sans-serif, Arial, Verdana, "Trebuchet MS";
-	font-size: 12px;
+	font-family: "Times New Roman", "EducAide", Times, serif;
+	font-size: 12pt;
 
+  /* Spacing */
+  line-height: 110%;
+  padding: 0.5ex;
+  
 	/* Text color */
-	color: #333;
+	color: #222;
 
 	/* Remove the background color to make it transparent */
 	background-color: #fff;
-
-	margin: 20px;
 }
 
-.cke_editable
-{
-	font-size: 13px;
-	line-height: 1.6;
-}
-
-blockquote
-{
-	font-style: italic;
-	font-family: Georgia, Times, "Times New Roman", serif;
-	padding: 2px 0;
-	border-style: solid;
-	border-color: #ccc;
-	border-width: 0;
-}
-
-.cke_contents_ltr blockquote
-{
-	padding-left: 20px;
-	padding-right: 8px;
-	border-left-width: 5px;
-}
-
-.cke_contents_rtl blockquote
-{
-	padding-left: 8px;
-	padding-right: 20px;
-	border-right-width: 5px;
-}
-
-a
-{
-	color: #0782C1;
-}
-
+/* preserved spaces for rtl list item bullets. (#6249)*/
 ol,ul,dl
 {
-	/* IE7: reset rtl list margin. (#7334) */
-	*margin-right: 0px;
-	/* preserved spaces for list items with text direction other than the list. (#6249,#8049)*/
-	padding: 0 40px;
+    padding-right:40px;
 }
 
-h1,h2,h3,h4,h5,h6
+html
 {
-	font-weight: normal;
-	line-height: 1.2;
+	/* #3658: [IE6] Editor document has horizontal scrollbar on long lines
+	To prevent this misbehavior, we show the scrollbar always */
+	_overflow-y: scroll;
+	/* #6341: The text cursor must be set on the editor area. */
+	cursor: text;
+	/* #6632: Avoid having "text" shape of cursor in IE7 scrollbars.*/
+	*cursor:auto;
 }
 
-hr
+img:-moz-broken
 {
-	border: 0px;
-	border-top: 1px solid #ccc;
+	-moz-force-broken-image-icon : 1;
+	width : 24px;
+	height : 24px;
 }
-
-img.right
+img, input, textarea
 {
-	border: 1px solid #ccc;
-	float: right;
-	margin-left: 15px;
-	padding: 5px;
+	cursor: default;
 }
 
-img.left
+/* eas changes */
+
+ol.emcee {
+    margin-left: 1ex; 
+    list-style-position: inside; 
+    list-style: lower-alpha; 
+    padding: 1ex; 
+
+    background-color: #ffe; 
+    border: 1px solid #dd8;
+}
+
+ol.emcee li.correct {
+    background-color: #cfc; 
+}
+
+ol.subparts {
+  list-style-type: lower-alpha;
+}
+
+/*
+ol.subparts {
+  counter-reset: list;
+}
+ol.subparts li{
+  list-style: none;
+}
+ol.subparts li:before {
+  content: counter(list, lower-alpha) ") ";
+  counter-increment: list;
+}
+*/
+
+#intro {
+  border: 1px solid blue;
+}
+
+/* Parbox */
+.parbox {
+  border: 1px solid #ccc;
+}
+
+/*Parbox borders */
+/* the class only selectors are for IE, which sucks. */
+.parbox[data-eas-border="single"],
+.parbox.parbox-border-single{
+  border: 1px solid #000;
+}
+
+.parbox[data-eas-border="double"],
+.parbox.parbox-border-double{
+  border: 4px double #000;
+}
+
+.parbox[data-eas-border="thick"],
+.parbox.parbox-border-thick{
+  border: 4px solid #000;
+}
+
+.parbox[data-eas-border="shadow"],
+.parbox.parbox-border-shadow{
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+  border-right: 2px solid #000;
+  border-bottom: 3px solid #000;
+}
+
+/* Parbox pos */
+/* the class only selectors are for IE, which sucks. */
+.parbox[data-eas-pos="indent"],
+.parbox.parbox-pos-indent {
+  margin-left: 2em;
+}
+
+.parbox[data-eas-pos="left"],
+.parbox.parbox-pos-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.parbox[data-eas-pos="center"],
+.parbox.parbox-pos-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.parbox[data-eas-pos="right"],
+.parbox.parbox-pos-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Img borders */
+/* the class only selectors are for IE, which sucks. */
+img[data-eas-border] {
+  padding: 0.8em;
+}
+
+img[data-eas-border="single"],
+*[data-eas-border="single"] {
+  border: 1px solid #000;
+}
+
+img[data-eas-border="double"],
+*[data-eas-border="double"] {
+  border: 4px double #000;
+}
+
+img[data-eas-border="thick"],
+*[data-eas-border="thick"] {
+  border: 4px solid #000;
+}
+
+img[data-eas-border="shadow"],
+*[data-eas-border="shadow"] {
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+  border-right: 2px solid #000;
+  border-bottom: 3px solid #000;
+}
+
+
+/* 'verbatim' TeX elements */
+.math, .mathbutton {
+  font-size: 90%;
+  font-family: "Courier New", Courier, monospace;
+  border-width: 1px;
+  border-style: solid;
+  margin: 0 2px;
+  padding: 0 2px;
+}
+
+.math, .mathbutton {
+  background-color: #f8fff8;
+  border-color: #8b8;
+  white-space: nowrap;
+}
+
+.wall {
+  margin-bottom: 2ex;
+  margin-top: 2ex;
+  padding: 4pt 6pt;
+}
+
+.wall > p {
+  margin-top: 0;
+}
+
+.wall > p:last-child {
+  margin-bottom: 0;
+}
+
+.table, table {
+  border: 1px solid lightgray;
+  border-collapse: collapse;
+  display: table;
+}
+
+.table .row {
+  display: table-row;
+}
+
+.table .cell, td {
+  border: 1px solid lightgray;
+  display: table-cell;
+  padding: 0.6ex;
+}
+
+.table .title {
+  display: table-row;
+}
+
+.table .caption {
+  display: table-row;
+}
+
+img {
+  vertical-align: top;
+}
+
+/*did not translate emph and vocab correctly. still supporting strong.emph style from Acces*/
+span[eas-class=word-vocab],
+span[eas-class=word-emph],
+strong.emph,
+strong.vocab
 {
-	border: 1px solid #ccc;
-	float: left;
-	margin-right: 15px;
-	padding: 5px;
+  font-weight: normal;
+  border-bottom: dotted 1px black;
 }
 
-pre
+span[eas-class=word-vocab],
+strong.emph
 {
-	white-space: pre-wrap; /* CSS 2.1 */
-	word-wrap: break-word; /* IE7 */
-	-moz-tab-size: 4;
-	tab-size: 4;
+  border-bottom: dashed 1px black;
 }
 
-.marker
+span[eas-class=word-none],
+strong.vocab
 {
-	background-color: Yellow;
+  border-bottom: solid 1px white;
 }
 
-span[lang]
+.texblank, .texspace {
+  color: #fef;
+}
+
+.texblank {
+  height: 1em;
+  margin: 0px 1px;
+  border-bottom: 1px solid black;
+  display: inline-block;
+}
+.texblank.small,
+.texblank.smallblank
+{width: 2em;}
+.texblank.medium,
+.texblank.medblank
+{width: 4em;}
+.texblank.large,
+.texblank.bigblank
+{width: 8em;}
+.texblank.veryLarge,
+.texblank.Bigblank
+{width: 2in;}
+.texblank.line,
+.texblank.blankline
 {
-	font-style: italic;
+  display: block;
+  width: 100%;
 }
 
-figure
-{
-	text-align: center;
-	border: solid 1px #ccc;
-	border-radius: 2px;
-	background: rgba(0,0,0,0.05);
-	padding: 10px;
-	margin: 10px 20px;
-	display: inline-block;
+.texspace{
+  border: 1px dashed gray;
+}
+.texspace.hspace{
+  display: inline-block;
+  height: 1em;
+}
+.texspace.vspace{
+  display: block;
 }
 
-figure > figcaption
-{
-	text-align: center;
-	display: block; /* For IE8 */
+.capture {
+  font-style: italic;
 }
 
-a > img {
-	padding: 1px;
-	margin: 1px;
-	border: none;
-	outline: 1px solid #0782C1;
+/*
+table.wall
+
+data-eas-first
+
+data-eas-borders-outside
+data-eas-borders-horizontal
+data-eas-borders-vertical
+data-eas-headers-display
+data-eas-headers-font-style
+data-eas-headers-font-size
+data-eas-headers-shading
+
+data-eas-last
+*/
+
+table.wall thead,
+table.wall tfoot {
+  text-align: center;
 }
+
+/* row and column */
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="both"] tbody > tr > td:first-child { background-color: #B0C4DE }
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="both"] tbody > tr > th:first-child { background-color: #B0C4DE }
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="both"] tbody > tr:first-child > td { background-color: #B0C4DE }
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="both"] tbody > tr:first-child > th { background-color: #B0C4DE }
+
+/*  col */
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="left"] tbody > tr > td:first-child { background-color: #B0C4DE }
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="left"] tbody > tr > th:first-child { background-color: #B0C4DE }
+
+/* row */
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="top"] tbody > tr:first-child > td { background-color: #B0C4DE }
+
+table.wall[data-eas-headers-shading="true"][data-eas-headers-display="top"] tbody > tr:first-child > th { background-color: #B0C4DE }
+
+
+
+/* row and column */
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="both"] tbody > tr > td:first-child { background-color: #ECF1F8 }
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="both"] tbody > tr > th:first-child { background-color: #ECF1F8 }
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="both"] tbody > tr:first-child > td { background-color: #ECF1F8 }
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="both"] tbody > tr:first-child > th { background-color: #ECF1F8 }
+
+/*  col */
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="left"] tbody > tr > td:first-child { background-color: #ECF1F8 }
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="left"] tbody > tr > th:first-child { background-color: #ECF1F8 }
+
+/* row */
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="top"] tbody > tr:first-child > td { background-color: #ECF1F8 }
+
+table.wall[data-eas-headers-shading="false"][data-eas-headers-display="top"] tbody > tr:first-child > th { background-color: #ECF1F8 }
+
+
+
+table.wall[data-eas-borders-vertical="first"] tbody > tr > td:first-child { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="first"] tbody > tr > td:first-child + td { border-left: black 1px solid }
+
+table.wall[data-eas-borders-vertical="first"] tbody > tr > th:first-child { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="first"] tbody > tr > th:first-child + td { border-left: black 1px solid }
+
+table.wall[data-eas-borders-vertical="first"] tbody > tr > th:first-child + th { border-left: black 1px solid }
+
+
+
+table.wall[data-eas-borders-horizontal="first"] tbody > tr:first-child > td { border-bottom: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="first"] tbody > tr:first-child > th { border-bottom: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="first"] tbody > tr:first-child + tr > td { border-top: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="first"] tbody > tr:first-child + tr > th { border-top: black 1px solid }
+
+
+
+table.wall[data-eas-borders-vertical="all"] { border-left: black 1px solid; border-right: black 1px solid; }
+
+table.wall[data-eas-borders-vertical="all"] tbody > tr > td { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="all"] tbody > tr > td { border-left: black 1px solid }
+
+table.wall[data-eas-borders-vertical="all"] tbody > tr > th { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="all"] tbody > tr > th { border-left: black 1px solid }
+
+
+
+table.wall[data-eas-borders-horizontal="all"] { border-top: black 1px solid; border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-horizontal="all"] tbody > tr > td { border-top: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="all"] tbody > tr > td { border-bottom: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="all"] tbody > tr > th { border-top: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="all"] tbody > tr > th { border-bottom: black 1px solid }
+
+
+
+table.wall[data-eas-borders-vertical="inner"] { border-left: #d0d0d0 dotted 1px; border-right: #d0d0d0 dotted 1px; }
+
+table.wall[data-eas-borders-vertical="inner"] tbody > tr > td:not([last_col='true']) { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="inner"] tbody > tr > td:not(:first-child) { border-left: black 1px solid }
+
+table.wall[data-eas-borders-vertical="inner"] tbody > tr > th:not([last_col='true']) { border-right: black 1px solid }
+
+table.wall[data-eas-borders-vertical="inner"] tbody > tr > th:not(:first-child) { border-left: black 1px solid }
+
+
+
+table.wall[data-eas-borders-horizontal="inner"] { border-top: #d0d0d0 dotted 1px; border-bottom: #d0d0d0 dotted 1px; }
+
+table.wall[data-eas-borders-horizontal="inner"] tbody > tr:not(:first-child) > td { border-top: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="inner"] tbody > tr:not([last_row='true']) > td { border-bottom: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="inner"] tbody > tr:not(:first-child) > th { border-top: black 1px solid }
+
+table.wall[data-eas-borders-horizontal="inner"] tbody > tr:not([last_row='true']) > th { border-bottom: black 1px solid }
+
+
+
+/* table borders - complicated due to thead and tfoot */
+
+/* requires support from editor.js */
+
+/* SINGLE */
+
+table.wall[data-eas-borders-outside="single"] { border: none; /* black solid 1px; */ }
+
+/* top */
+
+table.wall[data-eas-borders-outside="single"] tbody > tr:first-child > td { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tbody > tr:first-child > th { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] thead > tr > td[data-eas-first="true"] { border-top: black 1px solid; border-left: black 1px solid; border-right: black 1px solid; border-bottom: black 1px solid;}
+
+table.wall[data-eas-borders-outside="single"] thead > tr > td:not([data-eas-first="true"]) { border-bottom: black 1px solid; }
+
+
+/* bottom */
+
+table.wall[data-eas-borders-outside="single"] tfoot > tr > td { border: 1px solid lightgray; }
+
+table.wall[data-eas-borders-outside="single"][row_cnt="1"] tbody > tr > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"][row_cnt="1"] tbody > tr > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tbody tr[last_row="true"] > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tbody tr[last_row="true"] > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tfoot > tr > td[data-eas-last="true"] { border-bottom: black 1px solid; border-left: black 1px solid; border-right: black 1px solid; border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tfoot > tr > td:not([data-eas-last="true"]) { border-top: black 1px solid; }
+
+/* left */
+
+
+/* left */
+
+table.wall[data-eas-borders-outside="single"] tbody > tr > td:first-child { border-left: black 1px solid; }
+
+table.wall[data-eas-borders-outside="single"] tbody > tr > th:first-child { border-left: black 1px solid; }
+
+/* right */
+
+table.wall[data-eas-borders-outside="single"][cols="1"] tbody > tr > th { border-right: black solid 1px; }
+
+table.wall[data-eas-borders-outside="single"][cols="1"] tbody > tr > td { border-right: black solid 1px; }
+
+table.wall[data-eas-borders-outside="single"] tbody td[last_col="true"] { border-right: black solid 1px; }
+
+table.wall[data-eas-borders-outside="single"] tbody th[last_col="true"] { border-right: black solid 1px; }
+
+
+
+/* THICK */
+
+table.wall[data-eas-borders-outside="thick"] { border: none; /* black solid 3px; */ }
+
+/* top */
+
+table.wall[data-eas-borders-outside="thick"] tbody > tr:first-child > td { border-top: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tbody > tr:first-child > th { border-top: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] thead > tr > td[data-eas-first="true"] { border-top: black 3px solid; border-left: black 3px solid; border-right: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] thead > tr > td:not([data-eas-first="true"]) { border-bottom: black 3px solid; }
+
+/* bottom */
+
+table.wall[data-eas-borders-outside="thick"] tfoot > tr > td { border: 1px solid lightgray; }
+
+table.wall[data-eas-borders-outside="thick"][row_cnt="1"] tbody > tr > th { border-bottom: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"][row_cnt="1"] tbody > tr > td { border-bottom: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tbody tr[last_row="true"] > td { border-bottom: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tbody tr[last_row="true"] > th { border-bottom: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tfoot > tr > td[data-eas-last="true"] { border-bottom: black 3px solid; border-left: black 3px solid; border-right: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tfoot > tr > td:not([data-eas-last="true"]) { border-top: black 3px solid; }
+
+
+/* left */
+
+table.wall[data-eas-borders-outside="thick"] tbody > tr > td:first-child { border-left: black 3px solid; }
+
+table.wall[data-eas-borders-outside="thick"] tbody > tr > th:first-child { border-left: black 3px solid; }
+
+/* right */
+
+table.wall[data-eas-borders-outside="thick"][cols="1"] tbody > tr > th { border-right: black solid 3px; }
+
+table.wall[data-eas-borders-outside="thick"][cols="1"] tbody > tr > td { border-right: black solid 3px; }
+
+table.wall[data-eas-borders-outside="thick"] tbody td[last_col="true"] { border-right: black solid 3px; }
+
+table.wall[data-eas-borders-outside="thick"] tbody th[last_col="true"] { border-right: black solid 3px; }
+
+
+
+/* DOUBLE */
+
+table.wall[data-eas-borders-outside="double"] { border: none; /* black double 3px; */ }
+
+/* top - single */
+
+table.wall[data-eas-borders-outside="double"] thead > tr > td { border: none; }
+
+table.wall[data-eas-borders-outside="double"][has_head="true"] tbody > tr:first-child > td { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_head="true"] tbody > tr:first-child > th { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_head="false"] tbody > tr:first-child > td { border-top: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"][has_head="false"] tbody > tr:first-child > th { border-top: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"] thead > tr > td:not([data-eas-first="true"]) { border-top: black 1px solid; border-left: black 1px solid; border-right: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"] thead > tr > td[data-eas-first="true"] { border-top: black 3px double; border-left: black 3px double; border-right: black 3px double; border-bottom: black 1px solid }
+
+/* bottom - single */
+
+table.wall[data-eas-borders-outside="double"] tfoot > tr > td { border: none; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="true"][row_cnt="1"] tbody > tr > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="true"][row_cnt="1"] tbody > tr > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="true"] tbody tr[last_row="true"] > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="true"] tbody tr[last_row="true"] > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="false"][row_cnt="1"] tbody > tr > th { border-bottom: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="false"][row_cnt="1"] tbody > tr > td { border-bottom: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="false"] tbody tr[last_row="true"] > td { border-bottom: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"][has_foot="false"] tbody tr[last_row="true"] > th { border-bottom: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"] tfoot > tr > td:not([data-eas-last="true"]) { border-bottom: black 1px solid; border-left: black 1px solid; border-right: black 1px solid; }
+
+table.wall[data-eas-borders-outside="double"] tfoot > tr > td[data-eas-last="true"] { border-bottom: black 3px double; border-left: black 3px double; border-right: black 3px double; border-top: 1px black solid;}
+
+/* left */
+
+table.wall[data-eas-borders-outside="double"] tbody > tr > td:first-child { border-left: black 3px double; }
+
+table.wall[data-eas-borders-outside="double"] tbody > tr > th:first-child { border-left: black 3px double; }
+
+/* right */
+
+table.wall[data-eas-borders-outside="double"][cols="1"] tbody > tr > th { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="double"][cols="1"] tbody > tr > td { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="double"] tbody td[last_col="true"] { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="double"] tbody th[last_col="true"] { border-right: black double 3px; }
+
+
+
+/* SHADOW */
+
+table.wall[data-eas-borders-outside="shadow"] { border: none; /* black double 3px; */ }
+
+/* top - single */
+
+table.wall[data-eas-borders-outside="shadow"] thead > tr > td { border: none; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody > tr:first-child > td { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody > tr:first-child > th { border-top: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"] thead > tr > td:not([data-eas-first="false"]) { border-top: black 1px solid; border-left: black 1px solid; border-right: black 3px double; }
+
+table.wall[data-eas-borders-outside="shadow"] thead > tr > td[data-eas-first="true"] { border-top: black 3px double; border-left: black 3px double; border-right: black 3px double; }
+
+/* bottom - single */
+
+table.wall[data-eas-borders-outside="shadow"] tfoot > tr > td { border: none; }
+
+table.wall[data-eas-borders-outside="shadow"][row_cnt="1"] tbody > tr > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"][row_cnt="1"] tbody > tr > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody tr[last_row="true"] > td { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody tr[last_row="true"] > th { border-bottom: black 1px solid; }
+
+table.wall[data-eas-borders-outside="shadow"] tfoot > tr > td:not([data-eas-last="true"]) { border-left: black 1px solid; border-right: black 3px double; }
+
+table.wall[data-eas-borders-outside="shadow"] tfoot > tr > td[data-eas-last="true"] { border-left: black 3px double; border-right: black 3px double; }
+
+/* table owns bottom shadow */
+
+table.wall[data-eas-borders-outside="shadow"] { border-bottom: black 3px outset; }
+
+/* left */
+
+table.wall[data-eas-borders-outside="shadow"] tbody > tr > td:first-child { border-left: black 3px double; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody > tr > th:first-child { border-left: black 3px double; }
+
+/* right */
+
+table.wall[data-eas-borders-outside="shadow"][cols="1"] tbody > tr > th { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="shadow"][cols="1"] tbody > tr > td { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody td[last_col="true"] { border-right: black double 3px; }
+
+table.wall[data-eas-borders-outside="shadow"] tbody th[last_col="true"] { border-right: black double 3px; }
+
+/* table owns right shadow */
+
+table.wall[data-eas-borders-outside="shadow"] { border-right: black 3px outset }
+
+
+img[data-eas-rotate="90"] {
+    /* for firefox, safari, chrome, etc. */
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    /* for ie */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+img[data-eas-rotate="270"] {
+    /* for firefox, safari, chrome, etc. */
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    transform: rotate(90deg);
+    /* for ie */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+
+img[data-eas-rotate="180"] {
+    /* for firefox, safari, chrome, etc. */
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    transform: rotate(180deg);
+    /* for ie */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
+
+.unknown {
+  display: none;
+}
+
