@@ -141,7 +141,7 @@ function onLeafClick(event, element) {
 
   currentLeaf = leafId;
   var cachedLeaf = leafCache[leafId];
-  var url = '/figures/' + leafId + '.json';
+  var url = 'account/figures/' + leafId + '.json';
   if (leafId === 'user_images') {
     cachedLeaf = null;  // don't cache user leaf data since it's likely to be modified
     url = '/account/figures.json'
@@ -302,7 +302,7 @@ function createBranchLi(node) {
 }
 
 function loadListHierarchy() {
-  new Ajax.Request('/figures.json', {
+  new Ajax.Request('account/figures.json', {
     method: 'get',
     onCreate: function() {
       // show 'please wait'
