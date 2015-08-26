@@ -188,6 +188,12 @@
     var pattern = /<span class="capture">(.*?)<\/span>/gi;
 
     editor.on('getSnapshot', function(evt) {
+      // In some cases, if CKEditor's API is used incorrectly, evt.data won't exist
+      // (see https://github.com/educaide/ckeditor-dev/issues/1).
+      if (typeof evt.data != 'string') {
+        return;
+      }
+
       if (evt.data.match(pattern)) {
         console.log('undo tweaking');
       }
