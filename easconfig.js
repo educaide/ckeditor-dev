@@ -13,6 +13,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'elementspath',
 		'contextmenu',
 		'htmlwriter',
+		'entities',
 		'basicstyles',
 		'justify',
 		'list',

@@ -39,6 +39,7 @@ var CKBUILDER_CONFIG = {
 		elementspath: 1,
 		contextmenu: 1,
 		htmlwriter: 1,
+		entities: 1,
 		basicstyles: 1,
 		justify: 1,
 		list: 1,
