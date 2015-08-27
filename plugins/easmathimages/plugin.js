@@ -5,8 +5,8 @@
 
   function createImage(editor, properties) {
     // Setting the width and height directly is necessary becuase otherwise the browser displays 1px of our low quality thumbnail = 1px on the screen, which we do not want.
-    inch_width  = properties.width  / properties.dpi;
-    inch_height = properties.height / properties.dpi;
+    var inch_width  = properties.width  / properties.dpi;
+    var inch_height = properties.height / properties.dpi;
     var style = "";
     if (properties.style)
       style = properties.style;
