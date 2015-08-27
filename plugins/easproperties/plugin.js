@@ -42,6 +42,23 @@
     return elem;
   }
 
+  function getEasBlockElem(editor, elemClassName)
+  {
+    if (elemClassName == null)
+      return null;
+
+    var selection = editor.getSelection(),
+      startElement = selection && selection.getStartElement(),
+      blockElem = startElement && startElement.getAscendant('div', 1);
+
+    var elementIs = blockElem && blockElem.getAttribute('class').indexOf(elemClassName) !== -1;
+
+    if (elementIs)
+      return blockElem;
+
+    return null;
+  }
+
   function deleteEasBlockElem(editor, elemClassName)
   {
     var blockElem = getEasBlockElem(editor, elemClassName);
