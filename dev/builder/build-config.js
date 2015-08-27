@@ -44,6 +44,7 @@ var CKBUILDER_CONFIG = {
 		justify: 1,
 		list: 1,
 		indentlist: 1,
+		indentblock: 1,
 
 		easbehaviors: 1,
 		easfontsize: 1,

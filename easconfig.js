@@ -18,6 +18,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'justify',
 		'list',
 		'indentlist',
+		'indentblock',
 
 		'easbehaviors',
 		'easfontsize',
