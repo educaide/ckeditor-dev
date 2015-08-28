@@ -9,7 +9,7 @@ function setMath(math, src){
   $("mathtex").value = math;
 
   var imgElem = $('thumbnail');
-  imgElem.writeAttribute("src", src); 
+  imgElem.writeAttribute("src", src);
   $('clear').enable();
 }
 
@@ -52,14 +52,14 @@ function setJimCarrey(el, caretPos) {
 
 function insertTex(tex){
   var texInput = $('mathtex');
-  
+
   // hack! fix IE later: http://stackoverflow.com/questions/263743/how-to-get-caret-position-in-textarea
   var insertLocation = getJimCarrey(texInput);//.selectionStart;
 
   var insertTeX = tex;
   // don't insert an initial space if we're inserting against nothing. This behavior may cause problems if insertTex is used for anything other than our palette, which is currently the only use.
   if (insertLocation == 0)
-    insertTeX = tex.trimLeft();
+    insertTeX = tex.replace( /^[ \t\n\r]+/g, '' ); // Trim left.
 
   texInput.value = texInput.value.splice(insertLocation, 0, insertTeX);
 
@@ -129,12 +129,12 @@ function invalidatePreview(){
 
   var tex = $('mathtex').value;
   if (!tex || tex.length == 0) {
-    $('clear').disable();      
+    $('clear').disable();
   }
   else {
     $('clear').enable();
   }
-} 
+}
 
 function getProperties() {
 
@@ -142,7 +142,7 @@ function getProperties() {
   if (!mathTeX){
     return null;
   }
-  
+
   var imgElem = $('thumbnail');
   if (!imgElem || imgElem.getAttribute('dirty')){
     updatePreview(true);
@@ -155,7 +155,7 @@ function getProperties() {
   if (!thumbnailUrl) {
     return null;
   }
-  
+
   return {
     mathTeX: mathTeX,
     src: thumbnailUrl,
@@ -245,7 +245,7 @@ function setSpinner(onOff) {
     previewButton = $('update');
     if (previewButton)
       previewButton.disabled = true;
- 
+
     if( $$('div.spinner').length == 0 ){
       // show spinner and disable buttons while server generates new thumbnail
       var spinnerElem = new Element('div', { 'class': 'spinner' } )
@@ -320,7 +320,7 @@ function checkForPreviewReady(mathId, thumb, closeAfter){
       if (data.thumbnail_status == "success"){
         showPreviewImage(thumb, data.style);
         if (closeAfter){
-         // cleverly close here. somehow... 
+         // cleverly close here. somehow...
         }
       } else if (data.thumbnail_status == "pending") {
         if (previewRetryCount > 0)
