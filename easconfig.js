@@ -48,8 +48,10 @@ CKEDITOR.editorConfig = function( config ) {
 	];
 
 	config.skin = 'kama';
-
 	config.allowedContent = true;
+	config.height = 400;
+    	config.minimumChangeMilliseconds = 500;
+    	config.disableObjectResizing = true;
 };
 
 // %LEAVE_UNMINIFIED% %REMOVE_LINE%
