@@ -82,6 +82,10 @@ td.widthSettings {
   width: 3em;
 }
 
+.tabbertab.layout select#position {
+  width: 5.5em;
+}
+
 .tabbertab.layout select {
   width: 4.5em;
 }
