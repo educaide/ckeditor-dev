@@ -1,72 +1,56 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
- */
+﻿CKEDITOR.editorConfig = function( config ) {
+	config.plugins = [
+		'wysiwygarea',
+		'clipboard',
+		'undo',
+		'enterkey',
+		'toolbar',
+		'elementspath',
+		'contextmenu',
+		'htmlwriter',
+		'entities',
+		'basicstyles',
+		'justify',
+		'list',
+		'lineutils',
+		'indentlist',
+		'indentblock',
+		'widget',
 
-CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
-	// %REMOVE_START%
-	config.plugins =
-		'about,' +
-		'a11yhelp,' +
-		'basicstyles,' +
-		'bidi,' +
-		'blockquote,' +
-		'clipboard,' +
-		'colorbutton,' +
-		'colordialog,' +
-		'contextmenu,' +
-		'dialogadvtab,' +
-		'div,' +
-		'elementspath,' +
-		'enterkey,' +
-		'entities,' +
-		'filebrowser,' +
-		'find,' +
-		'flash,' +
-		'floatingspace,' +
-		'font,' +
-		'format,' +
-		'forms,' +
-		'horizontalrule,' +
-		'htmlwriter,' +
-		'image,' +
-		'iframe,' +
-		'indentlist,' +
-		'indentblock,' +
-		'justify,' +
-		'language,' +
-		'link,' +
-		'list,' +
-		'liststyle,' +
-		'magicline,' +
-		'maximize,' +
-		'newpage,' +
-		'pagebreak,' +
-		'pastefromword,' +
-		'pastetext,' +
-		'preview,' +
-		'print,' +
-		'removeformat,' +
-		'resize,' +
-		'save,' +
-		'selectall,' +
-		'showblocks,' +
-		'showborders,' +
-		'smiley,' +
-		'sourcearea,' +
-		'specialchar,' +
-		'stylescombo,' +
-		'tab,' +
-		'table,' +
-		'tabletools,' +
-		'templates,' +
-		'toolbar,' +
-		'undo,' +
-		'wysiwygarea';
-	// %REMOVE_END%
+		'easbehaviors',
+		'easfontsize',
+		'easimage',
+		'easimagestyle',
+		'easintro',
+		'easlistcustom',
+		'easliststyle',
+		'easmath',
+		'easmathquill',
+		'easmathimages',
+		'easparbox',
+		'easproperties',
+		'easspecials',
+		'eastable',
+		'eastabletoolscustom',
+		'easwordstyle'
+	].join( ',' );
+
+	config.toolbar = [
+		[ 'Undo', 'Redo' ],
+		[ 'Bold','Italic','Underline', '-', 'Subscript', 'Superscript' ],
+		[ 'EASWordStyle' ],
+		[ 'EASFontSize' ],
+		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
+		[ 'EASList'],
+		[ 'EASMathQuill'],
+		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ]
+	];
+
+	config.skin = 'kama';
+	config.allowedContent = true;
+	//allow mathquill styling
+	config.contentsCss = '/stylesheets/mathquill.css';
+	config.height = 400;
+    	config.minimumChangeMilliseconds = 500;
+    	config.disableObjectResizing = true;
 };
-
-// %LEAVE_UNMINIFIED% %REMOVE_LINE%
