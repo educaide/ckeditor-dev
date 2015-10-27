@@ -23,22 +23,22 @@
     icons: 'easmathquill',
     hidpi: false, // %REMOVE_LINE_CORE%
     init: function (editor) {
-      editor.on('instanceReady', function() {
-        var scriptsToLoad = [
-          'https://code.jquery.com/jquery-1.11.3.min.js',
-          'http://mathquill.com/mathquill/mathquill.js'
-        ];
+      function reportError() {
+        console.log('Error: could not load MathQuill dependency.');
+      }
 
-        CKEDITOR.scriptLoader.load( scriptsToLoad, function (success, failed){
-          if (failed.length){
-            console.log("scripts did not load");
-          }else{
-            console.log("scripts loaded");
-            // I'm assuming here that the rest of the plugin code follows only
-            // once the scripts are loaded
-            // However, I am running into JS errors after the scripts load,
-            // probably due to our continued use of Prototype, but I am not
-            // positive.
+      // Loading jQuery. Note if jQuery is already defined it will override it!
+      CKEDITOR.scriptLoader.load('https://code.jquery.com/jquery-1.11.3.min.js', function (success) {
+        if (!success) {
+          reportError();
+          return;
+        }
+
+        // Once jQuery is loaded, we can load MathQuill itself.
+        CKEDITOR.scriptLoader.load('http://mathquill.com/mathquill/mathquill.js', function (success, failed) {
+          if (!success) {
+            reportError();
+            return;
           }
         });
       });
@@ -48,6 +48,7 @@
           insertMathQuillSpan(editor);
         }
       });
+
       editor.ui.addButton('EASMathQuill', {
         label: 'Insert Inline Math',
         command: 'easmathquill'
