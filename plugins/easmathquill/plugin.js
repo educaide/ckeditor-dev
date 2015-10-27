@@ -16,10 +16,10 @@
     editor.insertElement(editableMathSpan);
     // since the span is created dynamically, we must use the mathquill
     // jquery plugin after inserting the element into the visibile DOM
-    jQuery( editableMathSpan.$ ).mathquill('editable');
+    jQuery(editableMathSpan.$).mathquill('editable');
 
-    // It would be also nice to focus it's textarea, so youser can type
-    // without using pointing device.
+    // it would be also nice to focus it's textarea, so youser can type
+    // without using pointing device
   }
 
   CKEDITOR.plugins.easmathquill = {
@@ -30,14 +30,14 @@
         console.log('Error: could not load MathQuill dependency.');
       }
 
-      // Loading jQuery. Note if jQuery is already defined it will override it!
+      // loading jQuery. Note if jQuery is already defined it will override it!
       CKEDITOR.scriptLoader.load('https://code.jquery.com/jquery-1.11.3.min.js', function (success) {
         if (!success) {
           reportError();
           return;
         }
 
-        // Once jQuery is loaded, we can load MathQuill itself.
+        // once jQuery is loaded, we can load MathQuill itself
         CKEDITOR.scriptLoader.load('http://mathquill.com/mathquill/mathquill.js', function (success, failed) {
           if (!success) {
             reportError();
@@ -57,7 +57,7 @@
         command: 'easmathquill'
       });
 
-      // Set keystroke handler.
+      // set keystroke handler
       editor.setKeystroke(CKEDITOR.CTRL + 77, 'easmathquill');
     }
   };
