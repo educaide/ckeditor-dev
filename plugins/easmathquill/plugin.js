@@ -20,6 +20,8 @@
   }
 
   CKEDITOR.plugins.easmathquill = {
+    icons: 'easmathquill',
+    hidpi: false, // %REMOVE_LINE_CORE%
     init: function (editor) {
       editor.on('instanceReady', function() {
         var scriptsToLoad = [
@@ -37,18 +39,18 @@
             // However, I am running into JS errors after the scripts load,
             // probably due to our continued use of Prototype, but I am not
             // positive.
-            editor.addCommand('easmathquill', {
-              exec: function(editor) {
-                insertMathQuillSpan(editor);
-              }
-            });
-            editor.ui.addButton('EASMathQuill', {
-              label: 'Insert Inline Math',
-              command: 'easmathquill',
-              icon: 'easmathquill',
-            });
           }
         });
+      });
+
+      editor.addCommand('easmathquill', {
+        exec: function(editor) {
+          insertMathQuillSpan(editor);
+        }
+      });
+      editor.ui.addButton('EASMathQuill', {
+        label: 'Insert Inline Math',
+        command: 'easmathquill'
       });
     }
   };
