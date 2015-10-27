@@ -53,6 +53,9 @@
         label: 'Insert Inline Math',
         command: 'easmathquill'
       });
+
+      // Set keystroke handler.
+      editor.setKeystroke(CKEDITOR.CTRL + 77, 'easmathquill');
     }
   };
 
