@@ -17,6 +17,9 @@
     // since the span is created dynamically, we must use the mathquill
     // jquery plugin after inserting the element into the visibile DOM
     jQuery( editableMathSpan.$ ).mathquill('editable');
+
+    // It would be also nice to focus it's textarea, so youser can type
+    // without using pointing device.
   }
 
   CKEDITOR.plugins.easmathquill = {
