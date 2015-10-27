@@ -16,7 +16,7 @@
     editor.insertElement(editableMathSpan);
     // since the span is created dynamically, we must use the mathquill
     // jquery plugin after inserting the element into the visibile DOM
-    editableMathSpan.mathquill('editable');
+    jQuery( editableMathSpan.$ ).mathquill('editable');
   }
 
   CKEDITOR.plugins.easmathquill = {
