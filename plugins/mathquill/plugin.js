@@ -66,6 +66,15 @@
 							that.setData( 'source', $jqElement.mathquill( 'latex' ) );
 							editor.fire( 'unlockSnapshot' );
 						} );
+
+						textarea.on( 'keydown', function( evt ) {
+							if ( evt.data.getKeystroke() === CKEDITOR.CTRL + 77 ) { // CTRL + M
+								// Move back focus to the widget wrapper within the editor's editable element.
+								that.focus();
+								// Cancel the event, so it won't be handled by any further code.
+								evt.cancel();
+							}
+						} );
 					} );
 				},
 
