@@ -25,8 +25,7 @@
 		'easlistcustom',
 		'easliststyle',
 		'easmath',
-		'mathquill'
-		'easmathquill',
+		'mathquill',
 		'easparbox',
 		'easproperties',
 		'easspecials',
@@ -48,7 +47,7 @@
 	config.skin = 'kama';
 	config.allowedContent = true;
 	config.height = 400;
-    	config.minimumChangeMilliseconds = 500;
-    	config.disableObjectResizing = true;
+    config.minimumChangeMilliseconds = 500;
+    config.disableObjectResizing = true;
 	config.forcePasteAsPlainText = true;
 };
