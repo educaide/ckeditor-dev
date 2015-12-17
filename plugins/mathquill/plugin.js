@@ -32,6 +32,7 @@
 				allowedContent: 'span(!mathquill-widget)',
 				button: 'Insert Equation',
 				template: '<span class="mathquill-widget"></span>',
+				draggable: false, // Widget should not feature drag hanlder.
 
 				init: function() {
 					var $jqElement = jQuery( this.element.$ ),
