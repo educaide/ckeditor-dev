@@ -25,8 +25,8 @@
 		'easlistcustom',
 		'easliststyle',
 		'easmath',
+		'mathquill'
 		'easmathquill',
-		'easmathimages',
 		'easparbox',
 		'easproperties',
 		'easspecials',
@@ -42,7 +42,6 @@
 		[ 'EASFontSize' ],
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
 		[ 'EASList'],
-		[ 'EASMathQuill'],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ]
 	];
 
