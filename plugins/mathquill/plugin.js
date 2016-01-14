@@ -15,8 +15,8 @@
 
 		init: function( editor ) {
 			var path = this.path,
-				mathQuillPath = path + 'lib/mathquill/';
-				//mathQuillPath = 'http://mathquill.com/mathquill/';
+				mathQuillPath = path + 'lib/mathquill/',
+				MATHQUILL_KEYSTROKE = CKEDITOR.CTRL + 77; // CTRL + M
 
 			if ( editor.addContentsCss ) {
 				editor.addContentsCss( mathQuillPath + 'mathquill.css' );
@@ -25,6 +25,39 @@
 			CKEDITOR.scriptLoader.load( mathQuillPath + 'mathquill.js', function( result ) {
 				if ( !result ) {
 					console.error( 'Could not fetch MathQuill script.' );
+				}
+			} );
+
+			function checkIfWidgetIsFocused( editor ) {
+				var currentActive = editor.document.getActive();
+
+				// editor.widgets.focused can't be used as focus is inside widget's textarea,
+				// not widget itself.
+				return currentActive && currentActive.getAscendant( function( el ) {
+					return el.type == CKEDITOR.NODE_ELEMENT && el.hasClass( 'mathquill-widget' );
+				}, 1 );
+			}
+
+			function moveSelectionAfterElement( editor, element ) {
+				var range = editor.createRange();
+				range.moveToPosition( element, CKEDITOR.POSITION_AFTER_END );
+				editor.getSelection().selectRanges( [ range ] );
+			}
+
+			editor.on( 'key', function( evt ) {
+				if ( evt.data.domEvent.getKeystroke() == MATHQUILL_KEYSTROKE ) {
+					var widgetEl = checkIfWidgetIsFocused( editor );
+
+					if ( widgetEl ) {
+						moveSelectionAfterElement( editor, widgetEl.getParent() );
+						evt.cancel();
+
+						if ( CKEDITOR.env.gecko ) {
+							editor.focus();
+						}
+					} else {
+						editor.execCommand( 'mathQuill' );
+					}
 				}
 			} );
 
@@ -67,15 +100,6 @@
 							that.setData( 'source', $jqElement.mathquill( 'latex' ) );
 							editor.fire( 'unlockSnapshot' );
 						} );
-
-						textarea.on( 'keydown', function( evt ) {
-							if ( evt.data.getKeystroke() === CKEDITOR.CTRL + 77 ) { // CTRL + M
-								// Move back focus to the widget wrapper within the editor's editable element.
-								that.focus();
-								// Cancel the event, so it won't be handled by any further code.
-								evt.cancel();
-							}
-						} );
 					} );
 				},
 
@@ -114,9 +138,6 @@
 					return span;
 				}
 			} );
-
-			// Register keystrokes.
-			editor.setKeystroke( CKEDITOR.CTRL + 77, 'mathQuill' ); // CTRL + M
 		}
 	} );
 
