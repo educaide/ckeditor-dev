@@ -62,6 +62,16 @@
 				}
 			} );
 
+			// Fix for modifying previous content on pressing "Backspace" in Webkit and Gecko
+			// (due to ticket #13771 that workaround will be also needed there).
+			if ( CKEDITOR.env.webkit || CKEDITOR.env.gecko ) {
+				editor.on( 'key', function( evt ) {
+					if( evt.data.domEvent.getKey() === 8 && checkIfWidgetIsFocused( evt.editor ) ) {
+						evt.cancel();
+					}
+				} );
+			}
+
 			editor.widgets.add( 'mathQuill', {
 				allowedContent: 'span(!mathquill-widget)',
 				button: 'Insert Equation',
