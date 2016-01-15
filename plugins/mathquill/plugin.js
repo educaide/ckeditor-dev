@@ -50,7 +50,6 @@
 
 					if ( widgetEl ) {
 						moveSelectionAfterElement( editor, widgetEl.getParent() );
-						evt.cancel();
 
 						if ( CKEDITOR.env.gecko ) {
 							editor.focus();
@@ -58,6 +57,8 @@
 					} else {
 						editor.execCommand( 'mathQuill' );
 					}
+
+					evt.cancel();
 				}
 			} );
 
