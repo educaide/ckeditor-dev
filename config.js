@@ -25,6 +25,7 @@
 		'easlistcustom',
 		'easliststyle',
 		'easmath',
+		'easmathimages',
 		'mathquill',
 		'easparbox',
 		'easproperties',
