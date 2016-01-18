@@ -135,6 +135,15 @@
 					instance.element.findOne( '.textarea > textarea' ).focus();
 				},
 
+				edit: function() {
+					// Widget edit action should simply focus MathQuill internal part.
+					var mathQuillTextarea = this.element.findOne( 'textarea' );
+
+					if ( mathQuillTextarea ) {
+						mathQuillTextarea.focus();
+					}
+				},
+
 				upcast: function( el ) {
 					return el.name == 'span' && el.hasClass( 'mathquill-widget' );
 				},
