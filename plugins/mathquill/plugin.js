@@ -124,7 +124,7 @@
 					temp.append( wrapper );
 					instance = editor.widgets.initOn( element, this );
 
-					instance.once( 'edit', function( evt ) {
+					instance.once( 'edit', function() {
 						editor.widgets.finalizeCreation( temp );
 					}, null, null, 999 );
 
