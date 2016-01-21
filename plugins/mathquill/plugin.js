@@ -62,15 +62,14 @@
 				}
 			} );
 
-			// Fix for modifying previous content on pressing "Backspace" in Webkit and Gecko
-			// (due to ticket #13771 that workaround will be also needed there).
-			if ( CKEDITOR.env.webkit || CKEDITOR.env.gecko ) {
-				editor.on( 'key', function( evt ) {
-					if( evt.data.domEvent.getKey() === 8 && checkIfWidgetIsFocused( evt.editor ) ) {
-						evt.cancel();
-					}
-				} );
-			}
+			// This fix prevents custom backspace handlers (like the one from #13771 or list backspace handler)
+			// from triggering.
+			editor.on( 'key', function( evt ) {
+				if ( evt.data.domEvent.getKey() === 8 && checkIfWidgetIsFocused( evt.editor ) ) {
+					evt.cancel();
+				}
+			}, null, null, 1 );
+
 
 			editor.widgets.add( 'mathQuill', {
 				allowedContent: 'span(!mathquill-widget)',
