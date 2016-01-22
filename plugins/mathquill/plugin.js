@@ -8,6 +8,20 @@
 ( function() {
 	'use strict';
 
+	// A list of commands that should be blocked when MathQuill widget is focused.
+	var blockedCommands = [
+		'indent',
+		'outdent'
+	];
+
+	// A list of key codes that should be blocked when MathQuill widget is focused.
+	// Note that keys will be blocked at CKEditor editor's object handling level, so earlier
+	// listeners will still be executed (e.g. MathQuill internal listeners).
+	var blockedKeys = [
+		8, // Backspace
+		9 // Tab
+	];
+
 	CKEDITOR.plugins.add( 'mathquill', {
 		requires: 'widget',
 		icons: 'mathquill',
@@ -65,11 +79,24 @@
 			// This fix prevents custom backspace handlers (like the one from #13771 or list backspace handler)
 			// from triggering.
 			editor.on( 'key', function( evt ) {
-				if ( evt.data.domEvent.getKey() === 8 && checkIfWidgetIsFocused( evt.editor ) ) {
+				var keyCode = evt.data.domEvent.getKey();
+
+				if ( CKEDITOR.tools.indexOf( blockedKeys, keyCode ) !== -1 && checkIfWidgetIsFocused( evt.editor ) ) {
 					evt.cancel();
 				}
 			}, null, null, 1 );
 
+			// Some commands might need to be blocked while the MathQuill widget is focused, e.g. list indentation.
+			editor.on( 'beforeCommandExec', function( evt ) {
+				if ( !checkIfWidgetIsFocused( evt.editor ) ) {
+					// We want to cancel certian commands only if the MathQuill widget is focused.
+					return;
+				}
+
+				if ( CKEDITOR.tools.indexOf( blockedCommands, evt.data.name ) !== -1 ) {
+					evt.cancel();
+				}
+			} );
 
 			editor.widgets.add( 'mathQuill', {
 				allowedContent: 'span(!mathquill-widget)',
