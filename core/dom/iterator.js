@@ -168,15 +168,20 @@
 
 					// Non-editable block was found - return it and move to processing
 					// its nested editables if they exist.
-					if ( CKEDITOR.dtd.$block[ nodeName ] && currentNode.getAttribute( 'contenteditable' ) == 'false' ) {
-						block = currentNode;
-
-						// Setup iterator for first of nested editables.
-						// If there's no editable, then algorithm will move to next element after current block.
-						startNestedEditableIterator( this, blockTag, block );
-
-						// Gets us straight to the end of getParagraph() because block variable is set.
-						break;
+					if ( currentNode.getAttribute( 'contenteditable' ) == 'false' ) {
+						if ( CKEDITOR.dtd.$block[ nodeName ] ) {
+							block = currentNode;
+	
+							// Setup iterator for first of nested editables.
+							// If there's no editable, then algorithm will move to next element after current block.
+							startNestedEditableIterator( this, blockTag, block );
+	
+							// Gets us straight to the end of getParagraph() because block variable is set.
+							break;
+						} else {
+							currentNode = currentNode.getNext();
+							continue;
+						}
 					} else if ( currentNode.isBlockBoundary( this.forceBrBreak && !parentPre && { br: 1 } ) ) {
 						// <br> boundaries must be part of the range. It will
 						// happen only if ForceBrBreak.
