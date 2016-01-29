@@ -29,14 +29,14 @@
 
 		init: function( editor ) {
 			var path = this.path,
-				mathQuillPath = path + 'lib/mathquill/',
+				mathQuillPath = path + '../../../mathquill/',
 				MATHQUILL_KEYSTROKE = CKEDITOR.CTRL + 77; // CTRL + M
 
 			if ( editor.addContentsCss ) {
 				editor.addContentsCss( mathQuillPath + 'mathquill.css' );
 			}
 
-			CKEDITOR.scriptLoader.load( mathQuillPath + 'mathquill.js', function( result ) {
+			CKEDITOR.scriptLoader.load( mathQuillPath + 'mathquill.min.js', function( result ) {
 				if ( !result ) {
 					console.error( 'Could not fetch MathQuill script.' );
 				}
