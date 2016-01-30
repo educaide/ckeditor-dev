@@ -179,6 +179,12 @@
 							// Gets us straight to the end of getParagraph() because block variable is set.
 							break;
 						} else {
+							if (range)
+								range.setEndAt( currentNode, CKEDITOR.POSITION_AFTER_END );
+							else {
+								range = this.range.clone();
+								range.setStartAt( currentNode, CKEDITOR.POSITION_BEFORE_START );
+							}
 							currentNode = currentNode.getNext();
 							continue;
 						}
