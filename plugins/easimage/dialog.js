@@ -1,9 +1,10 @@
+var $j = jQuery.noConflict();
 (function() {
 
 document.observe('dom:loaded', function() {
   attachListeners();
   resizeContent();
-  loadListHierarchy();
+  setUpTree();
 });
 
 window.onresize = function() { resizeContent(); }
@@ -19,6 +20,9 @@ var publicThumbFolder = null;
 window.publicPreviewFolder = null;
 
 function attachListeners() {
+  $('user').on('click', onChangeView);
+  $('new').on('click', onChangeView);
+  $('root').on('click', onChangeView);
   $('browser').down('.list ul').on('click', '.leaf', onLeafClick);
   $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
@@ -28,6 +32,102 @@ function attachListeners() {
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
   $('upload-dialog').down('input[type=submit]').on('click', onFileSubmit);
+  $$('.leaf').invoke('observe', 'click', showImages);
+  $('backbutton').on('click', goBack);
+}
+
+function goBack(){
+  var visibleNode = $j('#backbutton').siblings(".node:visible");
+  var toShow = visibleNode.children().first().data("parent");
+
+  if(toShow){
+    visibleNode.hide();
+    $j('[data-current='+toShow+']').first().parent().show();
+  }else{
+    $('user').show();
+    $('new').show();
+    $('stock-image-browser').hide();
+    $('backbutton').hide();
+  }
+}
+
+function setUpTree(){
+  $j('.node').hide();
+
+  $j('#root').click(function(){
+    var chirrens = $j(this).data("current");
+    //console.log(chirrens);
+    var childLIs = $j('[data-parent='+chirrens+']');
+    //console.log(childLIs.first().parent());
+    childLIs.first().parent().show();
+    $j(this).parent().hide();
+  });
+
+  $j('.node li').click(function(){
+    if($j(this).data("group")){
+      console.log("ajax for images");
+    }else{
+      var chirrens = $j(this).data("current");
+      //console.log(chirrens);
+      var childLIs = $j('[data-parent='+chirrens+']')
+      //console.log(childLIs.first().parent());
+      childLIs.first().parent().show();
+      $j(this).parent().hide();
+    }
+  });
+}
+
+function showImages(event){
+  clearBackAndSelected();
+  event.target.setStyle({display:'block'});
+  event.target.addClassName('selected-node');
+  new Ajax.Request('/account/image_nodes/'+event.target.identify()+'/stock_images', {
+    method: 'get',
+    onCreate: function() {
+      // show 'please wait'
+    },
+    onFailure: function() {
+      // show error message
+    },
+    on0: function() {
+      // show 'abort' message
+    },
+    onSuccess: function(response) {
+      // update DOM with returned data
+      // TODO when moved to a real server, data can be assigned with:
+      // var data = response.responseJSON
+      var data = eval("(" + response.responseText + ")");
+      console.log(data);
+    },
+    onComplete: function(response) {
+    }
+  });
+}
+
+function onChangeView(event){
+  var target_id = event.target.identify();
+  //console.log(target_id)
+  if(target_id == "root"){
+    $('user').hide();
+    $('new').hide();
+    if($('browser').visible){
+      $('browser').hide();
+    }
+    if($('upload-dialog-container').visible){
+      $('upload-dialog-container').hide();
+    }
+    $('stock-image-browser').show();
+    $('backbutton').show();
+  }else if(target_id == "user"){
+    $('stock-image-browser').hide();
+    $('upload-dialog-container').hide();
+    loadListHierarchy();
+    $('browser').show();
+  }else{
+    $('stock-image-browser').hide();
+    $('browser').hide();
+    $('upload-dialog-container').show();
+  }
 }
 
 function removeSpinnerOnImgLoad(parentElem) {
@@ -44,7 +144,7 @@ function resizeContent() {
   var multiEl = $('browser').down('.preview .multi');
   var viewWidth = document.viewport.getWidth();
   var singleEl = $('browser').down('.preview .single');
-  var uploadDiv = $('browser').down('.preview .uploads');
+  var uploadDiv = $('viewport').down('.uploads');
   var multiHeight = height - (uploadDiv.visible() ? uploadDiv.getHeight() : 0);
 
   $('browser').down('.list .container').setStyle({ height: height + 'px'});
@@ -116,10 +216,10 @@ function onImageDoubleClick(event, element) {
   singleEl.insert({ bottom: createMeta(imageProperties) });
   removeSpinnerOnImgLoad(singleEl);
 
-  if (isUserImage) {
-    var uploadDiv = $('browser').down('.preview .uploads');
-    uploadDiv.toggle();
-  }
+  //if (isUserImage) {
+    //var uploadDiv = $('viewport').down('.preview .uploads');
+    //uploadDiv.toggle();
+  //}
   singleEl.toggle();
   multiEl.toggle();
   resizeContent();
@@ -154,7 +254,7 @@ function onLeafClick(event, element) {
       parameters: { leafId: leafId },
       onCreate: function() {
         // show 'please wait'
-        $('browser').down('.preview .uploads').hide();
+        //$('viewport').down('.preview .uploads').hide();
         multiEl.update('Loading...');
       },
       onFailure: function(response) {
@@ -202,7 +302,7 @@ function onLeafClick(event, element) {
         // restore any items disabled in onCreate, clear any loading messages
         var requestedLeafId = response.request.parameters.leafId;
         if (requestedLeafId == 'user_images') {
-          $('browser').down('.preview .uploads').show();
+          //$('viewport').down('.preview .uploads').show();
           resizeContent();
         }
       }

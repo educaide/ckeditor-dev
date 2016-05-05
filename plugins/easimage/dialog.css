@@ -138,3 +138,9 @@ body, td {
 #browser #upload-toolbar {
   margin-left: 5px;
 }
+
+.list ul li ul {
+  display: none;
+  margin-left:15px;
+  padding:10px;
+} 
