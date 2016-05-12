@@ -32,17 +32,17 @@ function attachListeners() {
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
   $('upload-dialog').down('input[type=submit]').on('click', onFileSubmit);
-  $$('.leaf').invoke('observe', 'click', showImages);
   $('backbutton').on('click', goBack);
 }
 
 function goBack(){
+  $j('#stock-image-browser').empty();
   var visibleNode = $j('#backbutton').siblings(".node:visible");
   var toShow = visibleNode.children().first().data("parent");
 
   if(toShow){
     visibleNode.hide();
-    $j('[data-current='+toShow+']').first().parent().show();
+    $j('[data-self='+toShow+']').first().parent().show();
   }else{
     $('user').show();
     $('new').show();
@@ -55,7 +55,7 @@ function setUpTree(){
   $j('.node').hide();
 
   $j('#root').click(function(){
-    var chirrens = $j(this).data("current");
+    var chirrens = $j(this).data("self");
     //console.log(chirrens);
     var childLIs = $j('[data-parent='+chirrens+']');
     //console.log(childLIs.first().parent());
@@ -63,43 +63,26 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
-  $j('.node li').click(function(){
-    if($j(this).data("group")){
-      console.log("ajax for images");
+  $j('.node li').click(function(event){
+    var id = $j(event.target).data('self');
+    if($j(this).data("container")){
+      $j('#stock-image-browser').empty();
+      $j.ajax({
+        url: '/account/image_nodes/'+id+'/stock_images', 
+        success: function(response){
+          $j.each(response, function(i, image){
+            console.log(image.stock_image.file_name);
+            $j('#stock-image-browser').append("<p>"+image.stock_image.file_name+"</p>");
+          });
+        }
+      });
     }else{
-      var chirrens = $j(this).data("current");
+      var chirrens = $j(this).data("self");
       //console.log(chirrens);
       var childLIs = $j('[data-parent='+chirrens+']')
       //console.log(childLIs.first().parent());
       childLIs.first().parent().show();
       $j(this).parent().hide();
-    }
-  });
-}
-
-function showImages(event){
-  clearBackAndSelected();
-  event.target.setStyle({display:'block'});
-  event.target.addClassName('selected-node');
-  new Ajax.Request('/account/image_nodes/'+event.target.identify()+'/stock_images', {
-    method: 'get',
-    onCreate: function() {
-      // show 'please wait'
-    },
-    onFailure: function() {
-      // show error message
-    },
-    on0: function() {
-      // show 'abort' message
-    },
-    onSuccess: function(response) {
-      // update DOM with returned data
-      // TODO when moved to a real server, data can be assigned with:
-      // var data = response.responseJSON
-      var data = eval("(" + response.responseText + ")");
-      console.log(data);
-    },
-    onComplete: function(response) {
     }
   });
 }
