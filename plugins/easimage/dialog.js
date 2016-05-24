@@ -2,6 +2,7 @@ var $j = jQuery.noConflict();
 (function() {
 
 document.observe('dom:loaded', function() {
+  includeTree();
   attachListeners();
   resizeContent();
   setUpTree();
@@ -18,6 +19,18 @@ var publicThumbFolder = null;
 
 // this needs to be a window variable so window.getProperties() can work
 window.publicPreviewFolder = null;
+
+function includeTree(){
+  /*
+  */
+  $j.ajax({
+    url: '../../../stock-image-hierarchy.html',
+    success: function(data){
+      $j(data).insertAfter($j('#root-ul') );
+      $j('.node').hide();
+    }
+  });
+}
 
 function attachListeners() {
   $('user').on('click', onChangeView);
@@ -52,13 +65,9 @@ function goBack(){
 }
 
 function setUpTree(){
-  $j('.node').hide();
-
   $j('#root').click(function(){
     var chirrens = $j(this).data("self");
-    //console.log(chirrens);
     var childLIs = $j('[data-parent='+chirrens+']');
-    //console.log(childLIs.first().parent());
     childLIs.first().parent().show();
     $j(this).parent().hide();
   });
@@ -66,21 +75,29 @@ function setUpTree(){
   $j('.node li').click(function(event){
     var id = $j(event.target).data('self');
     if($j(this).data("container")){
-      $j('#stock-image-browser').empty();
       $j.ajax({
-        url: '/account/image_nodes/'+id+'/stock_images', 
+        url: '/account/image_nodes/'+id+'/stock_images',
         success: function(response){
+          var multiEl = $('browser2').down('.preview .multi');
+          multiEl.empty();
           $j.each(response, function(i, image){
             console.log(image.stock_image.file_name);
-            $j('#stock-image-browser').append("<p>"+image.stock_image.file_name+"</p>");
+            var thumb = createStockThumbnail(image.stock_image);
+            $j(multiEl).append(thumb );
           });
+
+          var firstThumb = $('browser2').down('.preview .multi .thumbnail');
+          if (firstThumb) {
+            firstThumb.addClassName('selected');
+          }
+
+          resizeContent();
+           ensureMultiIsShown();
         }
       });
     }else{
       var chirrens = $j(this).data("self");
-      //console.log(chirrens);
       var childLIs = $j('[data-parent='+chirrens+']')
-      //console.log(childLIs.first().parent());
       childLIs.first().parent().show();
       $j(this).parent().hide();
     }
@@ -89,7 +106,6 @@ function setUpTree(){
 
 function onChangeView(event){
   var target_id = event.target.identify();
-  //console.log(target_id)
   if(target_id == "root"){
     $('user').hide();
     $('new').hide();
@@ -342,6 +358,22 @@ function createMeta(figureObj) {
   metaEl.insert({ bottom: new Element('p').update(sizeString) });
 
   return metaEl;
+}
+function createStockThumbnail(figureObj) {
+  var divEl = new Element('div', { 'class': 'thumbnail' });
+  var wrapEl = new Element('div', { 'class': 'wrapper' });
+  var src = 'http://d182r4aj4ojgdn.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
+
+  var properties = {
+    src             : src,
+  };
+
+  wrapEl.insert({ bottom: new Element('img', properties) });
+  divEl.insert({ bottom: wrapEl });
+  divEl.insert({ bottom: createMeta(figureObj) });
+
+  removeSpinnerOnImgLoad(divEl);
+  return divEl;
 }
 
 function createThumbnail(figureObj, isUserImage) {
