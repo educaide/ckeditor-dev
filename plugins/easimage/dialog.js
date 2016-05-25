@@ -3,6 +3,7 @@ var $j = jQuery.noConflict();
 
 document.observe('dom:loaded', function() {
   includeTree();
+  onLeafClick();
   attachListeners();
   resizeContent('browser');
   resizeContent('browser2');
@@ -36,13 +37,12 @@ function attachListeners() {
   $('user').on('click', onChangeView);
   $('new').on('click', onChangeView);
   $('root').on('click', onChangeView);
-  $('browser').down('.list ul').on('click', '.leaf', onLeafClick);
+
   $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
   $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
 
-  $('toggle-upload').on('click', onToggleUploadClick);
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
   $('upload-dialog').down('input[type=submit]').on('click', onFileSubmit);
@@ -50,7 +50,7 @@ function attachListeners() {
 }
 
 function goBack(){
-  $j('#stock-image-browser').empty();
+  $j('#browser2').find('.multi').empty();
   var visibleNode = $j('#backbutton').siblings(".node:visible");
   var toShow = visibleNode.children().first().data("parent");
 
@@ -60,8 +60,9 @@ function goBack(){
   }else{
     $('user').show();
     $('new').show();
-    $('stock-image-browser').hide();
+    $('browser2').hide();
     $('backbutton').hide();
+    $('browser').show();
   }
 }
 
@@ -74,37 +75,41 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
-  $j('.node li').click(function(event){
-    $j(this).unbind('click');
-    var id = $j(event.target).data('self');
-    if($j(this).data("container")){
-      $j('browser2').empty();
-      $j.ajax({
-        url: '/account/image_nodes/'+id+'/stock_images',
-        success: function(response){
-          var multiEl = $('browser2').down('.preview .multi');
-          multiEl.empty();
-          $j.each(response, function(i, image){
-            var thumb = createStockThumbnail(image.stock_image);
-            $j(multiEl).append(thumb );
-          });
+  $j('.node li').click(treeNavigation);
+}
 
-          var firstThumb = $('browser2').down('.preview .multi .thumbnail');
-          if (firstThumb) {
-            firstThumb.addClassName('selected');
-          }
-          resizeContent('browser2');
-          ensureMultiIsShown('browser2');
+function treeNavigation(event){
+  var multiEl = $('browser2').down('.preview .multi');
+  $j(multiEl).empty();
+  var id = $j(event.target).data('self');
+  if($j(this).data("container")){
+    multiEl.update('Loading...');
+    var contentLink = $j(this);
+    contentLink.unbind('click');
+    $j.ajax({
+      url: '/account/image_nodes/'+id+'/stock_images',
+      success: function(response){
+        $j(multiEl).empty();
+        $j.each(response, function(i, image){
+          var thumb = createStockThumbnail(image.stock_image);
+          $j(multiEl).append(thumb );
+        });
+
+        var firstThumb = $('browser2').down('.preview .multi .thumbnail');
+        if (firstThumb) {
+          firstThumb.addClassName('selected');
         }
-      });
-    }else{
-      var chirrens = $j(this).data("self");
-      var childLIs = $j('[data-parent='+chirrens+']')
-      childLIs.first().parent().show();
-      $j(this).parent().hide();
-    }
-    $j(this).bind('click');
-  });
+        resizeContent('browser2');
+        ensureMultiIsShown('browser2');
+        contentLink.bind('click', treeNavigation);
+      }
+    });
+  }else{
+    var chirrens = $j(this).data("self");
+    var childLIs = $j('[data-parent='+chirrens+']')
+    childLIs.first().parent().show();
+    $j(this).parent().hide();
+  }
 }
 
 function onChangeView(event){
@@ -115,20 +120,27 @@ function onChangeView(event){
     if($('browser').visible){
       $('browser').hide();
     }
-    if($('upload-dialog-container').visible){
-      $('upload-dialog-container').hide();
+    $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    //console.log($j('#browser').find('.preview .multi .thumbnail.selected'));
+    if($('upload-dialog').visible){
+      $('upload-dialog').hide();
     }
     $('browser2').show();
     $('backbutton').show();
   }else if(target_id == "user"){
     $('browser2').hide();
-    $('upload-dialog-container').hide();
-    loadListHierarchy();
+    $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    //console.log($j('#browser2').find('.thumbnail.selected'));
+    $('upload-dialog').hide();
     $('browser').show();
   }else{
     $('browser2').hide();
+    $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    //console.log($j('#browser2').find('.thumbnail.selected'));
     $('browser').hide();
-    $('upload-dialog-container').show();
+    $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    //console.log($j('#browser').find('.thumbnail.selected'));
+    $('upload-dialog').show();
   }
 }
 
@@ -146,12 +158,12 @@ function resizeContent(browser) {
   var multiEl = $(browser).down('.preview .multi');
   var viewWidth = document.viewport.getWidth();
   var singleEl = $(browser).down('.preview .single');
-  var uploadDiv = $('viewport').down('.uploads');
-  var multiHeight = height - (uploadDiv.visible() ? uploadDiv.getHeight() : 0);
+  var multiHeight = height;
 
-  $(browser).down('.list .container').setStyle({ height: height + 'px'});
   multiEl.setStyle({ height:  multiHeight + 'px'});
-  singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
+  if(browser == 'browser'){
+    singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
+  }
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
 }
 
@@ -189,7 +201,7 @@ function onToggleUploadClick(event) {
   }
 
   $('upload-dialog').toggle();
-  $('toggle-upload').toggle();
+  //$('toggle-upload').toggle();
   resizeContent('browser');
 
   if (showing && !Prototype.Browser.IE) {
@@ -235,90 +247,30 @@ function onThumbnailClick(event, element) {
   element.addClassName('selected');
 }
 
-function onLeafClick(event, element) {
-  var leafId = element.readAttribute('data-leaf-id');
-  if (currentLeaf === leafId) {
-    return;
-  }
-
-  currentLeaf = leafId;
-  var cachedLeaf = leafCache[leafId];
-  var url = 'account/figures/' + leafId + '.json';
-  if (leafId === 'user_images') {
-    cachedLeaf = null;  // don't cache user leaf data since it's likely to be modified
-    url = '/account/figures.json'
-  }
+function onLeafClick() {
+  var url = '/account/figures.json';
 
   var multiEl = $('browser').down('.preview .multi');
-  if (!cachedLeaf) {
-    new Ajax.Request(url, {
-      method: 'get',
-      parameters: { leafId: leafId },
-      onCreate: function() {
-        // show 'please wait'
-        //$('viewport').down('.preview .uploads').hide();
-        multiEl.update('Loading...');
-      },
-      onFailure: function(response) {
-        // show error message
-        var requestedLeafId = response.request.parameters.leafId;
-        if (requestedLeafId != currentLeaf) {
-          // don't show error message if user has clicked on another leaf while the
-          // original leaf was loading
-          return;
-        }
+  multiEl.update('Loading...');
+  $j.ajax({
+    url: url,
+    success: function(response){
+      if(response.length > 0){
+        $j(multiEl).empty();
+        $j.each(response, function(i, image){
+          var thumb = createThumbnail(image.figure, true);
+          $j(multiEl).append(thumb );
+        });
 
-        multiEl.update("Couldn't load images for this section.");
-        ensureMultiIsShown('browser');
-        currentLeaf = null;
-      },
-      on0: function() {
-        // show 'abort' message
-        multiEl.update("Request aborted.");
-        ensureMultiIsShown('browser');
-        currentLeaf = null;
-      },
-      onSuccess: function(response) {
-        // update DOM with returned data
-        // TODO when moved to a real server, data can be assigned with:
-        // var data = response.responseJSON
-        var requestedLeafId = response.request.parameters.leafId;
-        var data = eval("(" + response.responseText + ")");
-        cachedLeaf = { id: requestedLeafId, figures: data };
-        leafCache[requestedLeafId] = cachedLeaf;
-        showThumbsFor(cachedLeaf);
-
-        if (document.location.hash.startsWith('#user_images')) {
-          if (document.location.hash.endsWith('/success')) {
-            var multiEl = $('browser').down('.preview .multi');
-            multiEl.scrollTop = multiEl.scrollHeight;
-            onThumbailClick(null, multiEl.select('.thumbnail').last());
-          }
-          else if (document.location.hash.endsWith('/error')) {
-            alert('An error occurred while uploading your image. Make sure your image is a valid PNG or JPG file and is smaller than 1MB.');
-          }
-          document.location.hash = "";
+        var firstThumb = $('browser').down('.preview .multi .thumbnail');
+        if (firstThumb) {
+          firstThumb.addClassName('selected');
         }
-      },
-      onComplete: function(response) {
-        // restore any items disabled in onCreate, clear any loading messages
-        var requestedLeafId = response.request.parameters.leafId;
-        if (requestedLeafId == 'user_images') {
-          //$('viewport').down('.preview .uploads').show();
-          resizeContent('browser');
-        }
+        resizeContent('browser');
+        ensureMultiIsShown('browser');
       }
-    });
-  }
-  else {
-    showThumbsFor(cachedLeaf);
-  }
-
-  var oldSelectedLeaf = $('browser').down('.list .selected.leaf');
-  if (oldSelectedLeaf) {
-    oldSelectedLeaf.removeClassName('selected');
-  }
-  element.addClassName('selected');
+    }
+  });
 }
 
 function ensureMultiIsShown(browserToShow) {
@@ -327,22 +279,6 @@ function ensureMultiIsShown(browserToShow) {
   var singleEl = $(browserToShow).down('.preview .single');
   singleEl.hide();
   multiEl.show();
-}
-
-function showThumbsFor(cachedLeaf, browserToShow) {
-  var multiEl = $(browserToShow).down('.preview .multi');
-  multiEl.update();
-  $(cachedLeaf.figures).each(function(figureWrapper) {
-    multiEl.insert({ bottom: createThumbnail(figureWrapper.figure, cachedLeaf.id == 'user_images') });
-  });
-
-  var firstThumb = $('browser').down('.preview .multi .thumbnail');
-  if (firstThumb) {
-    firstThumb.addClassName('selected');
-  }
-
-  resizeContent('browser');
-  ensureMultiIsShown(browserToShow);
 }
 
 function getReferenceFileName(filename){
@@ -387,7 +323,7 @@ function createStockThumbnail(figureObj) {
 function createThumbnail(figureObj, isUserImage) {
   var divEl = new Element('div', { 'class': 'thumbnail' });
   var wrapEl = new Element('div', { 'class': 'wrapper' });
-  var src = (isUserImage ? '/account/figures/' + figureObj.id + '?style=thumb' : publicThumbFolder + figureObj.asset_file_name);
+  var src ='/account/figures/' + figureObj.id + '?style=thumb';
 
   var properties = {
     src             : src,
@@ -422,53 +358,6 @@ function createBranchLi(node) {
   }
 
   return liEl;
-}
-
-function loadListHierarchy() {
-  new Ajax.Request('account/figures.json', {
-    method: 'get',
-    onCreate: function() {
-      // show 'please wait'
-    },
-    onFailure: function() {
-      // show error message
-    },
-    on0: function() {
-      // show 'abort' message
-    },
-    onSuccess: function(response) {
-      // update DOM with returned data
-      // TODO when moved to a real server, data can be assigned with:
-      // var data = response.responseJSON
-      var data = eval("(" + response.responseText + ")");
-      publicThumbFolder = data.publicThumbFolder;
-      publicPreviewFolder = data.publicPreviewFolder;
-
-      var ulEl = $('browser').down('.list ul');
-      $A(data.hierarchy).each(function(rootNode) {
-        ulEl.insert({ bottom: createBranchLi(rootNode) });
-      });
-    },
-    onComplete: function(response) {
-      // restore any items disabled in onCreate, clear any loading messages
-      $('browser').select('td .loading').each(function(el) {
-        el.hide();
-      });
-
-      // load the user image folder
-      var ulEl = $('browser').down('.list ul');
-      var userNode = {name: 'My Images', leafId: 'user_images'};
-      ulEl.insert({ bottom: createBranchLi(userNode) });
-      if (document.location.hash.startsWith('#user_images')) {
-        // HACK instead of calling the event handler, we should be calling something like "selectLeaf"
-        onLeafClick(null, $('browser').down('.list').down('li[data-leaf-id=user_images]'));
-      }
-      else {
-        // select the first leaf by simulating a click on it
-        onLeafClick(null, ulEl.down('.leaf'));
-      }
-    }
-  });
 }
 
 })();

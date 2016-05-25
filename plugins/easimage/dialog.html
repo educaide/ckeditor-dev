@@ -12,13 +12,13 @@
   <body>
     <div id="nav-container" style ="float:left; width:20%;">
       <ul>
-        <a id="backbutton" style="display:none;" href="#">Back</a>
+        <li id="backbutton" style="display:none;"> Back </li>
+        <li style="margin-top:5px;" id="user">Your Images</li>
         <ul id="root-ul">
-            <li id="root" data-self="1">Stock IMAGE</li>
+            <li style="margin-top:10px;" id="root" data-self="1">Stock Images</li>
         </ul>
 
-        <li><a id="user" href="#">Your Images</a></li>
-        <li><a id="new" href="#">New...</a></li>
+        <li id="new" style="margin-top:10px;">New...</li>
       </ul>
     </div>
     <div  id="viewport" style="float:right; width: 75%;">
@@ -36,16 +36,8 @@
         </tfoot>
         <tbody>
           <tr>
-            <td class="list">
-              <div class="container">
-                <div class="loading">Loading...</div>
-                <ul>
-                </ul>
-              </div>
-            </td>
             <td class="preview">
               <div class="multi">
-                <div class="loading">Loading...</div>
               </div>
               <div class="single" style="display: none;">
                   single
@@ -55,7 +47,7 @@
         </tbody>
       </table>
 
-      <table id="browser" border="1" style="display:none;">
+      <table id="browser" border="1">
         <tfoot>
           <tr>
             <td class="meta">
@@ -68,16 +60,8 @@
         </tfoot>
         <tbody>
           <tr>
-            <td class="list">
-              <div class="container">
-                <div class="loading">Loading...</div>
-                <ul>
-                </ul>
-              </div>
-            </td>
             <td class="preview">
               <div class="multi">
-                <div class="loading">Loading...</div>
               </div>
               <div class="single" style="display: none;">
                   single
@@ -86,21 +70,17 @@
           </tr>
         </tbody>
       </table>
-      <div class="uploads" id="upload-dialog-container" style="display: none">
-        <div id="upload-toolbar" class="toolbar">
-          <button id="toggle-upload">Upload</button>
-        </div>
-        <div id="upload-dialog" style="display: none">
-          <form method="post" enctype="multipart/form-data" action="/account/figures">
-            <input type="hidden" id="authenticity_token" name="authenticity_token" />
-            <input type="hidden" name="success_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/success" />
-            <input type="hidden" name="error_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/error" />
-            <input type="file" name="figure[asset]" />
-            <input type="submit" value="Upload" disabled="disabled" name="commit" />
-            <button id="cancel-upload">Cancel</button>
-          </form>
-          <div style="display: none;" class="wait">Uploading, please wait...</div>
-        </div>
+
+      <div id="upload-dialog" style="display: none">
+        <form method="post" enctype="multipart/form-data" action="/account/figures">
+          <input type="hidden" id="authenticity_token" name="authenticity_token" />
+          <input type="hidden" name="success_url" value="/javascripts/ckeditor-dev/plugins/easimage/dialog.html#user_images/success" />
+          <input type="hidden" name="error_url" value="/javascripts/ckeditor-dev/plugins/easimage/dialog.html#user_images/error" />
+          <input type="file" name="figure[asset]" />
+          <input type="submit" value="Upload" disabled="disabled" name="commit" />
+          <button id="cancel-upload">Cancel</button>
+        </form>
+        <div style="display: none;" class="wait">Uploading, please wait...</div>
       </div>
     </div>
   </body>
