@@ -3,12 +3,12 @@ body, td {
   font-size: 14px;
 }
 
-#browser, .multi, .single {
+#browser, #browser2, .multi, .single {
   height: 100%;
   width: 100%;
 }
 
-#browser .single {
+#browser .single, #browser2 .single {
   background-color: #eee;
   display: table-cell;
   position: relative;
@@ -16,56 +16,62 @@ body, td {
   vertical-align: middle;
 }
 
-#browser .list {
+#browser .list, #browser2 .list {
   width: 200px;
   display: none;
 }
 
-#browser .list ul {
+#browser .list ul, #browser2 .list ul {
 /*  width: 100%; */
 }
 
-#browser .list ul ul {
+#browser .list ul ul, #browser2 .list ul ul {
   margin-left: 1em;
 }
 
-#browser .list li > div {
+#browser .list li > div, #browser2 .list li > div  {
   cursor: default;
   padding: 2pt;
 }
 
-#browser .list .selected {
+#browser .list .selected, #browser2 .list .selected {
   background-color: #69c;
   color: white;
 }
 
 #browser .list .container,
 #browser .multi,
-#browser .single {
+#browser .single,
+#browser2 .list .container,
+#browser2 .multi,
+#browser2 .single  {
   overflow: auto;
   height: 100px;
 }
 
-#browser .single {
+#browser .single,
+#browser2 .single {
   overflow: initial;
 }
 
-#browser tfoot {
+#browser tfoot, #browser2 tfoot {
   display: none;
   height: 8ex;
 }
 
-#browser td {
+#browser td, #browser2 td  {
   vertical-align: top;
 }
 
 #browser .thumbnail,
-#browser .thumbnail .wrapper {
+#browser .thumbnail .wrapper,
+#browser2 .thumbnail,
+#browser2 .thumbnail .wrapper {
   height: 170px;
   width: 170px;
 }
 
-#browser .thumbnail {
+#browser .thumbnail, #browser2 .thumbnail {
   background-color: #eee;
   border: 1px solid #ccc;
   display: inline-block;
@@ -73,13 +79,14 @@ body, td {
   position: relative;
 }
 
-#browser .thumbnail .wrapper {
+#browser .thumbnail .wrapper,
+#browser2 .thumbnail .wrapper {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
 }
 
-#browser .meta {
+#browser .meta, #browser2 .meta  {
   background-color: gray;
   bottom: 0;
   color: white;
@@ -93,38 +100,46 @@ body, td {
 }
 
 #browser .thumbnail.selected .meta,
-#browser .single .meta {
+#browser .single .meta,
+#browser2 .thumbnail.selected .meta,
+#browser2 .single .meta {
   display: block;
 }
 
-#browser .thumbnail.selected {
+#browser .thumbnail.selected,
+#browser2 .thumbnail.selected {
   background-color: #ddf;
   border: 1px solid #69c;
 }
 
 #browser .thumbnail img,
-#browser .single img {
+#browser .single img,
+#browser2 .thumbnail img,
+#browser2 .single img {
   border: 1px solid #ccc;
   margin: 9px;
   max-height: 100%;
   max-width: 100%;
 }
 
-#browser .single .meta {
+#browser .single .meta,
+#browser2 .single .meta {
   position: static;
   font-size: 100%;
 }
 
-#browser .single img {
+#browser .single img,
+#browser2 .single img {
   max-width: none;
   max-height: none;
 }
 
-#browser img {
+#browser img, #browser2 img {
   background: transparent url(/images/spinner.gif) center center no-repeat;
 }
 
 #browser .toolbar button,
+#browser2 .toolbar button,
 #browser #upload-dialog button,
 #browser #upload-dialog input[type='submit'] {
   padding: 1px 4px;

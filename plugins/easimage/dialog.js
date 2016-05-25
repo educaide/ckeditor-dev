@@ -4,11 +4,11 @@ var $j = jQuery.noConflict();
 document.observe('dom:loaded', function() {
   includeTree();
   attachListeners();
-  resizeContent();
-  setUpTree();
+  resizeContent('browser');
+  resizeContent('browser2');
 });
 
-window.onresize = function() { resizeContent(); }
+window.onresize = function() { resizeContent('browser'); resizeContent('browser2'); }
 
 // keys are leafIds, values are objects with a timestamp of last access (for
 // cache expiring) and an array of figure objects. cache will hold up to
@@ -27,7 +27,7 @@ function includeTree(){
     url: '../../../stock-image-hierarchy.html',
     success: function(data){
       $j(data).insertAfter($j('#root-ul') );
-      $j('.node').hide();
+      setUpTree();
     }
   });
 }
@@ -37,7 +37,8 @@ function attachListeners() {
   $('new').on('click', onChangeView);
   $('root').on('click', onChangeView);
   $('browser').down('.list ul').on('click', '.leaf', onLeafClick);
-  $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbailClick);
+  $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
+  $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
   $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
 
@@ -65,6 +66,7 @@ function goBack(){
 }
 
 function setUpTree(){
+  $j('.node').hide();
   $j('#root').click(function(){
     var chirrens = $j(this).data("self");
     var childLIs = $j('[data-parent='+chirrens+']');
@@ -73,15 +75,16 @@ function setUpTree(){
   });
 
   $j('.node li').click(function(event){
+    $j(this).unbind('click');
     var id = $j(event.target).data('self');
     if($j(this).data("container")){
+      $j('browser2').empty();
       $j.ajax({
         url: '/account/image_nodes/'+id+'/stock_images',
         success: function(response){
           var multiEl = $('browser2').down('.preview .multi');
           multiEl.empty();
           $j.each(response, function(i, image){
-            console.log(image.stock_image.file_name);
             var thumb = createStockThumbnail(image.stock_image);
             $j(multiEl).append(thumb );
           });
@@ -90,9 +93,8 @@ function setUpTree(){
           if (firstThumb) {
             firstThumb.addClassName('selected');
           }
-
-          resizeContent();
-           ensureMultiIsShown();
+          resizeContent('browser2');
+          ensureMultiIsShown('browser2');
         }
       });
     }else{
@@ -101,6 +103,7 @@ function setUpTree(){
       childLIs.first().parent().show();
       $j(this).parent().hide();
     }
+    $j(this).bind('click');
   });
 }
 
@@ -115,15 +118,15 @@ function onChangeView(event){
     if($('upload-dialog-container').visible){
       $('upload-dialog-container').hide();
     }
-    $('stock-image-browser').show();
+    $('browser2').show();
     $('backbutton').show();
   }else if(target_id == "user"){
-    $('stock-image-browser').hide();
+    $('browser2').hide();
     $('upload-dialog-container').hide();
     loadListHierarchy();
     $('browser').show();
   }else{
-    $('stock-image-browser').hide();
+    $('browser2').hide();
     $('browser').hide();
     $('upload-dialog-container').show();
   }
@@ -138,15 +141,15 @@ function removeSpinnerOnImgLoad(parentElem) {
   }
 }
 
-function resizeContent() {
+function resizeContent(browser) {
   var height = document.viewport.getHeight() - 5;
-  var multiEl = $('browser').down('.preview .multi');
+  var multiEl = $(browser).down('.preview .multi');
   var viewWidth = document.viewport.getWidth();
-  var singleEl = $('browser').down('.preview .single');
+  var singleEl = $(browser).down('.preview .single');
   var uploadDiv = $('viewport').down('.uploads');
   var multiHeight = height - (uploadDiv.visible() ? uploadDiv.getHeight() : 0);
 
-  $('browser').down('.list .container').setStyle({ height: height + 'px'});
+  $(browser).down('.list .container').setStyle({ height: height + 'px'});
   multiEl.setStyle({ height:  multiHeight + 'px'});
   singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
@@ -187,7 +190,7 @@ function onToggleUploadClick(event) {
 
   $('upload-dialog').toggle();
   $('toggle-upload').toggle();
-  resizeContent();
+  resizeContent('browser');
 
   if (showing && !Prototype.Browser.IE) {
     $('upload-dialog').down('input[type=file]').click();
@@ -221,13 +224,13 @@ function onImageDoubleClick(event, element) {
   //}
   singleEl.toggle();
   multiEl.toggle();
-  resizeContent();
+  resizeContent('browser');
 }
 
-function onThumbailClick(event, element) {
-  var currentEl = $('browser').down('.preview .multi .selected');
+function onThumbnailClick(event, element) {
+  var currentEl = $j(element).closest('table').find('.preview .multi .selected');
   if (currentEl) {
-    currentEl.removeClassName('selected');
+    currentEl.removeClass('selected');
   }
   element.addClassName('selected');
 }
@@ -266,13 +269,13 @@ function onLeafClick(event, element) {
         }
 
         multiEl.update("Couldn't load images for this section.");
-        ensureMultiIsShown();
+        ensureMultiIsShown('browser');
         currentLeaf = null;
       },
       on0: function() {
         // show 'abort' message
         multiEl.update("Request aborted.");
-        ensureMultiIsShown();
+        ensureMultiIsShown('browser');
         currentLeaf = null;
       },
       onSuccess: function(response) {
@@ -302,7 +305,7 @@ function onLeafClick(event, element) {
         var requestedLeafId = response.request.parameters.leafId;
         if (requestedLeafId == 'user_images') {
           //$('viewport').down('.preview .uploads').show();
-          resizeContent();
+          resizeContent('browser');
         }
       }
     });
@@ -318,16 +321,16 @@ function onLeafClick(event, element) {
   element.addClassName('selected');
 }
 
-function ensureMultiIsShown() {
+function ensureMultiIsShown(browserToShow) {
   // switch out of single view
-  var multiEl = $('browser').down('.preview .multi');
-  var singleEl = $('browser').down('.preview .single');
+  var multiEl = $(browserToShow).down('.preview .multi');
+  var singleEl = $(browserToShow).down('.preview .single');
   singleEl.hide();
   multiEl.show();
 }
 
-function showThumbsFor(cachedLeaf) {
-  var multiEl = $('browser').down('.preview .multi');
+function showThumbsFor(cachedLeaf, browserToShow) {
+  var multiEl = $(browserToShow).down('.preview .multi');
   multiEl.update();
   $(cachedLeaf.figures).each(function(figureWrapper) {
     multiEl.insert({ bottom: createThumbnail(figureWrapper.figure, cachedLeaf.id == 'user_images') });
@@ -338,13 +341,13 @@ function showThumbsFor(cachedLeaf) {
     firstThumb.addClassName('selected');
   }
 
-  resizeContent();
-  ensureMultiIsShown();
+  resizeContent('browser');
+  ensureMultiIsShown(browserToShow);
 }
 
-function getReferenceFileName(figureObj){
-  var badFileExtension = figureObj.asset_file_name.split(".").pop();
-  var referenceFileName = figureObj.asset_file_name.replace("." + badFileExtension, ".PNG");
+function getReferenceFileName(filename){
+  var badFileExtension = filename.split(".").pop();
+  var referenceFileName = filename.replace("." + badFileExtension, ".PNG");
   return referenceFileName;
 }
 
@@ -362,10 +365,15 @@ function createMeta(figureObj) {
 function createStockThumbnail(figureObj) {
   var divEl = new Element('div', { 'class': 'thumbnail' });
   var wrapEl = new Element('div', { 'class': 'wrapper' });
-  var src = 'http://d182r4aj4ojgdn.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
+  var src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
 
   var properties = {
     src             : src,
+    'data-width'    : figureObj.width,
+    'data-height'   : figureObj.height,
+    'data-dpi'      : figureObj.dpi,
+    'data-filename' : getReferenceFileName(figureObj.file_name),
+    'data-id'       : figureObj.id || 0,
   };
 
   wrapEl.insert({ bottom: new Element('img', properties) });
@@ -386,7 +394,7 @@ function createThumbnail(figureObj, isUserImage) {
     'data-width'    : figureObj.width,
     'data-height'   : figureObj.height,
     'data-dpi'      : figureObj.dpi,
-    'data-filename' : getReferenceFileName(figureObj),
+    'data-filename' : getReferenceFileName(figureObj.asset_file_name),
     'data-id'       : figureObj.id || 0,
     'data-is-user'  : isUserImage.toString()
   };
@@ -465,8 +473,8 @@ function loadListHierarchy() {
 
 })();
 
-function getProperties() {
-  var selectedThumbEl = $('browser').down('.multi .thumbnail.selected');
+function getProperties(browser) {
+  var selectedThumbEl = $(browser).down('.multi .thumbnail.selected');
   if (!selectedThumbEl) {
     return null;
   }
@@ -475,8 +483,13 @@ function getProperties() {
   var imgFile = imgEl.readAttribute('data-filename');
   var imgExtension = imgFile.match(/\.[^\.]+$/)[0];
   var imgId  = imgEl.readAttribute('data-id');
-  var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
-  var previewSrc = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
+  if(browser == "browser"){
+    var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
+    var previewSrc = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
+  }else{
+    var previewSrc = imgEl.readAttribute('src');
+    var isUserImage = false;
+  }
 
   return {
     filename: isUserImage ? imgId + imgExtension : imgFile,
