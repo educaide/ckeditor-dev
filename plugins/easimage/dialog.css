@@ -161,8 +161,22 @@ body, td {
 }
 .node li, #nav-container li {
   cursor: pointer;
+  padding: 2pt 3pt;
 }
 
 .node li{
   margin-top:5px;
+  padding: 2pt 3pt;
+}
+
+.node li img{
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.nav-selected{
+  border-radius: 5px;
+  background-color: #cfc;
+  border: 1px solid lightgreen;
+  padding: 2pt 3pt;
 }

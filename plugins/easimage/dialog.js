@@ -58,6 +58,8 @@ function goBack(){
     visibleNode.hide();
     $j('[data-self='+toShow+']').first().parent().show();
   }else{
+    $j('.nav-selected').removeClass('nav-selected');
+    $j('#user').addClass('nav-selected');
     $('user').show();
     $('new').show();
     $('browser2').hide();
@@ -75,6 +77,16 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
+  var folderEl = "<img src='icons/folder-icon.png' height='32px' width='32px'/>";
+  var imageEl = "<img src='icons/image-icon.png' height='32px' width='32px'/>";
+  $j('.node li').each(function(index, element){
+    if($j(element).data("container")){
+      $j(element).prepend(imageEl);
+    }else{
+      $j(element).prepend(folderEl);
+    }
+  });
+
   $j('.node li').click(treeNavigation);
 }
 
@@ -83,6 +95,8 @@ function treeNavigation(event){
   $j(multiEl).empty();
   var id = $j(event.target).data('self');
   if($j(this).data("container")){
+    $j('.nav-selected').removeClass('nav-selected');
+    $j(this).addClass('nav-selected');
     multiEl.update('Loading...');
     var contentLink = $j(this);
     contentLink.unbind('click');
@@ -113,7 +127,10 @@ function treeNavigation(event){
 }
 
 function onChangeView(event){
-  var target_id = event.target.identify();
+  $j('.nav-selected').removeClass('nav-selected');
+  var target = event.target;
+  $j(target).addClass('nav-selected');
+  var target_id = target.identify();
   if(target_id == "root"){
     $('user').hide();
     $('new').hide();
@@ -121,7 +138,6 @@ function onChangeView(event){
       $('browser').hide();
     }
     $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
-    //console.log($j('#browser').find('.preview .multi .thumbnail.selected'));
     if($('upload-dialog').visible){
       $('upload-dialog').hide();
     }
@@ -130,16 +146,13 @@ function onChangeView(event){
   }else if(target_id == "user"){
     $('browser2').hide();
     $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
-    //console.log($j('#browser2').find('.thumbnail.selected'));
     $('upload-dialog').hide();
     $('browser').show();
   }else{
     $('browser2').hide();
     $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
-    //console.log($j('#browser2').find('.thumbnail.selected'));
     $('browser').hide();
     $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
-    //console.log($j('#browser').find('.thumbnail.selected'));
     $('upload-dialog').show();
   }
 }
