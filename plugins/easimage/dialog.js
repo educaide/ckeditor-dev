@@ -172,9 +172,11 @@ function resizeContent(browser) {
   var height = document.viewport.getHeight() - 5;
   var multiEl = $(browser).down('.preview .multi');
   var viewWidth = document.viewport.getWidth();
+  var navEl = $('nav-container');
   var singleEl = $(browser).down('.preview .single');
   var multiHeight = height;
 
+  navEl.setStyle({height: multiHeight + 'px'});
   multiEl.setStyle({ height:  multiHeight + 'px'});
   singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window

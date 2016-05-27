@@ -163,9 +163,12 @@ body, td {
   cursor: pointer;
   padding: 2pt 3pt;
 }
-
+.node {
+  margin-top: 40px;
+  margin-left: 5px;
+}
 .node li{
-  margin-top:5px;
+  margin-top: 5px;
   padding: 2pt 3pt;
 }
 
@@ -179,4 +182,11 @@ body, td {
   background-color: #cfc;
   border: 1px solid lightgreen;
   padding: 2pt 3pt;
+}
+
+#backbutton {
+  margin-right: 5px;
+  position:fixed;
+  z-index:1000;
+  background-color: white;
 }
