@@ -55,15 +55,17 @@ function goBack(){
   $j('#browser2').find('.multi').empty();
   var visibleNode = $j('#backbutton').siblings(".node:visible");
   var toShow = visibleNode.children().first().data("parent");
+  visibleNode.hide();
 
-  if(toShow){
-    visibleNode.hide();
+  if(toShow && toShow != 1){
     $j('[data-self='+toShow+']').first().parent().show();
   }else{
     $j('.nav-selected').removeClass('nav-selected');
     $j('#user').addClass('nav-selected');
     $('user').show();
     $('new').show();
+    $('root').show();
+    $('root-ul').show();
     $('browser2').hide();
     $('backbutton').hide();
     $('browser').show();

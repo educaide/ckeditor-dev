@@ -185,8 +185,15 @@ body, td {
 }
 
 #backbutton {
-  margin-right: 5px;
+  left: 5px;
   position:fixed;
   z-index:1000;
   background-color: white;
+  top: 0;
+}
+
+#backbutton img {
+  height:32px;
+  width:32px;
+  vertical-align:middle;
 }
