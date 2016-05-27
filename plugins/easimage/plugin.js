@@ -34,7 +34,7 @@
       var dialogName = pluginName + '-' + editor.name;
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName, "Image Browser", this.path + 'dialog.html', 800, 600,
+      CKEDITOR.dialog.addIframe(dialogName, "Image Browser", this.path + 'dialog.html', 950, 600,
         // onContentLoad
         function() {
           // pass on authenticity token so file uploads work

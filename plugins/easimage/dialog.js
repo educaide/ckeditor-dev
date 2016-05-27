@@ -19,7 +19,7 @@ var currentLeaf = null;
 var publicThumbFolder = null;
 
 // this needs to be a window variable so window.getProperties() can work
-window.publicPreviewFolder = null;
+window.publicPreviewFolder = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-print-previews/';
 
 function includeTree(){
   /*
@@ -39,9 +39,11 @@ function attachListeners() {
   $('root').on('click', onChangeView);
 
   $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
-  $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
   $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
+  $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
+  $('browser2').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
+  $('browser2').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
 
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
@@ -77,8 +79,8 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
-  var folderEl = "<img src='icons/folder-icon.png' height='32px' width='32px'/>";
-  var imageEl = "<img src='icons/image-icon.png' height='32px' width='32px'/>";
+  var folderEl = "<img src='icons/folder-icon.png' height='24px' width='24px'/>";
+  var imageEl = "<img src='icons/image-icon.png' height='24px' width='24px'/>";
   $j('.node li').each(function(index, element){
     if($j(element).data("container")){
       $j(element).prepend(imageEl);
@@ -174,9 +176,7 @@ function resizeContent(browser) {
   var multiHeight = height;
 
   multiEl.setStyle({ height:  multiHeight + 'px'});
-  if(browser == 'browser'){
-    singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
-  }
+  singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
 }
 
@@ -223,9 +223,10 @@ function onToggleUploadClick(event) {
 }
 
 function onImageDoubleClick(event, element) {
+  var browser = $j(element).closest('table').attr('id');
   var imgEl = element.down('img');
-  var multiEl = $('browser').down('.preview .multi');
-  var singleEl = $('browser').down('.preview .single');
+  var multiEl = $(browser).down('.preview .multi');
+  var singleEl = $(browser).down('.preview .single');
 
   var imgFile = imgEl.readAttribute('data-filename');
   var imgId  = imgEl.readAttribute('data-id');
@@ -249,7 +250,7 @@ function onImageDoubleClick(event, element) {
   //}
   singleEl.toggle();
   multiEl.toggle();
-  resizeContent('browser');
+  resizeContent(browser);
 }
 
 function onThumbnailClick(event, element) {
@@ -315,7 +316,6 @@ function createStockThumbnail(figureObj) {
   var divEl = new Element('div', { 'class': 'thumbnail' });
   var wrapEl = new Element('div', { 'class': 'wrapper' });
   var src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
-
   var properties = {
     src             : src,
     'data-width'    : figureObj.width,
