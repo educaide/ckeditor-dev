@@ -79,8 +79,8 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
-  var folderEl = "<img src='icons/folder-icon.png' height='24px' width='24px'/>";
-  var imageEl = "<img src='icons/image-icon.png' height='24px' width='24px'/>";
+  var folderEl = "<img src='images/folder-icon.png' height='24px' width='24px'/>";
+  var imageEl = "<img src='images/image-icon.png' height='24px' width='24px'/>";
   $j('.node li').each(function(index, element){
     if($j(element).data("container")){
       $j(element).prepend(imageEl);
