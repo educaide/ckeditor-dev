@@ -384,14 +384,8 @@ function getProperties(browser) {
   var imgEl = selectedThumbEl.down('img');
   var imgFile = imgEl.readAttribute('data-filename');
   var imgExtension = imgFile.match(/\.[^\.]+$/)[0];
-  var imgId  = imgEl.readAttribute('data-id');
-  if(browser == "browser"){
-    var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
-    var previewSrc = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
-  }else{
-    var previewSrc = imgEl.readAttribute('src');
-    var isUserImage = false;
-  }
+  var imgId  = imgEl.readAttribute('data-id');    var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
+  var previewSrc = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
 
   return {
     filename: isUserImage ? imgId + imgExtension : imgFile,
