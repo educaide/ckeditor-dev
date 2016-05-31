@@ -1,6 +1,5 @@
 var $j = jQuery.noConflict();
 (function() {
-
 document.observe('dom:loaded', function() {
   includeTree();
   onLeafClick();
@@ -40,10 +39,10 @@ function attachListeners() {
 
   $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
-  $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
+  $('browser').down('.preview .close-preview-button').on('click', closePreview);
   $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser2').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
-  $('browser2').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
+  $('browser2').down('.preview .close-preview-button').on('click', closePreview);
 
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
@@ -52,6 +51,7 @@ function attachListeners() {
 }
 
 function goBack(){
+  $j('.nav-selected').removeClass('nav-selected');
   $j('#browser2').find('.multi').empty();
   var visibleNode = $j('#backbutton').siblings(".node:visible");
   var toShow = visibleNode.children().first().data("parent");
@@ -59,6 +59,7 @@ function goBack(){
 
   if(toShow && toShow != 1){
     $j('[data-self='+toShow+']').first().parent().show();
+    $j('[data-self='+toShow+']').addClass('nav-selected');
   }else{
     $j('.nav-selected').removeClass('nav-selected');
     $j('#user').addClass('nav-selected');
@@ -81,16 +82,6 @@ function setUpTree(){
     $j(this).parent().hide();
   });
 
-  var folderEl = "<img src='images/folder-icon.png' height='24px' width='24px'/>";
-  var imageEl = "<img src='images/folder-icon.png' height='24px' width='24px'/>";
-  $j('.node li').each(function(index, element){
-    if($j(element).data("container")){
-      $j(element).prepend(imageEl);
-    }else{
-      $j(element).prepend(folderEl);
-    }
-  });
-
   $j('.node li').click(treeNavigation);
 }
 
@@ -109,7 +100,7 @@ function treeNavigation(event){
       success: function(response){
         $j(multiEl).empty();
         $j.each(response, function(i, image){
-          var thumb = createStockThumbnail(image.stock_image);
+          var thumb = createThumbnail(image.stock_image, false);
           $j(multiEl).append(thumb );
         });
 
@@ -180,7 +171,7 @@ function resizeContent(browser) {
 
   navEl.setStyle({height: multiHeight + 'px'});
   multiEl.setStyle({ height:  multiHeight + 'px'});
-  singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
+  singleEl.setStyle({ height: height - 10 + 'px', width: viewWidth - 190 + 'px' });
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
 }
 
@@ -229,6 +220,7 @@ function onToggleUploadClick(event) {
 function onImageDoubleClick(event, element) {
   var browser = $j(element).closest('table').attr('id');
   var imgEl = element.down('img');
+  var close = $(browser).down('.preview .close-preview-button');
   var multiEl = $(browser).down('.preview .multi');
   var singleEl = $(browser).down('.preview .single');
 
@@ -239,22 +231,35 @@ function onImageDoubleClick(event, element) {
   var src = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
 
   singleEl.update(new Element('img', { src: src, 'data-is-user': isUserImage.toString() }));
-  var imageProperties = {
-    asset_file_name: imgFile,
-    width: imgEl.readAttribute('data-width'),
-    height: imgEl.readAttribute('data-height'),
-    dpi: imgEl.readAttribute('data-dpi')
-  };
-  singleEl.insert({ bottom: createMeta(imageProperties) });
+
+  var height = imgEl.readAttribute('data-height');
+  var width = imgEl.readAttribute('data-width');
+  var dpi = imgEl.readAttribute('data-dpi');
+
+  singleEl.insert({ bottom: createMeta(height, width, dpi, imgFile) });
   removeSpinnerOnImgLoad(singleEl);
 
   //if (isUserImage) {
     //var uploadDiv = $('viewport').down('.preview .uploads');
     //uploadDiv.toggle();
   //}
-  singleEl.toggle();
-  multiEl.toggle();
+  singleEl.show();
+  close.show();
+  multiEl.hide();
+  //singleEl.toggle();
+  //multiEl.toggle();
   resizeContent(browser);
+}
+
+function closePreview(event, element){
+  var browser = $j(element).closest('table').attr('id');
+  var multiEl = $(browser).down('.preview .multi');
+  var closebutton = $(browser).down('.preview .close-preview-button');
+  var singleEl = $(browser).down('.preview .single');
+
+  singleEl.hide();
+  closebutton.hide();
+  multiEl.show();
 }
 
 function onThumbnailClick(event, element) {
@@ -305,56 +310,44 @@ function getReferenceFileName(filename){
   return referenceFileName;
 }
 
-function createMeta(figureObj) {
-  var metaEl = new Element('div', { 'class': 'meta' }).update(new Element('p').update(figureObj.asset_file_name));
+function createMeta(height, width, dpi, name) {
+  var metaEl = new Element('div', { 'class': 'meta' }).update(new Element('p').update(name));
   var sizeString = "#{width}in &times; #{height}in @ #{dpi}dpi".interpolate({
-    width: Math.round(100 * figureObj.width / figureObj.dpi) / 100,
-    height: Math.round(100 * figureObj.height / figureObj.dpi) / 100,
-    dpi: figureObj.dpi
+    width: Math.round(100 * width / dpi) / 100,
+    height: Math.round(100 * height / dpi) / 100,
+    dpi: dpi
   });
   metaEl.insert({ bottom: new Element('p').update(sizeString) });
 
   return metaEl;
 }
-function createStockThumbnail(figureObj) {
-  var divEl = new Element('div', { 'class': 'thumbnail' });
-  var wrapEl = new Element('div', { 'class': 'wrapper' });
-  var src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
-  var properties = {
-    src             : src,
-    'data-width'    : figureObj.width,
-    'data-height'   : figureObj.height,
-    'data-dpi'      : figureObj.dpi,
-    'data-filename' : getReferenceFileName(figureObj.file_name),
-    'data-id'       : figureObj.id || 0,
-  };
-
-  wrapEl.insert({ bottom: new Element('img', properties) });
-  divEl.insert({ bottom: wrapEl });
-  divEl.insert({ bottom: createMeta(figureObj) });
-
-  removeSpinnerOnImgLoad(divEl);
-  return divEl;
-}
 
 function createThumbnail(figureObj, isUserImage) {
+  var fileName;
   var divEl = new Element('div', { 'class': 'thumbnail' });
   var wrapEl = new Element('div', { 'class': 'wrapper' });
-  var src ='/account/figures/' + figureObj.id + '?style=thumb';
+  var src;
+  if(isUserImage){
+    fileName = figureObj.asset_file_name;
+    src  ='/account/figures/' + figureObj.id + '?style=thumb';
+  }else{
+    fileName = figureObj.file_name;
+    src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
+  }
 
   var properties = {
     src             : src,
     'data-width'    : figureObj.width,
     'data-height'   : figureObj.height,
     'data-dpi'      : figureObj.dpi,
-    'data-filename' : getReferenceFileName(figureObj.asset_file_name),
+    'data-filename' : getReferenceFileName(fileName),
     'data-id'       : figureObj.id || 0,
     'data-is-user'  : isUserImage.toString()
   };
 
   wrapEl.insert({ bottom: new Element('img', properties) });
   divEl.insert({ bottom: wrapEl });
-  divEl.insert({ bottom: createMeta(figureObj) });
+  divEl.insert({ bottom: createMeta(figureObj.height, figureObj.width, figureObj.dpi, fileName) });
 
   removeSpinnerOnImgLoad(divEl);
   return divEl;

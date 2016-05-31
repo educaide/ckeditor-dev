@@ -12,7 +12,7 @@
   <body>
     <div id="nav-container" style ="float:left; width:15%; overflow-x:scroll; padding-right:3%;">
       <ul>
-        <li id="backbutton" style="display:none; padding-right: 9%;"><img src='images/back-icon.png'/>Back</li>
+        <li id="backbutton" style="display:none;"><img src='images/back-icon.png'/>Back</li>
         <li style="margin-top:5px;" id="user" class='nav-selected'>Your Images</li>
         <ul id="root-ul">
             <li style="margin-top:10px;" id="root" data-self="1">Stock Images</li>
@@ -39,8 +39,9 @@
             <td class="preview">
               <div class="multi">
               </div>
+              <button type="button" id="browser2-close" class='close-preview-button' style="display:none;">X</button>
               <div class="single" style="display: none;">
-                  single
+                single
               </div>
             </td>
           </tr>
@@ -63,8 +64,9 @@
             <td class="preview">
               <div class="multi">
               </div>
+              <button type="button" id="browser-close" class='close-preview-button' style="display:none;">X</button>
               <div class="single" style="display: none;">
-                  single
+                single
               </div>
             </td>
           </tr>
@@ -74,8 +76,8 @@
       <div id="upload-dialog" style="display: none">
         <form method="post" enctype="multipart/form-data" action="/account/figures">
           <input type="hidden" id="authenticity_token" name="authenticity_token" />
-          <input type="hidden" name="success_url" value="/javascripts/ckeditor-dev/plugins/easimage/dialog.html#user_images/success" />
-          <input type="hidden" name="error_url" value="/javascripts/ckeditor-dev/plugins/easimage/dialog.html#user_images/error" />
+          <input type="hidden" name="success_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/success" />
+          <input type="hidden" name="error_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/error" />
           <input type="file" name="figure[asset]" />
           <input type="submit" value="Upload" disabled="disabled" name="commit" />
           <button id="cancel-upload">Cancel</button>

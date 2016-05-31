@@ -2,7 +2,19 @@ body, td {
   font-family: sans-serif;
   font-size: 14px;
 }
-
+#cke_dialog_close_button_114{
+  display:none;
+}
+.close-preview-button{
+  position: absolute;
+  left: 735px;
+  top: 5px;
+  z-index: 100;
+  padding: .3%;
+}
+.preview{
+  position:relative;
+}
 #browser, #browser2, .multi, .single {
   height: 100%;
   width: 100%;
@@ -159,22 +171,31 @@ body, td {
   margin-left:15px;
   padding:10px;
 }
-.node li, #nav-container li {
+
+#nav-container li {
   cursor: pointer;
-  padding: 2pt 3pt;
 }
 .node {
   margin-top: 40px;
   margin-left: 5px;
 }
 .node li{
+  cursor: pointer;
   margin-top: 5px;
+  background-image: url('images/folder-icon.png');
+  background-size: 24px 24px;
+  background-repeat: no-repeat;
+  padding: 3px 10px 5px 32px;
+}
+
+#user, #root, #new{
   padding: 2pt 3pt;
 }
 
 .node li img{
   vertical-align: middle;
   margin-right: 5px;
+  float:left;
 }
 
 .nav-selected{
@@ -185,15 +206,16 @@ body, td {
 }
 
 #backbutton {
-  left: 5px;
+  left: 3px;
   position:fixed;
   z-index:1000;
   background-color: white;
   top: 0;
+  padding-right: 10%;
 }
 
 #backbutton img {
-  height:32px;
-  width:32px;
+  height: 28px;
+  width: 28px;
   vertical-align:middle;
 }
