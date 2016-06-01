@@ -40,6 +40,7 @@
           // pass on authenticity token so file uploads work
           if (Hachiko) {
             var iframe = $(this.domId);
+            $('cke_dialog_close_button_114').hide();
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
             $(inputEl).value = Hachiko.AuthenticityToken;
           }
