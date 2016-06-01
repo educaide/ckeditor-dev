@@ -296,6 +296,8 @@ function onLeafClick() {
         }
         resizeContent('browser');
         ensureMultiIsShown('browser');
+      }else{
+        $(multiEl).update("You have no images to show. To get started, click 'New...' on the left and upload an image.")
       }
     }
   });
