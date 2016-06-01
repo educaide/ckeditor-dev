@@ -21,10 +21,15 @@ var publicThumbFolder = null;
 window.publicPreviewFolder = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-print-previews/';
 
 function includeTree(){
-  /*
-  */
+  var url;
+  var editorWindow = window.parent.document.getElementById('editor-container')
+  if( $j(editorWindow).find('#see_full_hier').prop('checked') ){
+    url = '../../../stock-image-hierarchy.html'
+  }else{
+    url = '../../../stock-image-hierarchy-amended.html'
+  }
   $j.ajax({
-    url: '../../../stock-image-hierarchy.html',
+    url: url,
     success: function(data){
       $j(data).insertAfter($j('#root-ul') );
       setUpTree();
