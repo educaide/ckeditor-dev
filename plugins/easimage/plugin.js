@@ -37,10 +37,10 @@
       CKEDITOR.dialog.addIframe(dialogName, "Image Browser", this.path + 'dialog.html', 950, 600,
         // onContentLoad
         function() {
+          $$('.cke_dialog_close_button')[0].hide();
           // pass on authenticity token so file uploads work
           if (Hachiko) {
             var iframe = $(this.domId);
-            $('cke_dialog_close_button_114').hide();
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
             $(inputEl).value = Hachiko.AuthenticityToken;
           }
