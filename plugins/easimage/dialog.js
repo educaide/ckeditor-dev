@@ -44,9 +44,12 @@ function attachListeners() {
 
   $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
+  $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
   $('browser').down('.preview .close-preview-button').on('click', closePreview);
+
   $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser2').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
+  $('browser2').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
   $('browser2').down('.preview .close-preview-button').on('click', closePreview);
 
   $('cancel-upload').on('click', onToggleUploadClick);
@@ -95,6 +98,7 @@ function treeNavigation(event){
   $j(multiEl).empty();
   var id = $j(event.target).data('self');
   if($j(this).data("container")){
+    $j('.close-preview-button').hide();
     $j('.nav-selected').removeClass('nav-selected');
     $j(this).addClass('nav-selected');
     multiEl.update('Loading...');
@@ -143,6 +147,8 @@ function onChangeView(event){
     }
     $('browser2').show();
     $('backbutton').show();
+    $('search-bar').show();
+    $('search').show();
   }else if(target_id == "user"){
     $('browser2').hide();
     $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
@@ -248,11 +254,10 @@ function onImageDoubleClick(event, element) {
     //var uploadDiv = $('viewport').down('.preview .uploads');
     //uploadDiv.toggle();
   //}
-  singleEl.show();
-  close.show();
-  multiEl.hide();
-  //singleEl.toggle();
-  //multiEl.toggle();
+
+  close.toggle();
+  singleEl.toggle();
+  multiEl.toggle();
   resizeContent(browser);
 }
 
