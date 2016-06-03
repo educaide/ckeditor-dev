@@ -109,14 +109,18 @@ function treeNavigation(event){
       url: '/account/image_nodes/'+id+'/stock_images',
       success: function(response){
         $j(multiEl).empty();
-        $j.each(response, function(i, image){
-          var thumb = createThumbnail(image.stock_image, false);
-          $j(multiEl).append(thumb );
-        });
+        if(response.length > 0){
+          $j.each(response, function(i, image){
+            var thumb = createThumbnail(image.stock_image, false);
+            $j(multiEl).append(thumb );
+          });
 
-        var firstThumb = $('browser2').down('.preview .multi .thumbnail');
-        if (firstThumb) {
-          firstThumb.addClassName('selected');
+          var firstThumb = $('browser2').down('.preview .multi .thumbnail');
+          if (firstThumb) {
+            firstThumb.addClassName('selected');
+          }
+        }else{
+          $j(multiEl).text("No graphics found.");
         }
         resizeContent('browser2');
         ensureMultiIsShown('browser2');
