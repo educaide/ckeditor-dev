@@ -1,6 +1,6 @@
 body, td {
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .close-preview-button{
@@ -58,7 +58,7 @@ body, td {
 }
 
 #browser .thumbnail, #browser2 .thumbnail {
-  background-color: #eee;
+  background-color: #f1f1f1;
   border: 1px solid #ccc;
   display: inline-block;
   margin: 5px;
@@ -120,7 +120,7 @@ body, td {
   max-height: none;
 }
 
-#browser img, #browser2 img {
+#browser img:not(.close-preview-button), #browser2 img(.close-preview-button) {
   background: transparent url(/images/spinner.gif) center center no-repeat;
 }
 
@@ -168,7 +168,7 @@ body, td {
 }
 
 .nav-selected{
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #cfc;
   border: 1px solid lightgreen;
   padding: 2px 3px;

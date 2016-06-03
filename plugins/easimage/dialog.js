@@ -26,6 +26,7 @@ function includeTree(){
   if( $j(editorWindow).find('#see_full_hier').prop('checked') ){
     url = '../../../stock-image-hierarchy.html'
   }else{
+    $j('#root').text("Sample Images");
     url = '../../../stock-image-hierarchy-amended.html'
   }
   $j.ajax({
@@ -147,8 +148,6 @@ function onChangeView(event){
     }
     $('browser2').show();
     $('backbutton').show();
-    $('search-bar').show();
-    $('search').show();
   }else if(target_id == "user"){
     $('browser2').hide();
     $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
