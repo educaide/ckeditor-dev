@@ -154,6 +154,7 @@ body, td {
   background-size: 24px 20px;
   background-repeat: no-repeat;
   padding: 3px 10px 3px 32px;
+  width: 84%;
 }
 
 #user, #root, #new{
