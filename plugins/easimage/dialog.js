@@ -1,12 +1,14 @@
+var $j = jQuery.noConflict();
 (function() {
-
 document.observe('dom:loaded', function() {
+  includeTree();
+  onLeafClick();
   attachListeners();
-  resizeContent();
-  loadListHierarchy();
+  resizeContent('browser');
+  resizeContent('browser2');
 });
 
-window.onresize = function() { resizeContent(); }
+window.onresize = function() { resizeContent('browser'); resizeContent('browser2'); }
 
 // keys are leafIds, values are objects with a timestamp of last access (for
 // cache expiring) and an array of figure objects. cache will hold up to
@@ -16,18 +18,152 @@ var currentLeaf = null;
 var publicThumbFolder = null;
 
 // this needs to be a window variable so window.getProperties() can work
-window.publicPreviewFolder = null;
+window.publicPreviewFolder = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-print-previews/';
+
+function includeTree(){
+  var url;
+  var editorWindow = window.parent.document.getElementById('editor-container')
+  if( $j(editorWindow).find('#see_full_hier').prop('checked') ){
+    url = '../../../stock-image-hierarchy.html'
+  }else{
+    $j('#root').text("Sample Images");
+    url = '../../../stock-image-hierarchy-amended.html'
+  }
+  $j.ajax({
+    url: url,
+    success: function(data){
+      $j(data).insertAfter($j('#root-ul') );
+      setUpTree();
+    }
+  });
+}
 
 function attachListeners() {
-  $('browser').down('.list ul').on('click', '.leaf', onLeafClick);
-  $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbailClick);
+  $('user').on('click', onChangeView);
+  $('new').on('click', onChangeView);
+  $('root').on('click', onChangeView);
+
+  $('browser').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
   $('browser').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
   $('browser').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
+  $('browser').down('.preview .close-preview-button').on('click', closePreview);
 
-  $('toggle-upload').on('click', onToggleUploadClick);
+  $('browser2').down('.preview .multi').on('click', '.thumbnail', onThumbnailClick);
+  $('browser2').down('.preview .multi').on('dblclick', '.thumbnail', onImageDoubleClick);
+  $('browser2').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
+  $('browser2').down('.preview .close-preview-button').on('click', closePreview);
+
   $('cancel-upload').on('click', onToggleUploadClick);
   $('upload-dialog').down('input[type=file]').on('change', onFileChange);
   $('upload-dialog').down('input[type=submit]').on('click', onFileSubmit);
+  $('backbutton').on('click', goBack);
+}
+
+function goBack(){
+  $j('.nav-selected').removeClass('nav-selected');
+  $j('#browser2').find('.multi').empty();
+  var visibleNode = $j('#backbutton').siblings(".node:visible");
+  var toShow = visibleNode.children().first().data("parent");
+  visibleNode.hide();
+
+  if(toShow && toShow != 1){
+    $j('[data-self='+toShow+']').first().parent().show();
+    $j('[data-self='+toShow+']').addClass('nav-selected');
+  }else{
+    $j('.nav-selected').removeClass('nav-selected');
+    $j('#user').addClass('nav-selected');
+    $('user').show();
+    $('new').show();
+    $('root').show();
+    $('root-ul').show();
+    $('browser2').hide();
+    $('backbutton').hide();
+    $('browser').show();
+  }
+}
+
+function setUpTree(){
+  $j('.node').hide();
+  $j('#root').click(function(){
+    var chirrens = $j(this).data("self");
+    var childLIs = $j('[data-parent='+chirrens+']');
+    childLIs.first().parent().show();
+    $j(this).parent().hide();
+  });
+
+  $j('.node li').click(treeNavigation);
+}
+
+function treeNavigation(event){
+  var multiEl = $('browser2').down('.preview .multi');
+  $j(multiEl).empty();
+  var id = $j(event.target).data('self');
+  if($j(this).data("container")){
+    $j('.close-preview-button').hide();
+    $j('.nav-selected').removeClass('nav-selected');
+    $j(this).addClass('nav-selected');
+    multiEl.update('Loading...');
+    var contentLink = $j(this);
+    contentLink.unbind('click');
+    $j.ajax({
+      url: '/account/image_nodes/'+id+'/stock_images',
+      success: function(response){
+        $j(multiEl).empty();
+        if(response.length > 0){
+          $j.each(response, function(i, image){
+            var thumb = createThumbnail(image.stock_image, false);
+            $j(multiEl).append(thumb );
+          });
+
+          var firstThumb = $('browser2').down('.preview .multi .thumbnail');
+          if (firstThumb) {
+            firstThumb.addClassName('selected');
+          }
+        }else{
+          $j(multiEl).text("No graphics found.");
+        }
+        resizeContent('browser2');
+        ensureMultiIsShown('browser2');
+        contentLink.bind('click', treeNavigation);
+      }
+    });
+  }else{
+    var chirrens = $j(this).data("self");
+    var childLIs = $j('[data-parent='+chirrens+']')
+    childLIs.first().parent().show();
+    $j(this).parent().hide();
+  }
+}
+
+function onChangeView(event){
+  $j('.nav-selected').removeClass('nav-selected');
+  var target = event.target;
+  $j(target).addClass('nav-selected');
+  var target_id = target.identify();
+  if(target_id == "root"){
+    $('user').hide();
+    $('new').hide();
+    if($('browser').visible){
+      $('browser').hide();
+    }
+    $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    if($('upload-dialog').visible){
+      $('upload-dialog').hide();
+    }
+    $('browser2').show();
+    $('backbutton').show();
+  }else if(target_id == "user"){
+    $('browser2').hide();
+    $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    $('upload-dialog').hide();
+    $('browser').show();
+  }else{
+    $('browser2').hide();
+    $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    $('browser').hide();
+    $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    $('upload-dialog').show();
+  }
 }
 
 function removeSpinnerOnImgLoad(parentElem) {
@@ -39,17 +175,17 @@ function removeSpinnerOnImgLoad(parentElem) {
   }
 }
 
-function resizeContent() {
+function resizeContent(browser) {
   var height = document.viewport.getHeight() - 5;
-  var multiEl = $('browser').down('.preview .multi');
+  var multiEl = $(browser).down('.preview .multi');
   var viewWidth = document.viewport.getWidth();
-  var singleEl = $('browser').down('.preview .single');
-  var uploadDiv = $('browser').down('.preview .uploads');
-  var multiHeight = height - (uploadDiv.visible() ? uploadDiv.getHeight() : 0);
+  var navEl = $('nav-container');
+  var singleEl = $(browser).down('.preview .single');
+  var multiHeight = height;
 
-  $('browser').down('.list .container').setStyle({ height: height + 'px'});
+  navEl.setStyle({height: multiHeight + 'px'});
   multiEl.setStyle({ height:  multiHeight + 'px'});
-  singleEl.setStyle({ height: height + 'px', width: viewWidth - 205 + 'px' });
+  singleEl.setStyle({ height: height - 10 + 'px', width: viewWidth - 190 + 'px' });
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
 }
 
@@ -87,8 +223,8 @@ function onToggleUploadClick(event) {
   }
 
   $('upload-dialog').toggle();
-  $('toggle-upload').toggle();
-  resizeContent();
+  //$('toggle-upload').toggle();
+  resizeContent('browser');
 
   if (showing && !Prototype.Browser.IE) {
     $('upload-dialog').down('input[type=file]').click();
@@ -96,9 +232,11 @@ function onToggleUploadClick(event) {
 }
 
 function onImageDoubleClick(event, element) {
+  var browser = $j(element).closest('table').attr('id');
   var imgEl = element.down('img');
-  var multiEl = $('browser').down('.preview .multi');
-  var singleEl = $('browser').down('.preview .single');
+  var close = $(browser).down('.preview .close-preview-button');
+  var multiEl = $(browser).down('.preview .multi');
+  var singleEl = $(browser).down('.preview .single');
 
   var imgFile = imgEl.readAttribute('data-filename');
   var imgId  = imgEl.readAttribute('data-id');
@@ -107,154 +245,92 @@ function onImageDoubleClick(event, element) {
   var src = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
 
   singleEl.update(new Element('img', { src: src, 'data-is-user': isUserImage.toString() }));
-  var imageProperties = {
-    asset_file_name: imgFile,
-    width: imgEl.readAttribute('data-width'),
-    height: imgEl.readAttribute('data-height'),
-    dpi: imgEl.readAttribute('data-dpi')
-  };
-  singleEl.insert({ bottom: createMeta(imageProperties) });
+
+  var height = imgEl.readAttribute('data-height');
+  var width = imgEl.readAttribute('data-width');
+  var dpi = imgEl.readAttribute('data-dpi');
+
+  singleEl.insert({ bottom: createMeta(height, width, dpi, imgFile) });
   removeSpinnerOnImgLoad(singleEl);
 
-  if (isUserImage) {
-    var uploadDiv = $('browser').down('.preview .uploads');
-    uploadDiv.toggle();
-  }
+  //if (isUserImage) {
+    //var uploadDiv = $('viewport').down('.preview .uploads');
+    //uploadDiv.toggle();
+  //}
+
+  close.toggle();
   singleEl.toggle();
   multiEl.toggle();
-  resizeContent();
+  resizeContent(browser);
 }
 
-function onThumbailClick(event, element) {
-  var currentEl = $('browser').down('.preview .multi .selected');
+function closePreview(event, element){
+  var browser = $j(element).closest('table').attr('id');
+  var multiEl = $(browser).down('.preview .multi');
+  var closebutton = $(browser).down('.preview .close-preview-button');
+  var singleEl = $(browser).down('.preview .single');
+
+  singleEl.hide();
+  closebutton.hide();
+  multiEl.show();
+}
+
+function onThumbnailClick(event, element) {
+  var currentEl = $j(element).closest('table').find('.preview .multi .selected');
   if (currentEl) {
-    currentEl.removeClassName('selected');
+    currentEl.removeClass('selected');
   }
   element.addClassName('selected');
 }
 
-function onLeafClick(event, element) {
-  var leafId = element.readAttribute('data-leaf-id');
-  if (currentLeaf === leafId) {
-    return;
-  }
-
-  currentLeaf = leafId;
-  var cachedLeaf = leafCache[leafId];
-  var url = 'account/figures/' + leafId + '.json';
-  if (leafId === 'user_images') {
-    cachedLeaf = null;  // don't cache user leaf data since it's likely to be modified
-    url = '/account/figures.json'
-  }
+function onLeafClick() {
+  var url = '/account/figures.json';
 
   var multiEl = $('browser').down('.preview .multi');
-  if (!cachedLeaf) {
-    new Ajax.Request(url, {
-      method: 'get',
-      parameters: { leafId: leafId },
-      onCreate: function() {
-        // show 'please wait'
-        $('browser').down('.preview .uploads').hide();
-        multiEl.update('Loading...');
-      },
-      onFailure: function(response) {
-        // show error message
-        var requestedLeafId = response.request.parameters.leafId;
-        if (requestedLeafId != currentLeaf) {
-          // don't show error message if user has clicked on another leaf while the
-          // original leaf was loading
-          return;
-        }
+  multiEl.update('Loading...');
+  $j.ajax({
+    url: url,
+    success: function(response){
+      if(response.length > 0){
+        $j(multiEl).empty();
+        $j.each(response, function(i, image){
+          var thumb = createThumbnail(image.figure, true);
+          $j(multiEl).append(thumb );
+        });
 
-        multiEl.update("Couldn't load images for this section.");
-        ensureMultiIsShown();
-        currentLeaf = null;
-      },
-      on0: function() {
-        // show 'abort' message
-        multiEl.update("Request aborted.");
-        ensureMultiIsShown();
-        currentLeaf = null;
-      },
-      onSuccess: function(response) {
-        // update DOM with returned data
-        // TODO when moved to a real server, data can be assigned with:
-        // var data = response.responseJSON
-        var requestedLeafId = response.request.parameters.leafId;
-        var data = eval("(" + response.responseText + ")");
-        cachedLeaf = { id: requestedLeafId, figures: data };
-        leafCache[requestedLeafId] = cachedLeaf;
-        showThumbsFor(cachedLeaf);
-
-        if (document.location.hash.startsWith('#user_images')) {
-          if (document.location.hash.endsWith('/success')) {
-            var multiEl = $('browser').down('.preview .multi');
-            multiEl.scrollTop = multiEl.scrollHeight;
-            onThumbailClick(null, multiEl.select('.thumbnail').last());
-          }
-          else if (document.location.hash.endsWith('/error')) {
-            alert('An error occurred while uploading your image. Make sure your image is a valid PNG or JPG file and is smaller than 1MB.');
-          }
-          document.location.hash = "";
+        var firstThumb = $('browser').down('.preview .multi .thumbnail');
+        if (firstThumb) {
+          firstThumb.addClassName('selected');
         }
-      },
-      onComplete: function(response) {
-        // restore any items disabled in onCreate, clear any loading messages
-        var requestedLeafId = response.request.parameters.leafId;
-        if (requestedLeafId == 'user_images') {
-          $('browser').down('.preview .uploads').show();
-          resizeContent();
-        }
+        resizeContent('browser');
+        ensureMultiIsShown('browser');
+      }else{
+        $(multiEl).update("You have no images to show. To get started, click 'New...' on the left and upload an image.")
       }
-    });
-  }
-  else {
-    showThumbsFor(cachedLeaf);
-  }
-
-  var oldSelectedLeaf = $('browser').down('.list .selected.leaf');
-  if (oldSelectedLeaf) {
-    oldSelectedLeaf.removeClassName('selected');
-  }
-  element.addClassName('selected');
+    }
+  });
 }
 
-function ensureMultiIsShown() {
+function ensureMultiIsShown(browserToShow) {
   // switch out of single view
-  var multiEl = $('browser').down('.preview .multi');
-  var singleEl = $('browser').down('.preview .single');
+  var multiEl = $(browserToShow).down('.preview .multi');
+  var singleEl = $(browserToShow).down('.preview .single');
   singleEl.hide();
   multiEl.show();
 }
 
-function showThumbsFor(cachedLeaf) {
-  var multiEl = $('browser').down('.preview .multi');
-  multiEl.update();
-  $(cachedLeaf.figures).each(function(figureWrapper) {
-    multiEl.insert({ bottom: createThumbnail(figureWrapper.figure, cachedLeaf.id == 'user_images') });
-  });
-
-  var firstThumb = $('browser').down('.preview .multi .thumbnail');
-  if (firstThumb) {
-    firstThumb.addClassName('selected');
-  }
-
-  resizeContent();
-  ensureMultiIsShown();
-}
-
-function getReferenceFileName(figureObj){
-  var badFileExtension = figureObj.asset_file_name.split(".").pop();
-  var referenceFileName = figureObj.asset_file_name.replace("." + badFileExtension, ".PNG");
+function getReferenceFileName(filename){
+  var badFileExtension = filename.split(".").pop();
+  var referenceFileName = filename.replace("." + badFileExtension, ".PNG");
   return referenceFileName;
 }
 
-function createMeta(figureObj) {
-  var metaEl = new Element('div', { 'class': 'meta' }).update(new Element('p').update(figureObj.asset_file_name));
+function createMeta(height, width, dpi, name) {
+  var metaEl = new Element('div', { 'class': 'meta' }).update(new Element('p').update(name));
   var sizeString = "#{width}in &times; #{height}in @ #{dpi}dpi".interpolate({
-    width: Math.round(100 * figureObj.width / figureObj.dpi) / 100,
-    height: Math.round(100 * figureObj.height / figureObj.dpi) / 100,
-    dpi: figureObj.dpi
+    width: Math.round(100 * width / dpi) / 100,
+    height: Math.round(100 * height / dpi) / 100,
+    dpi: dpi
   });
   metaEl.insert({ bottom: new Element('p').update(sizeString) });
 
@@ -262,23 +338,31 @@ function createMeta(figureObj) {
 }
 
 function createThumbnail(figureObj, isUserImage) {
+  var fileName;
   var divEl = new Element('div', { 'class': 'thumbnail' });
   var wrapEl = new Element('div', { 'class': 'wrapper' });
-  var src = (isUserImage ? '/account/figures/' + figureObj.id + '?style=thumb' : publicThumbFolder + figureObj.asset_file_name);
+  var src;
+  if(isUserImage){
+    fileName = figureObj.asset_file_name;
+    src  ='/account/figures/' + figureObj.id + '?style=thumb';
+  }else{
+    fileName = figureObj.file_name;
+    src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
+  }
 
   var properties = {
     src             : src,
     'data-width'    : figureObj.width,
     'data-height'   : figureObj.height,
     'data-dpi'      : figureObj.dpi,
-    'data-filename' : getReferenceFileName(figureObj),
+    'data-filename' : getReferenceFileName(fileName),
     'data-id'       : figureObj.id || 0,
     'data-is-user'  : isUserImage.toString()
   };
 
   wrapEl.insert({ bottom: new Element('img', properties) });
   divEl.insert({ bottom: wrapEl });
-  divEl.insert({ bottom: createMeta(figureObj) });
+  divEl.insert({ bottom: createMeta(figureObj.height, figureObj.width, figureObj.dpi, fileName) });
 
   removeSpinnerOnImgLoad(divEl);
   return divEl;
@@ -301,57 +385,10 @@ function createBranchLi(node) {
   return liEl;
 }
 
-function loadListHierarchy() {
-  new Ajax.Request('account/figures.json', {
-    method: 'get',
-    onCreate: function() {
-      // show 'please wait'
-    },
-    onFailure: function() {
-      // show error message
-    },
-    on0: function() {
-      // show 'abort' message
-    },
-    onSuccess: function(response) {
-      // update DOM with returned data
-      // TODO when moved to a real server, data can be assigned with:
-      // var data = response.responseJSON
-      var data = eval("(" + response.responseText + ")");
-      publicThumbFolder = data.publicThumbFolder;
-      publicPreviewFolder = data.publicPreviewFolder;
-
-      var ulEl = $('browser').down('.list ul');
-      $A(data.hierarchy).each(function(rootNode) {
-        ulEl.insert({ bottom: createBranchLi(rootNode) });
-      });
-    },
-    onComplete: function(response) {
-      // restore any items disabled in onCreate, clear any loading messages
-      $('browser').select('td .loading').each(function(el) {
-        el.hide();
-      });
-
-      // load the user image folder
-      var ulEl = $('browser').down('.list ul');
-      var userNode = {name: 'My Images', leafId: 'user_images'};
-      ulEl.insert({ bottom: createBranchLi(userNode) });
-      if (document.location.hash.startsWith('#user_images')) {
-        // HACK instead of calling the event handler, we should be calling something like "selectLeaf"
-        onLeafClick(null, $('browser').down('.list').down('li[data-leaf-id=user_images]'));
-      }
-      else {
-        // select the first leaf by simulating a click on it
-        onLeafClick(null, ulEl.down('.leaf'));
-      }
-    }
-  });
-}
-
 })();
 
-function getProperties() {
-  var selectedThumbEl = $('browser').down('.multi .thumbnail.selected');
+function getProperties(browser) {
+  var selectedThumbEl = $(browser).down('.multi .thumbnail.selected');
   if (!selectedThumbEl) {
     return null;
   }
@@ -359,8 +396,7 @@ function getProperties() {
   var imgEl = selectedThumbEl.down('img');
   var imgFile = imgEl.readAttribute('data-filename');
   var imgExtension = imgFile.match(/\.[^\.]+$/)[0];
-  var imgId  = imgEl.readAttribute('data-id');
-  var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
+  var imgId  = imgEl.readAttribute('data-id');    var isUserImage = imgEl.readAttribute('data-is-user') == 'true'
   var previewSrc = (isUserImage ? '/account/figures/' + imgId + '?style=print_preview_thumbnail' : publicPreviewFolder + imgFile);
 
   return {

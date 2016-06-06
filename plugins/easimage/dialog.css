@@ -1,14 +1,25 @@
 body, td {
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 
-#browser, .multi, .single {
+.close-preview-button{
+  position: absolute;
+  left: 725px;
+  top: 5px;
+  z-index: 100;
+  padding: .3%;
+  font-size: 18pt;
+}
+.preview{
+  position:relative;
+}
+#browser, #browser2, .multi, .single {
   height: 100%;
   width: 100%;
 }
 
-#browser .single {
+#browser .single, #browser2 .single {
   background-color: #eee;
   display: table-cell;
   position: relative;
@@ -16,115 +27,105 @@ body, td {
   vertical-align: middle;
 }
 
-#browser .list {
-  width: 200px;
-  display: none;
-}
-
-#browser .list ul {
-/*  width: 100%; */
-}
-
-#browser .list ul ul {
-  margin-left: 1em;
-}
-
-#browser .list li > div {
-  cursor: default;
-  padding: 2pt;
-}
-
-#browser .list .selected {
-  background-color: #69c;
-  color: white;
-}
-
-#browser .list .container,
 #browser .multi,
-#browser .single {
+#browser .single,
+#browser2 .multi,
+#browser2 .single  {
   overflow: auto;
   height: 100px;
 }
 
-#browser .single {
+#browser .single,
+#browser2 .single {
   overflow: initial;
 }
 
-#browser tfoot {
+#browser tfoot, #browser2 tfoot {
   display: none;
   height: 8ex;
 }
 
-#browser td {
+#browser td, #browser2 td  {
   vertical-align: top;
 }
 
 #browser .thumbnail,
-#browser .thumbnail .wrapper {
+#browser .thumbnail .wrapper,
+#browser2 .thumbnail,
+#browser2 .thumbnail .wrapper {
   height: 170px;
   width: 170px;
 }
 
-#browser .thumbnail {
-  background-color: #eee;
+#browser .thumbnail, #browser2 .thumbnail {
+  background-color: #f1f1f1;
   border: 1px solid #ccc;
   display: inline-block;
   margin: 5px;
   position: relative;
 }
 
-#browser .thumbnail .wrapper {
+#browser .thumbnail .wrapper,
+#browser2 .thumbnail .wrapper {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
 }
 
-#browser .meta {
+#browser .meta, #browser2 .meta  {
   background-color: gray;
   bottom: 0;
   color: white;
   display: none;
   font-size: 80%;
   opacity: 0.8;
-  padding: 1pt 0;
+  padding: 1px 0;
   position: absolute;
   text-align: center;
   width: 100%;
 }
 
 #browser .thumbnail.selected .meta,
-#browser .single .meta {
+#browser .single .meta,
+#browser2 .thumbnail.selected .meta,
+#browser2 .single .meta {
   display: block;
 }
 
-#browser .thumbnail.selected {
+#browser .thumbnail.selected,
+#browser2 .thumbnail.selected {
   background-color: #ddf;
   border: 1px solid #69c;
 }
 
 #browser .thumbnail img,
-#browser .single img {
+#browser .single img,
+#browser2 .thumbnail img,
+#browser2 .single img {
   border: 1px solid #ccc;
   margin: 9px;
   max-height: 100%;
   max-width: 100%;
 }
 
-#browser .single .meta {
+#browser .single .meta,
+#browser2 .single .meta {
   position: static;
   font-size: 100%;
 }
 
-#browser .single img {
+#browser .single img,
+#browser2 .single img {
   max-width: none;
   max-height: none;
 }
 
-#browser img {
+#browser img:not(.close-preview-button), #browser2 img(.close-preview-button) {
   background: transparent url(/images/spinner.gif) center center no-repeat;
 }
 
 #browser .toolbar button,
+#browser2 .toolbar button,
 #browser #upload-dialog button,
 #browser #upload-dialog input[type='submit'] {
   padding: 1px 4px;
@@ -137,4 +138,51 @@ body, td {
 #browser #upload-dialog,
 #browser #upload-toolbar {
   margin-left: 5px;
+}
+
+#nav-container li {
+  cursor: pointer;
+}
+.node {
+  margin-top: 40px;
+  margin-left: 5px;
+}
+.node li{
+  cursor: pointer;
+  margin-top: 5px;
+  background-image: url('images/folder-icon.png');
+  background-size: 24px 20px;
+  background-repeat: no-repeat;
+  padding: 3px 10px 3px 32px;
+  width: 84%;
+}
+
+#user, #root, #new{
+  padding: 2px 3px;
+}
+
+.node li img{
+  vertical-align: middle;
+  margin-right: 5px;
+  float:left;
+}
+
+.nav-selected{
+  border-radius: 2px;
+  background-color: #cfc;
+  border: 1px solid lightgreen;
+  padding: 2px 3px;
+}
+
+#backbutton {
+  left: 3px;
+  position:fixed;
+  z-index:1000;
+  background-color: white;
+  top: 0;
+  padding-right: 10%;
+  background-image: url('images/back-icon.png');
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+  padding: 5px 85px 10px 33px;
 }
