@@ -197,6 +197,13 @@
 
   CKEDITOR.plugins.add('easbehaviors', {
     init: function(editor) {
+       var type;
+      if(typeof editor.config.easEditorType != 'undefined'){
+        type = editor.config.easEditorType;
+      }else{
+        type = "problem";
+      }
+
       editor.on('key', CKEDITOR.tools.bind(onKey, this));
       editor.on('change', CKEDITOR.tools.bind(onChange, this));
     }
