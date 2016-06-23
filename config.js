@@ -50,5 +50,5 @@
 	config.height = 400;
     config.minimumChangeMilliseconds = 500;
     config.disableObjectResizing = true;
-	config.forcePasteAsPlainText = true;
+	config.pasteFilter = 'plain-text';
 };
