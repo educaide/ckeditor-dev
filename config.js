@@ -49,7 +49,6 @@
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
 		[ 'EASList'],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ],
-		['Format'],
 	];
 
 	config.skin = 'kama';
@@ -58,5 +57,4 @@
     config.minimumChangeMilliseconds = 500;
     config.disableObjectResizing = true;
 	config.forcePasteAsPlainText = true;
-	config.format_tags = 'h1;h2;h3';
 };
