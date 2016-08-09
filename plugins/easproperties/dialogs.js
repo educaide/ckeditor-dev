@@ -14,10 +14,6 @@ function setupProperties(){
     var groupDiv = new Element('div', {className: 'propertiesGroup properties'});
     insertLocation.insert(groupDiv);
 
-    //var titleSpan = new Element('span', {className: 'title'});
-    //titleSpan.update(propsGroup.groupName);
-    //groupDiv.insert(titleSpan);
-
     var props = propsGroup.props;
     for (var p = 0; p < props.length; p++) {
       var prop = props[p];
@@ -28,10 +24,8 @@ function setupProperties(){
 
       var propLabel = new Element('label').update(texKey);
       propLabel.setAttribute("for", htmlKey);
+      propLabel.setAttribute("id", htmlKey + "-label");
       row.insert(propLabel);
-
-      var propInput = new Element('input', {id: htmlKey, type: "textbox"});
-      row.insert(propInput);
     }
   }
 }
@@ -51,31 +45,84 @@ function setPropertySelect(element, key){
   }
 }
 
-function setPropertyTextbox(element, texProperties){
+function setupInput(element, texProp){
+  var dataType = texProp[0];
 
-  var dataType = texProperties[0];
+  var key = texProp[1];
 
-  var key = texProperties[1];
+  var elemId = easPrefix + key + "-input"
 
   if (dataType == "Dimension") {
 
-    $(easPrefix + key).setStyle({
+    var dimenId = easPrefix + key + "-dimen"
+
+    var elem = new Element('input', {id: elemId, type: "textbox"});
+
+    elem.setStyle({
       "width" : "4.5em"
     });
 
-    $(easPrefix + key).up().insert("<select id='" + easPrefix + key + "-dimension' style='width: 3em; margin-left: 5px;'><option value='in'>in</option><option value='cm'>cm</option><option value='pt'>pt</option><option value='em'>em</option><option value='ex'>ex</option></select>");
+    var select = new Element('select', {id: dimenId});
 
+    select.setStyle({
+      "width" : "3em",
+      "margin-left" : "5px"
+    });
+
+    var inDimen = new Element('option', {value: 'in'});
+    inDimen.insert("in");
+    var cmDimen = new Element('option', {value: 'cm'});
+    cmDimen.insert("cm");
+    var ptDimen = new Element('option', {value: 'pt'});
+    ptDimen.insert("pt");
+    var emDimen = new Element('option', {value: 'em'});
+    emDimen.insert("em");
+    var exDimen = new Element('option', {value: 'ex'});
+    exDimen.insert("ex");
+
+    select.insert(inDimen);
+    select.insert(cmDimen);
+    select.insert(ptDimen);
+    select.insert(emDimen);
+    select.insert(exDimen);
+
+    $(easPrefix + key + "-label").up().insert(elem);
+    $(easPrefix + key + "-label").up().insert(select);
+
+  } else if (dataType == "bool?") {
+    var elem = new Element('select', {id: elemId});
+
+    var opt_none = new Element('option', {value: ''});
+    var opt_true = new Element('option', {value: 'true'});
+    opt_true.insert("True");
+    var opt_false = new Element('option', {value: 'false'});
+    opt_false.insert("False");
+
+    elem.insert(opt_none);
+    elem.insert(opt_true);
+    elem.insert(opt_false);
+
+    $(easPrefix + key + "-label").up().insert(elem);
+  } else {
+    var elem = new Element('input', {id: elemId, type: "textbox"});
+    $(easPrefix + key + "-label").up().insert(elem);
   }
+
+}
+
+function setPropertyTextbox(element, texProp){
+
+  var key = texProp[1];
 
   if (!element)
     return;
 
-  var value =  element.getAttribute(easPrefix + key)
+  var value = element.getAttribute(easPrefix + key)
 
   if (!value)
     return;
 
-  $(easPrefix + key).value = value;
+  $(easPrefix + key + "-input").value = value;
 }
 
 function setWidthAndDimens(element, key){
@@ -106,12 +153,11 @@ function setProperties(element){
   if (!element)
     return;
 
-  var parbox = texCommand == "parbox";
-  if (parbox) {
-    setPropertySelect(element, 'border');
-    setPropertySelect(element, 'pos');
-    setWidthAndDimens(element, 'width');
-  }
+  //var parbox = texCommand == "parbox"; //if (parbox) {
+  //  setPropertySelect(element, 'border');
+  //  setPropertySelect(element, 'pos');
+  //  setWidthAndDimens(element, 'width');
+  //}
 
   for (var i = 0; i < texProperties.length; i++) {
     var p = texProperties[i];
@@ -119,14 +165,30 @@ function setProperties(element){
   }
 }
 
+function setupInputs(element){
+  if (!element)
+    return;
+
+  for (var i = 0; i < texProperties.length; i++) {
+    var p = texProperties[i];
+    setupInput(element,p);
+  }
+}
+
 function saveProperty(element, key){
-  var input = $(easPrefix + key);
+  var input = $(easPrefix + key + "-input");
   var value = null;
+
+  var dimen = $(easPrefix + key + "-dimen");
 
   if (input)
     value = input.value;
 
   if (value){
+
+    if (dimen)
+      value = String(value) + String(dimen.value);
+
     element.setAttribute(easPrefix + key, value);
     // IE does not like using normal attributes for style.
     // we are building classes to use to set styles in IE of the form:
@@ -153,18 +215,6 @@ function savePropertiesToElement(element){
     var styleClass = saveProperty(element, key);
     if (styleClass)
       styleClasses.push(styleClass);
-  }
-
-  if (parbox) {
-    if ($(easPrefix + 'width').value){
-      var width = $(easPrefix + 'width').value + $(easPrefix + 'width-dimension').value;
-      element.setAttribute(easPrefix + 'width', width);
-      element.setAttribute('style', "width: " + width + ";");
-    }
-    else {
-      element.removeAttribute(easPrefix + 'width');
-      element.removeAttribute('style');
-    }
   }
 
   if (texCommand != 'figure')

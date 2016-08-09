@@ -1,6 +1,6 @@
 var texCommand = "parbox";
 
-var texProperties = 
+var texProperties =
 [
   ["TextAlign", "textalign"],
   ["bool", "firstindent"],
@@ -15,7 +15,7 @@ var texProperties =
   ["HorizontalPosition", "pos"],
   ["bool?", "show"],
   ["Dimension", "height"],
-  //["Dimension", "width"],
+  ["Dimension", "width"],
   ["Percentage", "scale"],
   ["Dimension", "lift"],
   ["BorderStyle", "border"],
@@ -53,13 +53,13 @@ var texGroups =
     groupName: "Box",
     props: [
       "mode",
-      //"pos",
+      "pos",
       "show",
       "height",
-      //"width",
+      "width",
       "scale",
       "lift",
-      //"border",
+      "border",
       "margin",
       "rulewd",
       "unbox",

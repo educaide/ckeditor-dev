@@ -89,6 +89,14 @@
     }
   }
 
+  function setupInputs(iframe,element) {
+    if (element) {
+      iframe.contentWindow.setupInputs(element);
+    } else {
+      console.log("Error setting up element inputs");
+    }
+  }
+
   function saveProperties(args,element) {
     var iframe = $(args.sender.parts.dialog.$).down('iframe');
 
@@ -111,6 +119,7 @@
         function() {
           var iframe = $(this.domId);
           loadProperties(iframe,getParbox(editor));
+          setupInputs(iframe,getParbox(editor));
         },
         {
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
