@@ -1,6 +1,6 @@
 var texCommand = "emcee";
 
-var texProperties = 
+var texProperties =
 [
   ["EmceeLayout", "layout"],
   ["EmceeOrder", "order"],
@@ -22,7 +22,6 @@ var texProperties =
   ["Dimension", "rulewd"],
   ["Dimension", "lift"],
   ["Dimension", "spaceskip"],
-  ["Dimension", "fontsize"],
   ["TeXFontCode", "fontcode"],
   ["int?", "fontstep"],
   ["TeXFontStyle", "fontstyle"],

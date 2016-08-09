@@ -39,27 +39,42 @@ function setupProperties(){
 function setPropertySelect(element, key){
   if (!element)
     return;
-    
+
   var value =  element.getAttribute(easPrefix + key)
 
   if (!value)
     return;
-    
+
   var options = $(easPrefix + key).children
   for(var i = 0; i < options.length; i++){
     options[i].selected = options[i].value == value;
   }
 }
 
-function setPropertyTextbox(element, key){
+function setPropertyTextbox(element, texProperties){
+
+  var dataType = texProperties[0];
+
+  var key = texProperties[1];
+
+  if (dataType == "Dimension") {
+
+    $(easPrefix + key).setStyle({
+      "width" : "4.5em"
+    });
+
+    $(easPrefix + key).up().insert("<select id='" + easPrefix + key + "-dimension' style='width: 3em; margin-left: 5px;'><option value='in'>in</option><option value='cm'>cm</option><option value='pt'>pt</option><option value='em'>em</option><option value='ex'>ex</option></select>");
+
+  }
+
   if (!element)
     return;
-    
+
   var value =  element.getAttribute(easPrefix + key)
 
   if (!value)
     return;
-    
+
   $(easPrefix + key).value = value;
 }
 
@@ -90,7 +105,7 @@ var guiSetProps = ["border", 'pos', 'width'];
 function setProperties(element){
   if (!element)
     return;
-  
+
   var parbox = texCommand == "parbox";
   if (parbox) {
     setPropertySelect(element, 'border');
@@ -100,17 +115,17 @@ function setProperties(element){
 
   for (var i = 0; i < texProperties.length; i++) {
     var p = texProperties[i];
-    setPropertyTextbox(element, p[1]);
+    setPropertyTextbox(element, p);
   }
 }
 
 function saveProperty(element, key){
   var input = $(easPrefix + key);
   var value = null;
-  
+
   if (input)
     value = input.value;
-  
+
   if (value){
     element.setAttribute(easPrefix + key, value);
     // IE does not like using normal attributes for style.
@@ -139,7 +154,7 @@ function savePropertiesToElement(element){
     if (styleClass)
       styleClasses.push(styleClass);
   }
-  
+
   if (parbox) {
     if ($(easPrefix + 'width').value){
       var width = $(easPrefix + 'width').value + $(easPrefix + 'width-dimension').value;
@@ -151,17 +166,17 @@ function savePropertiesToElement(element){
       element.removeAttribute('style');
     }
   }
-  
+
   if (texCommand != 'figure')
     element.setAttribute("class", styleClasses.join(" "));
 }
 
 function insertTex(tex){
   var texInput = $('mathtex');
-  
+
   // hack! fix IE later: http://stackoverflow.com/questions/263743/how-to-get-caret-position-in-textarea
   var insertLocation = texInput.selectionStart;
-  
+
   texInput.value = texInput.value.splice(insertLocation, 0, tex);
 }
 
