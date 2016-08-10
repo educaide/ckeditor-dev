@@ -101,6 +101,36 @@ function setupInput(element, texProp){
     }
 
     $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "color" ) {
+    var elem = new Element('select', {id: elemId});
+
+    var colors = [
+      "black",
+      "white",
+      "blue",
+      "green",
+      "orange",
+      "red",
+      "purple",
+      "yellow",
+      "aqua",
+      "navy",
+      "teal",
+      "olive",
+      "fuchsia",
+      "maroon"
+    ];
+
+    var opt_none = new Element('option', {value: ''});
+    elem.insert(opt_none);
+
+    for ( var i=0; i < colors.length; i++ ) {
+      var opt = new Element('option', {value: colors[i]});
+      opt.insert(colors[i]);
+      elem.insert(opt);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
   } else {
     var elem = new Element('input', {id: elemId, type: "textbox"});
     $(easPrefix + key + "-label").up().insert(elem);
