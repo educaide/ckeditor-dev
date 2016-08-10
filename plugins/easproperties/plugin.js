@@ -118,8 +118,8 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
-          loadProperties(iframe,getParbox(editor));
           setupInputs(iframe,getParbox(editor));
+          loadProperties(iframe,getParbox(editor));
         },
         {
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,

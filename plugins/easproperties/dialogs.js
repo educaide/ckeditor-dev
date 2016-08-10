@@ -30,21 +30,6 @@ function setupProperties(){
   }
 }
 
-function setPropertySelect(element, key){
-  if (!element)
-    return;
-
-  var value =  element.getAttribute(easPrefix + key)
-
-  if (!value)
-    return;
-
-  var options = $(easPrefix + key).children
-  for(var i = 0; i < options.length; i++){
-    options[i].selected = options[i].value == value;
-  }
-}
-
 function setupInput(element, texProp){
   var dataType = texProp[0];
 
@@ -122,6 +107,14 @@ function setPropertyTextbox(element, texProp){
   if (!value)
     return;
 
+  //separate value and dimension if we're restoring a dimension value
+
+  if ( $(easPrefix + key + "-dimen") )
+    var dimen = value.replace( /[0-9]/g, '');
+    value = value.replace( /\D/g, '');
+
+    $(easPrefix + key + "-dimen").value = dimen;
+
   $(easPrefix + key + "-input").value = value;
 }
 
@@ -152,12 +145,6 @@ var guiSetProps = ["border", 'pos', 'width'];
 function setProperties(element){
   if (!element)
     return;
-
-  //var parbox = texCommand == "parbox"; //if (parbox) {
-  //  setPropertySelect(element, 'border');
-  //  setPropertySelect(element, 'pos');
-  //  setWidthAndDimens(element, 'width');
-  //}
 
   for (var i = 0; i < texProperties.length; i++) {
     var p = texProperties[i];
@@ -205,8 +192,9 @@ function savePropertiesToElement(element){
   var parbox = texCommand == "parbox";
 
   var styleClasses = [texCommand];
-  if (parbox)
+  if (parbox) {
     styleClasses.push("wall");
+  }
 
   //var keys = ['border', 'pos'];
   for (var i = 0; i < texProperties.length; i++){
@@ -215,6 +203,13 @@ function savePropertiesToElement(element){
     var styleClass = saveProperty(element, key);
     if (styleClass)
       styleClasses.push(styleClass);
+  }
+
+  if ($(easPrefix + 'width-input').value){
+    var width = $(easPrefix + 'width-input').value + $(easPrefix + 'width-dimen').value;
+    element.setAttribute('style', "width: " + width + ";");
+  } else {
+    element.removeAttribute('style');
   }
 
   if (texCommand != 'figure')
@@ -240,3 +235,4 @@ function insertTex(tex){
     setupProperties();
   }
 })();
+
