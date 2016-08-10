@@ -14,7 +14,7 @@
     if (elemClassName == null)
       return foundElem;
 
-    var elementIs = foundElem && foundElem.hasClass(elemClassName);
+    var elementIs = foundElem && ( foundElem.hasClass(elemClassName) || (elemClassName == "intro" && foundElem.getAttribute("id") == "intro" ) ); //not sure why intro element has intro as id instead of class
 
     if (elementIs)
       return foundElem;
@@ -161,7 +161,7 @@
       );
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "figure", "Figure Advanced", this.path + 'figure.html', 300, 400,
+      CKEDITOR.dialog.addIframe(dialogName + "figure", "Image Advanced", this.path + 'figure.html', 300, 400,
         // onContentLoad
         function() {
           var iframe = $(this.domId);
@@ -172,6 +172,22 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             saveProperties(args,getPlainFigure(editor));
+          }
+        }
+      );
+
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "intro", "Intro Advanced", this.path + 'intro.html', 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $(this.domId);
+          setupInputs(iframe,getIntro(editor));
+          loadProperties(iframe,getIntro(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getIntro(editor));
           }
         }
       );
@@ -194,6 +210,9 @@
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
+      var command = editor.addCommand("introProperties", {exec: function() { editor.openDialog(dialogName +  "intro"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
 
       editor.addCommand('parboxDelete', {exec: function() {parboxDelete(editor);}});
 
@@ -224,6 +243,11 @@
             command:  "figureProperties",
             group:    pluginName
           },
+          introProperties: {
+            label: 'Intro Advanced...',
+            command: 'introProperties',
+            group: pluginName
+          },
           parboxDelete: {
             label:   'Remove Paragraph Box',
             command: 'parboxDelete',
@@ -232,6 +256,13 @@
           }
         });
       }
+
+      if ( editor.addMenuItems ) {
+        editor.addMenuGroup('easintro', 444);
+        editor.addMenuItems({
+        });
+      };
+
       // If the "contextmenu" plugin is loaded, register the listeners.
       if (editor.contextMenu) {
         editor.contextMenu.addListener(function(element, selection) {
@@ -255,6 +286,10 @@
           var figure = getPlainFigure(editor);
           if (figure)
             return {figureProperties: CKEDITOR.TRISTATE_OFF };
+
+          var intro = getIntro(editor);
+          if (intro)
+            return {introProperties: CKEDITOR.TRISTATE_OFF };
 
           return null;
         });
