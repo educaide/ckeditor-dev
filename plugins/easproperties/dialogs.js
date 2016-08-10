@@ -122,11 +122,12 @@ function setPropertyTextbox(element, texProp){
 
   //separate value and dimension if we're restoring a dimension value
 
-  if ( $(easPrefix + key + "-dimen") )
+  if ( $(easPrefix + key + "-dimen") ) {
     var dimen = value.replace( /[0-9]/g, '');
     value = value.replace( /\D/g, '');
 
     $(easPrefix + key + "-dimen").value = dimen;
+  }
 
   $(easPrefix + key + "-input").value = value;
 }
