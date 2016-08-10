@@ -1,92 +1,58 @@
 var texCommand = "wall";
 
-var texProperties = 
+var texProperties =
 [
-// commented here are supported in the gui.
-  ["Percentage", "scale"],
-//  ["BorderStyle", "border"],
-  ["Dimension", "margin"],
-  ["Dimension", "rulewd"],
-  ["Dimension", "lift"],
-  ["TeXAlign", "align"],
-  ["Dimension", "spaceskip"],
-  ["bool?", "firstindent"],
-  ["Dimension", "parindent"],
-  ["Dimension", "parskip"],
-//  ["HorizontalPosition", "pos"],
-  ["uint?", "abovepenalty"],
-  ["uint?", "belowpenalty"],
-  ["Dimension", "aboveskip"],
-  ["Dimension", "belowskip"],
-  ["Dimension", "colsep"],
-  ["Dimension", "rowsep"],
-  ["Dimension", "rowht"],
-  ["Dimension", "colwd"],
-//  ["TableBorder", "vrule"],
-//  ["TableBorder", "hrule"],
-  ["TableColAlign", "colalign"],
-  ["LineSpacing", "rowspacing"],
-  ["Text", "style"],
-//  ["TableHeader", "header"],
-//  ["int?", "headerfontstep"],
-//  ["TeXFontStyle", "headerfontstyle"]
-//  ["bool?", "headershading"]
-  ["Dimension", "fontsize"],
-  ["TeXFontCode", "fontcode"],
-  ["int?", "fontstep"],
-  ["TeXFontStyle", "fontstyle"],
-  ["LineSpacing", "linespacing"],
-  ["Dimension", "baselineskip"],
-  ["Dimension", "lineskip"],
-  ["Dimension", "openup"]
+  ["string","cols"],
+  ["choice","vrule"],
+  ["choice","hrule"],
+  ["Dimension","colsep"],
+  ["Dimension","rowsep"],
+  ["Dimension","rowht"],
+  ["choice","rowspacing"],
+  ["string","colwd"],
+  ["string","colalign"],
+  ["choice","style"],
+  ["bool?","xfig"],
+  ["choice","header"],
+  ["int?","headerfontstep"],
+  ["choice","headerfontstyle"],
+  ["bool?","headershading"],
+  ["color","headercolor"]
 ];
+
+var texChoices =
+{
+        vrule:           [ "none", "first", "inner", "all" ],
+        hrule:           [ "none", "first", "inner", "all" ],
+        rowspacing:      [ "normal", "tight", "verytight", "loose", "veryloose", "double" ],
+        style:           [ "none", "stemleaf", "dotplot", "pictograph", "quantc", "proof", "prooffill", "lftitle", "speaker" ],
+        header:          [ "none", "col", "row", "both" ],
+        headerfontstyle: [ "normal", "bold", "italic", "bolditalic", "alternate" ]
+};
 
 var texGroups =
 [
   {
-    groupName: "Ungrouped",
+    groupName: "Table",
     props: [
       "scale",
-//      "border",
-      "margin",
-      "rulewd",
-      "lift",
-      "align",
-      "spaceskip",
-      "firstindent",
-      "parindent",
-      "parskip",
-//      "pos",
-      "abovepenalty",
-      "belowpenalty",
-      "aboveskip",
-      "belowskip",
+      "cols",
+      "vrule",
+      "hrule",
       "colsep",
       "rowsep",
       "rowht",
-      "colwd",
-//      "vrule",
-//      "hrule",
-      "colalign",
       "rowspacing",
-      "style"
-//      "header",
-//      "headerfontstep",
-//      "headerfontstyle",
-//      "headershading",
-    ]
-  },
-  {
-    groupName: "Text",
-    props: [
-      "fontsize",
-      "fontcode",
-      "fontstep",
-      "fontstyle",
-      "linespacing",
-      "baselineskip",
-      "lineskip",
-      "openup"
+      "colwd",
+      "colalign",
+      "style",
+      "xfig",
+      "header",
+      "headerfontstep",
+      "headerfontstyle",
+      "headershading",
+      "headercolor"
     ]
   }
 ];
+

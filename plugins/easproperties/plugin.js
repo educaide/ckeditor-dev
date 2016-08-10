@@ -150,6 +150,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getElem(editor, "table", null));
           loadProperties(iframe,getElem(editor, "table", null));
         },
         {
@@ -202,7 +203,7 @@
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
-      var command = editor.addCommand("tableProperties", {exec: function() { editor.openDialog(dialogName +  "table"); }});
+      var command = editor.addCommand("easTableProperties", {exec: function() { editor.openDialog(dialogName +  "table"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -226,9 +227,9 @@
             group:   pluginName,
             order:   1
           },
-          tableProperties: {
+          easTableProperties: {
             label:   "Table Advanced...",
-            command: "tableProperties",
+            command: "easTableProperties",
             group:   pluginName,
             order:   1
           },
@@ -281,7 +282,7 @@
 
           var table = getElem(editor,"table", null);
           if (table)
-            return {tableProperties: CKEDITOR.TRISTATE_OFF };
+            return {easTableProperties: CKEDITOR.TRISTATE_OFF };
 
           var figure = getPlainFigure(editor);
           if (figure)

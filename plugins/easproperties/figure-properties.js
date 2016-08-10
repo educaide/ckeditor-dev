@@ -3,7 +3,7 @@ var texCommand = "figure";
 var texProperties =
 [
   ["choice", "pos"],
-  ["int?", "scale"],
+  ["uint?", "scale"],
   ["bool", "tracking"],
   ["choice", "align"],
   ["Dimension", "lift"],

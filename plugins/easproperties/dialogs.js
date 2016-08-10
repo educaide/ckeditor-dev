@@ -191,10 +191,8 @@ function saveProperty(element, key){
 
     element.setAttribute(easPrefix + key, value);
 
-    return texCommand + "-" + value;
   } else {
     element.removeAttribute(easPrefix + key);
-    return null;
   }
 }
 
@@ -210,20 +208,9 @@ function savePropertiesToElement(element){
   for (var i = 0; i < texProperties.length; i++){
     var prop = texProperties[i];
     var key = prop[1];
-    var styleClass = saveProperty(element, key);
-    if (styleClass)
-      styleClasses.push(styleClass);
+    var type = prop[0];
+    saveProperty(element, key);
   }
-
-  if ($(easPrefix + 'width-input').value){
-    var width = $(easPrefix + 'width-input').value + $(easPrefix + 'width-dimen').value;
-    element.setAttribute('style', "width: " + width + ";");
-  } else {
-    element.removeAttribute('style');
-  }
-
-  if (texCommand != 'figure')
-    element.setAttribute("class", styleClasses.join(" "));
 }
 
 function insertTex(tex){
