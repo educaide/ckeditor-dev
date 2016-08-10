@@ -88,6 +88,19 @@ function setupInput(element, texProp){
     elem.insert(opt_false);
 
     $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "choice") {
+    var elem = new Element('select', {id: elemId});
+
+    var temp = new Element('option', {value: ''});
+    elem.insert(temp);
+
+    for (var i=0; i < texChoices[key].length; i++) {
+      temp = new Element('option', {value: texChoices[key][i]});
+      temp.insert(texChoices[key][i]);
+      elem.insert(temp);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
   } else {
     var elem = new Element('input', {id: elemId, type: "textbox"});
     $(easPrefix + key + "-label").up().insert(elem);
@@ -177,10 +190,8 @@ function saveProperty(element, key){
       value = String(value) + String(dimen.value);
 
     element.setAttribute(easPrefix + key, value);
-    // IE does not like using normal attributes for style.
-    // we are building classes to use to set styles in IE of the form:
-    // "parbox-pos-indent
-    return "parbox-" + key + "-" + value;
+
+    return texCommand + "-" + value;
   } else {
     element.removeAttribute(easPrefix + key);
     return null;
@@ -196,7 +207,6 @@ function savePropertiesToElement(element){
     styleClasses.push("wall");
   }
 
-  //var keys = ['border', 'pos'];
   for (var i = 0; i < texProperties.length; i++){
     var prop = texProperties[i];
     var key = prop[1];

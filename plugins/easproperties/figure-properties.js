@@ -1,16 +1,19 @@
 var texCommand = "figure";
 
-var texProperties = 
+var texProperties =
 [
-  ["Dimension", "width"],
-  ["BorderStyle", "border"],
+  ["choice", "pos"],
+  ["int?", "scale"],
+  ["bool", "tracking"],
+  ["choice", "align"],
   ["Dimension", "lift"],
+  ["Dimension", "width"],
+  ["choice", "border"],
   ["Dimension", "margin"],
   ["Dimension", "rulewd"],
-  ["bool?", "upcase"],
-  ["bool?", "tracking"],
-  ["float", "gamma"],
-  ["FileType", "ftype"]
+  ["bool", "upcase"],
+  ["int?", "gamma"],
+  ["choice", "ftype"]
 ];
 
 var texGroups =
@@ -18,15 +21,26 @@ var texGroups =
   {
     groupName: "All",
     props: [
+      "pos",
+      "scale",
+      "tracking",
+      "align",
+      "lift",
       "width",
       "border",
-      "lift",
       "margin",
       "rulewd",
       "upcase",
-      "tracking",
       "gamma",
       "ftype"
     ]
   }
 ];
+
+var texChoices =
+{
+  pos:    [ "none", "above", "below", "right", "manual", "optimized", "beginning", "end", "left" ],
+  align:  [ "normal", "bottom", "top", "center" ],
+  border: [ "none", "single", "double", "shadow", "thick" ],
+  ftype:  [ "PNG", "JPG", "PDF" ]
+};

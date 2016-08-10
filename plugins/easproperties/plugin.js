@@ -134,6 +134,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getEmcee(editor));
           loadProperties(iframe,getEmcee(editor));
         },
         {
@@ -164,6 +165,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getPlainFigure(editor));
           loadProperties(iframe,getPlainFigure(editor));
         },
         {
