@@ -267,30 +267,33 @@
       // If the "contextmenu" plugin is loaded, register the listeners.
       if (editor.contextMenu) {
         editor.contextMenu.addListener(function(element, selection) {
-          //if (!element || element.isReadOnly()) {
-          //  return null;
-          //}
 
-          var parbox = getParbox(editor);
-          if (parbox) {
-            return { parboxProperties : CKEDITOR.TRISTATE_OFF, parboxDelete : CKEDITOR.TRISTATE_OFF };
+          var properties = {};
+
+          if (getParbox(editor)) {
+            properties.parboxProperties = CKEDITOR.TRISTATE_OFF;
+            properties.parboxDelete = CKEDITOR.TRISTATE_OFF;
           }
 
-          var emcee = getEmcee(editor);
-          if (emcee)
-            return {emceeProperties: CKEDITOR.TRISTATE_OFF };
+          if (getEmcee(editor)) {
+            properties.emceeProperties = CKEDITOR.TRISTATE_OFF;
+          }
 
-          var table = getElem(editor,"table", null);
-          if (table)
-            return {easTableProperties: CKEDITOR.TRISTATE_OFF };
+          if (getElem(editor,"table", null)) {
+            properties.easTableProperties = CKEDITOR.TRISTATE_OFF;
+          }
 
-          var figure = getPlainFigure(editor);
-          if (figure)
-            return {figureProperties: CKEDITOR.TRISTATE_OFF };
+          if (getPlainFigure(editor)) {
+            properties.figureProperties = CKEDITOR.TRISTATE_OFF;
+          }
 
-          var intro = getIntro(editor);
-          if (intro)
-            return {introProperties: CKEDITOR.TRISTATE_OFF };
+          if (getIntro(editor)) {
+            properties.introProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if ( Object.keys(properties).length > 0 ) {
+            return properties;
+          }
 
           return null;
         });
