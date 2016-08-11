@@ -162,30 +162,6 @@ function setPropertyTextbox(element, texProp){
   $(easPrefix + key + "-input").value = value;
 }
 
-function setWidthAndDimens(element, key){
-  if (!element)
-    return;
-
-  var value = element.getAttribute(easPrefix + key);
-
-  var dimens = /^((\d|\.)+)\s?(em|in|pt|ex|%|cm)/;
-  var tokens = null;
-  if (value){
-    tokens = dimens.exec(value)
-  }
-
-  if (!value || !tokens){
-    $(easPrefix + key).value = '';
-    $(easPrefix + key + '-dimension').value = 'in';
-  } else {
-    $(easPrefix + key).value = tokens[1];
-    $(easPrefix + key + '-dimension').value = tokens[3];
-  }
-
-}
-
-var guiSetProps = ["border", 'pos', 'width'];
-
 function setProperties(element){
   if (!element)
     return;
