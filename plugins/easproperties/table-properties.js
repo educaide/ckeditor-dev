@@ -2,6 +2,7 @@ var texCommand = "wall";
 
 var texProperties =
 [
+  ["choice","pos"],
   ["string","cols"],
   ["choice","vrule"],
   ["choice","hrule"],
@@ -22,6 +23,7 @@ var texProperties =
 
 var texChoices =
 {
+        pos:             [ "none", "left", "center", "right", "indent" ],
         vrule:           [ "none", "first", "inner", "all" ],
         hrule:           [ "none", "first", "inner", "all" ],
         rowspacing:      [ "normal", "tight", "verytight", "loose", "veryloose", "double" ],
@@ -35,7 +37,7 @@ var texGroups =
   {
     groupName: "Table",
     props: [
-      "scale",
+      "pos",
       "cols",
       "vrule",
       "hrule",
