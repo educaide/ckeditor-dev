@@ -387,8 +387,8 @@ function createBranchLi(node) {
 
 })();
 
-function getProperties(browser) {
-  var selectedThumbEl = $(browser).down('.multi .thumbnail.selected');
+function getProperties() {
+  var selectedThumbEl = $('browser').down('.multi .thumbnail.selected') || $('browser2').down('.multi .thumbnail.selected');
   if (!selectedThumbEl) {
     return null;
   }
