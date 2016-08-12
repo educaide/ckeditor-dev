@@ -3,7 +3,7 @@ texProperties.push(
 ["bool?", "autosize"],
 ["Dimension", "width"],
 ["Dimension", "height"],
-["int?", "scale"],
+["uint?", "scale"],
 ["Dimension", "lift"],
 ["choice", "align"],
 ["choice", "border"],

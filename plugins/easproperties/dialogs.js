@@ -182,7 +182,7 @@ function setupInputs(element){
   }
 }
 
-function saveProperty(element, key){
+function saveProperty(element, key, type){
   var input = $(easPrefix + key + "-input");
   var value = null;
 
@@ -193,30 +193,61 @@ function saveProperty(element, key){
 
   if (value){
 
-    if (dimen)
-      value = String(value) + String(dimen.value);
+    if (type == "Dimension") {
+      if ( isNaN(value) ) {
+        return false;
+      }
+      value = String(value) + String(dimen.value); //append dimension
+    } else if (type == "uint?") {
+      if ( isNaN(value) || value.indexOf('.') > -1 || value < 0 ) {
+        return false;
+      }
+
+    } else if (type == "int?") {
+      if ( isNaN(value) || value.indexOf('.') > -1 ) {
+        return false;
+      }
+    }
 
     element.setAttribute(easPrefix + key, value);
-
+    return true;
   } else {
     element.removeAttribute(easPrefix + key);
+    return true;
   }
 }
 
-function savePropertiesToElement(element){
+function savePropertiesToElement(element, args){
 
-  var parbox = texCommand == "parbox";
+  failedKeys = {};
 
-  var styleClasses = [texCommand];
-  if (parbox) {
-    styleClasses.push("wall");
+  keyLookup = {
+    "uint?": "natural number",
+    "int?":  "integer",
+    "Dimension": "integer or decimal number",
   }
 
   for (var i = 0; i < texProperties.length; i++){
     var prop = texProperties[i];
     var key = prop[1];
     var type = prop[0];
-    saveProperty(element, key);
+
+    if ( !saveProperty(element, key, type) ) {
+      failedKeys[key] = type;
+    }
+
+  }
+
+  if ( Object.keys(failedKeys).length > 0 ) {
+    var errorMessage = "";
+
+    for ( var key in failedKeys ) {
+      errorMessage += "\"" + key + "\" must be a " + keyLookup[failedKeys[key]] + ".\n";
+    }
+
+    alert(errorMessage);
+
+    args.data.hide = false;
   }
 }
 

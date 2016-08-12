@@ -101,7 +101,7 @@
     var iframe = $(args.sender.parts.dialog.$).down('iframe');
 
     if (element){
-      var properties = iframe.contentWindow.savePropertiesToElement(element);
+      var properties = iframe.contentWindow.savePropertiesToElement(element, args);
     }
   }
 
