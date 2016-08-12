@@ -57,19 +57,15 @@
             }
 
             var iframe = $(args.sender.parts.dialog.$).down('iframe');
-            var properties = iframe.contentWindow.getProperties('browser');
-            var properties2 = iframe.contentWindow.getProperties('browser2');
+            var properties = iframe.contentWindow.getProperties();
 
-            if (!properties && !properties2) {
+            if (!properties) {
               return;
             }
 
             // insert new image
             if (properties){
               var image = createImage(editor, properties);
-              editor.insertElement(image);
-            }else if(properties2){
-              var image = createImage(editor, properties2);
               editor.insertElement(image);
             }
           }
