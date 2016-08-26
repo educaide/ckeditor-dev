@@ -170,8 +170,12 @@ is its visual representation:
 
 .cke_panel_listItem.cke_selected a
 {
-	border: 1px solid #ccc;
-	background-color: #e9f5ff;
+	/*border: 1px solid #ccc;*/
+	background-color: #d3d3d3;
+}
+.cke_panel_listItem.cke_selected a:after {
+	content: '\2713';
+	float: right;
 }
 
 .cke_panel_listItem a:hover,
