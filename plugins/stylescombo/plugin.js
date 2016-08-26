@@ -61,14 +61,14 @@
 
 			editor.ui.addRichCombo( 'Styles', {
 				label: lang.label,
-				//title: lang.panelTitle,
+				//title: lang.panelTitle, // EAS commented, don't want panel title for style groups
 				toolbar: 'styles,10',
 				allowedContent: allowedContent,
 
 				panel: {
 					css: [ CKEDITOR.skin.getPath( 'editor' ) ].concat( config.contentsCss ),
 					multiSelect: true,
-					//attributes: { 'aria-label': lang.panelTitle }
+					//attributes: { 'aria-label': lang.panelTitle } EAS commented, don't want labels for style groups
 				},
 
 				init: function() {
@@ -82,11 +82,11 @@
 						type = style._.type;
 
 						if ( type != lastType ) {
-							//this.startGroup( lang[ 'panelTitle' + String( type ) ] );
+							//this.startGroup( lang[ 'panelTitle' + String( type ) ] ); // EAS don't want labels for style groups
 							lastType = type;
 						}
 
-						this.add( styleName, style.type == CKEDITOR.STYLE_OBJECT ? styleName : style.buildPreview(), styleName );
+						this.add( styleName, styleName, styleName ); // EAS changed: we don't want drop down to be preview of style applied
 					}
 
 					this.commit();
@@ -150,14 +150,14 @@
 							this.mark( name );
 					}
 
-					/*if ( !counter[ CKEDITOR.STYLE_BLOCK ] )
+					if ( !counter[ CKEDITOR.STYLE_BLOCK ] )
 						this.hideGroup( lang[ 'panelTitle' + String( CKEDITOR.STYLE_BLOCK ) ] );
 
 					if ( !counter[ CKEDITOR.STYLE_INLINE ] )
 						this.hideGroup( lang[ 'panelTitle' + String( CKEDITOR.STYLE_INLINE ) ] );
 
 					if ( !counter[ CKEDITOR.STYLE_OBJECT ] )
-						this.hideGroup( lang[ 'panelTitle' + String( CKEDITOR.STYLE_OBJECT ) ] );*/
+						this.hideGroup( lang[ 'panelTitle' + String( CKEDITOR.STYLE_OBJECT ) ] );
 				},
 
 				refresh: function() {

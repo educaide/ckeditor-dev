@@ -114,7 +114,7 @@
     }
 
     // ignore keystrokes that aren't backspace or delete or ctrl+x
-    if (evt.data.keyCode != 8 && evt.data.keyCode != 46 && evt.data.keyCode != (CKEDITOR.CTRL + 88)) {
+    if (evt.data.keyCode != 8 && evt.data.keyCode != 46 && evt.data.keyCode != (CKEDITOR.CTRL + 88) && evt.data.keyCode != 13) {
       console.log('ignore keystroke');
       return;
     }
@@ -172,7 +172,7 @@
         });
       }
     }
-    else if (evt.data.keyCode == 46 && range.checkEndOfBlock()) { // delete
+    if (evt.data.keyCode == 46 && range.checkEndOfBlock()) { // delete
       // HACK sometimes calls to checkEndOfBlock (specifically the line that calls this.trim())
       // ends up deselecting what's currently selected. undo this.
       selection.selectRanges([range]);
@@ -192,6 +192,17 @@
           }
         });
       }
+    }else if(evt.data.keyCode == 13){
+      var specialClasses = ['source', 'author', 'title', 'subtitle', 'intro', 'copyr'];
+      setTimeout(function() { //ensures that enough time has passed that we get the new element not the element the enter originated from
+        var newElement = evt.editor.getSelection().getStartElement();
+        for(var i=0; i < specialClasses.length; i++){
+          if(newElement.hasClass(specialClasses[i]) == true){
+            newElement.removeAttribute("style");
+            newElement.removeClass(specialClasses[i]);
+          }
+        }
+      },10);
     }
   }
 

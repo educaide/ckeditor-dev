@@ -63,13 +63,14 @@
 					group: menuGroup,
 					command: 'emceelist'
 				};
-			}
 
-			uiMenuItems.easSubparts = {
-				label: 'Subparts',
-				group: menuGroup,
-				command: 'subpartlist'
-			};
+				uiMenuItems.easSubparts = {
+					label: 'Subparts',
+					group: menuGroup,
+					command: 'subpartlist'
+				};
+
+			}
 
 			uiMenuItems.easNone = {
 				label: 'None',
@@ -100,7 +101,6 @@
 							easUpperRoman: CKEDITOR.TRISTATE_OFF,
 							easLowerRoman: CKEDITOR.TRISTATE_OFF,
 							easBullets: CKEDITOR.TRISTATE_OFF,
-							easSubparts: CKEDITOR.TRISTATE_OFF,
 							easNone: CKEDITOR.TRISTATE_OFF
 						};
 					}else{
