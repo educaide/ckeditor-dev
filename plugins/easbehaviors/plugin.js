@@ -203,6 +203,7 @@
           }
         }
       },10);
+      combo._.state = CKEDITOR.TRISTATE_OFF; //causes console error but also does what we want, which is to reset the stylescombo
     }
   }
 
