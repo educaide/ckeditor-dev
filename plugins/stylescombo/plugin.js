@@ -58,6 +58,31 @@
 					return styleA._.weight - styleB._.weight;
 				} );
 			} );
+			// EAS added to prevent CKEditor default behavior of starting a new <p> with the same style as the previous <p>
+			// added here as opposed to in plugins/easbehaviors, because, in order to use the CKE approved .removeStyle() method
+			// to clear the style applied to the <p> on enter, we need to pass a style object. There appears to be no way via the API
+			// to get all registered styles, only a way to instantiate a new one. We have access to them here, since they are instantiated above
+			// and added to an array from the config options.
+			editor.on('key', function(e){
+				if(e.data.keyCode == 13){
+			      	var specialClasses = ['intro', 'title', 'subtitle', 'author', 'source', 'copyr'];
+			      	setTimeout(function() { //ensures that enough time has passed that we get the new element not the element the enter originated from
+			        	var newElement = e.editor.getSelection();
+			        	for(var i=0; i < specialClasses.length; i++){ // classes defined for our styles combo
+			          		if(newElement.getStartElement().hasClass(specialClasses[i]) == true){
+			            		editor.removeStyle(stylesList[i]);
+			            		$$('a.cke_combo_button').each(function(button){
+			            			// reset the combo button once class is removed
+			              			if(button.readAttribute('title') =="Style"){
+			                			button.down().addClassName('cke_combo_inlinelabel');
+			                			button.down().innerHTML="Style";
+			              			}
+			            		});
+			          		}
+			        	}
+			      	},10);
+				}
+			});
 
 			editor.ui.addRichCombo( 'Styles', {
 				label: lang.label,
@@ -98,6 +123,15 @@
 
 					var style = styles[ value ],
 						elementPath = editor.elementPath();
+					// reset the combo button when removing applied style by click
+					if(style.checkActive(elementPath, editor)){
+						$$('a.cke_combo_button').each(function(button){
+	              			if(button.readAttribute('title') =="Style"){
+	                			button.down().addClassName('cke_combo_inlinelabel');
+	                			button.down().innerHTML="Style";
+	              			}
+	            		});
+					}
 
 					editor[ style.checkActive( elementPath, editor ) ? 'removeStyle' : 'applyStyle' ]( style );
 					editor.fire( 'saveSnapshot' );
