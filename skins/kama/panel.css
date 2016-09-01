@@ -171,10 +171,13 @@ is its visual representation:
 	color: #000;
 }
 
+.cke_panel_listItem.cke_selected{
+	background-color: #d3d3d3 !important;
+}
+
 .cke_panel_listItem.cke_selected a
 {
-	/*border: 1px solid #ccc;*/
-	background-color: #d3d3d3;
+	background-color: #d3d3d3 !important;
 }
 .cke_panel_listItem.cke_selected a:before {
 	content: '\2713';

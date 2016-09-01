@@ -700,4 +700,8 @@ img[data-eas-rotate="180"] {
 .unknown {
   display: none;
 }
+h3{
+  font-style: italic;
+  font-weight: normal;
+}
 
