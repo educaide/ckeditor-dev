@@ -119,11 +119,13 @@
 						}
 
 						// Enable editable MathQuill.
-						$jqElement.mathquill( 'editable' );
-						// Store the initial source. Take it from MathQuill so it is normalized.
-						that.setData( 'source', $jqElement.mathquill( 'latex' ) );
+						var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
+						var field = MQ.MathField($jqElement[0]);
 
-						var textarea = that.element.findOne( '.textarea > textarea' );
+						// Store the initial source. Take it from MathQuill so it is normalized.
+						that.setData( 'source', field.latex() );
+
+						var textarea = that.element.findOne( '.mq-textarea > textarea' );
 
 						editor.focusManager.add( textarea );
 
@@ -134,7 +136,7 @@
 
 						textarea.on( 'blur', function() {
 							// Update source so we can copy&paste, undo&redo, etc.
-							that.setData( 'source', $jqElement.mathquill( 'latex' ) );
+							that.setData( 'source', field.latex() );
 							editor.fire( 'unlockSnapshot' );
 						} );
 					} );
@@ -158,7 +160,7 @@
 					instance.edit();
 					// And now focusing the mathquill editable.
 					editor.getSelection().selectElement( instance.element );
-					instance.element.findOne( '.textarea > textarea' ).focus();
+					instance.element.findOne( '.mq-textarea > textarea' ).focus();
 				},
 
 				edit: function() {
@@ -175,7 +177,9 @@
 				},
 
 				downcast: function() {
-					var text = new CKEDITOR.htmlParser.text( jQuery( this.element.$ ).mathquill( 'latex' ) ),
+					var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
+					var field = MQ.MathField(jQuery(this.element.$)[0]);
+					var text = new CKEDITOR.htmlParser.text( field.latex() ),
 						span = new CKEDITOR.htmlParser.element( 'span' );
 
 					span.attributes[ 'class' ] = 'mathquill-widget';
