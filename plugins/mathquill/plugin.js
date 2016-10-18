@@ -160,12 +160,19 @@
 					instance.edit();
 					// And now focusing the mathquill editable.
 					editor.getSelection().selectElement( instance.element );
-					instance.element.findOne( '.mq-textarea > textarea' ).focus();
+
+					var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
+					var mathQuillTextarea = MQ(instance.element.$);
+
+					if ( mathQuillTextarea ) {
+						mathQuillTextarea.focus();
+					}
 				},
 
 				edit: function() {
 					// Widget edit action should simply focus MathQuill internal part.
-					var mathQuillTextarea = this.element.findOne( 'textarea' );
+					var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
+					var mathQuillTextarea = MQ(this.element.$);
 
 					if ( mathQuillTextarea ) {
 						mathQuillTextarea.focus();
