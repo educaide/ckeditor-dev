@@ -8,14 +8,15 @@
 			var menuGroup = 'easlist',
 				uiMenuItems = {},
 				command;
-
 			command = editor.addCommand( 'numberlist', listCommand( 'numberlist', 'decimal' ) );
 			editor.addCommand( 'upperalphalist', listCommand( 'upperalphalist', 'upper-alpha' ) );
 			editor.addCommand( 'loweralphalist', listCommand( 'loweralphalist', 'lower-alpha' ) );
 			editor.addCommand( 'upperromanlist', listCommand( 'upperromanlist', 'upper-roman' ) );
 			editor.addCommand( 'lowerromanlist', listCommand( 'lowerromanlist', 'lower-roman' ) );
 			editor.addCommand( 'bulletslist', listCommand( 'bulletslist', 'disc' ) );
-			editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
+			if(editor.config.easEditorType == undefined){
+				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
+			}
 			editor.addCommand( 'subpartlist', listCommand( 'subpartlist', 'subparts' ) );
 			editor.addCommand( 'nolist', listCommand( 'nolist', 'none' ) );
 
@@ -56,18 +57,20 @@
 				group: menuGroup,
 				command: 'bulletslist'
 			};
+			if(editor.config.easEditorType == undefined){
+				uiMenuItems.easEmcee = {
+					label: 'Multiple-Choice Block',
+					group: menuGroup,
+					command: 'emceelist'
+				};
 
-			uiMenuItems.easEmcee = {
-				label: 'Multiple-Choice Block',
-				group: menuGroup,
-				command: 'emceelist'
-			};
+				uiMenuItems.easSubparts = {
+					label: 'Subparts',
+					group: menuGroup,
+					command: 'subpartlist'
+				};
 
-			uiMenuItems.easSubparts = {
-				label: 'Subparts',
-				group: menuGroup,
-				command: 'subpartlist'
-			};
+			}
 
 			uiMenuItems.easNone = {
 				label: 'None',
@@ -90,17 +93,29 @@
 				},
 
 				onMenu: function() {
-					return {
-						easNumber: CKEDITOR.TRISTATE_OFF,
-						easUpperAlpha: CKEDITOR.TRISTATE_OFF,
-						easLowerAlpha: CKEDITOR.TRISTATE_OFF,
-						easUpperRoman: CKEDITOR.TRISTATE_OFF,
-						easLowerRoman: CKEDITOR.TRISTATE_OFF,
-						easBullets: CKEDITOR.TRISTATE_OFF,
-						easEmcee: CKEDITOR.TRISTATE_OFF,
-						easSubparts: CKEDITOR.TRISTATE_OFF,
-						easNone: CKEDITOR.TRISTATE_OFF
-					};
+					if(editor.config.easEditorType == "passage"){
+						return {
+							easNumber: CKEDITOR.TRISTATE_OFF,
+							easUpperAlpha: CKEDITOR.TRISTATE_OFF,
+							easLowerAlpha: CKEDITOR.TRISTATE_OFF,
+							easUpperRoman: CKEDITOR.TRISTATE_OFF,
+							easLowerRoman: CKEDITOR.TRISTATE_OFF,
+							easBullets: CKEDITOR.TRISTATE_OFF,
+							easNone: CKEDITOR.TRISTATE_OFF
+						};
+					}else{
+						return {
+							easNumber: CKEDITOR.TRISTATE_OFF,
+							easUpperAlpha: CKEDITOR.TRISTATE_OFF,
+							easLowerAlpha: CKEDITOR.TRISTATE_OFF,
+							easUpperRoman: CKEDITOR.TRISTATE_OFF,
+							easLowerRoman: CKEDITOR.TRISTATE_OFF,
+							easBullets: CKEDITOR.TRISTATE_OFF,
+							easEmcee: CKEDITOR.TRISTATE_OFF,
+							easSubparts: CKEDITOR.TRISTATE_OFF,
+							easNone: CKEDITOR.TRISTATE_OFF
+						};
+					}
 				}
 			} );
 

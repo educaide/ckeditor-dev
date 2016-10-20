@@ -16,6 +16,12 @@
 		'indentlist',
 		'indentblock',
 		'widget',
+		'richcombo',
+		'floatpanel',
+		'listblock',
+		'panel',
+		'button',
+		'format',
 
 		'easbehaviors',
 		'easfontsize',
@@ -42,7 +48,7 @@
 		[ 'EASFontSize' ],
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
 		[ 'EASList'],
-		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ]
+		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ],
 	];
 
 	config.skin = 'kama';

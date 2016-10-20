@@ -114,7 +114,7 @@
     }
 
     // ignore keystrokes that aren't backspace or delete or ctrl+x
-    if (evt.data.keyCode != 8 && evt.data.keyCode != 46 && evt.data.keyCode != (CKEDITOR.CTRL + 88)) {
+    if (evt.data.keyCode != 8 && evt.data.keyCode != 46 && evt.data.keyCode != (CKEDITOR.CTRL + 88) && evt.data.keyCode != 13) {
       console.log('ignore keystroke');
       return;
     }
@@ -197,6 +197,13 @@
 
   CKEDITOR.plugins.add('easbehaviors', {
     init: function(editor) {
+       var type;
+      if(typeof editor.config.easEditorType != 'undefined'){
+        type = editor.config.easEditorType;
+      }else{
+        type = "problem";
+      }
+
       editor.on('key', CKEDITOR.tools.bind(onKey, this));
       editor.on('change', CKEDITOR.tools.bind(onChange, this));
     }
