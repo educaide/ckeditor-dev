@@ -120,7 +120,7 @@
 
 						// Enable editable MathQuill.
 						var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
-						var field = MQ.MathField($jqElement[0]);
+						var field = MQ.MathField($jqElement[0], { spaceBehavesLikeTab: true });
 
 						// Store the initial source. Take it from MathQuill so it is normalized.
 						that.setData( 'source', field.latex() );
@@ -185,7 +185,7 @@
 
 				downcast: function() {
 					var MQ = MathQuill.getInterface(MathQuill.getInterface.MAX);
-					var field = MQ.MathField(jQuery(this.element.$)[0]);
+					var field = MQ.MathField(jQuery(this.element.$)[0], { spaceBehavesLikeTab: true });
 					var text = new CKEDITOR.htmlParser.text( field.latex() ),
 						span = new CKEDITOR.htmlParser.element( 'span' );
 
