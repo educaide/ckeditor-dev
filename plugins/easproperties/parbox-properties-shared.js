@@ -10,8 +10,8 @@ texProperties.push(
 ["Dimension", "margin"],
 ["Dimension", "rulewd"],
 ["color", "fontcolor"],
-["color", "background"],
 ["color", "rulecolor"],
+["color_background", "background"],
 ["string", "vendorstyle"]);
 
 texGroups.push({
@@ -28,8 +28,8 @@ texGroups.push({
     "margin",
     "rulewd",
     "fontcolor",
-    "background",
     "rulecolor",
+    "background",
     "vendorstyle"
   ]
 });

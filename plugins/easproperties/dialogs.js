@@ -79,9 +79,9 @@ function setupInput(element, texProp){
 
     var opt_none = new Element('option', {value: ''});
     var opt_true = new Element('option', {value: 'true'});
-    opt_true.insert("True");
+    opt_true.insert("true");
     var opt_false = new Element('option', {value: 'false'});
-    opt_false.insert("False");
+    opt_false.insert("false");
 
     elem.insert(opt_none);
     elem.insert(opt_true);
@@ -107,18 +107,37 @@ function setupInput(element, texProp){
     var colors = [
       "black",
       "white",
-      "blue",
-      "green",
-      "orange",
+      "gray",
       "red",
-      "purple",
+      "green",
+      "blue",
+      "cyan",
+      "magenta",
       "yellow",
+      "purple",
+      "orange",
       "aqua",
-      "navy",
-      "teal",
-      "olive",
       "fuchsia",
-      "maroon"
+      "teal",
+      "maroon",
+      "navy",
+      "olive",
+      // dark
+      "dkblue",
+      "dkcyan",
+      "dkgray",
+      "dkgreen",
+      "dkmagenta",
+      "dkred",
+      "dkyellow",
+      // medium dark
+      "mdblue",
+      "mdcyan",
+      "mdgray",
+      "mdgreen",
+      "mdmagenta",
+      "mdred",
+      "mdyellow"
     ];
 
     var opt_none = new Element('option', {value: ''});
@@ -131,6 +150,47 @@ function setupInput(element, texProp){
     }
 
     $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "color_background" ) {
+    var elem = new Element('select', {id: elemId});
+
+    var colors_background = [
+      // extra light
+      "xlblue",
+      "xlcyan",
+      "xlgray",
+      "xlgreen",
+      "xlmagenta",
+      "xlred",
+      "xlyellow",
+      /// light
+      "ltblue",
+      "ltcyan",
+      "ltgray",
+      "ltgreen",
+      "ltmagenta",
+      "ltred",
+      "ltyellow",
+      // medium light
+      "mlblue",
+      "mlcyan",
+      "mlgray",
+      "mlgreen",
+      "mlmagenta",
+      "mlred",
+      "mlyellow",
+    ];
+
+    var opt_none = new Element('option', {value: ''});
+    elem.insert(opt_none);
+
+    for ( var i=0; i < colors_background.length; i++ ) {
+      var opt = new Element('option', {value: colors_background[i]});
+      opt.insert(colors_background[i]);
+      elem.insert(opt);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
+
   } else {
     var elem = new Element('input', {id: elemId, type: "textbox"});
     $(easPrefix + key + "-label").up().insert(elem);

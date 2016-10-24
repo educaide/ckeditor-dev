@@ -18,7 +18,7 @@ var texProperties =
   ["int?","headerfontstep"],
   ["choice","headerfontstyle"],
   ["bool?","headershading"],
-  ["color","headercolor"]
+  ["color_background","headercolor"]
 ];
 
 var texChoices =
