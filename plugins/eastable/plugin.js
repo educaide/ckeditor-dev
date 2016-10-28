@@ -27,17 +27,6 @@
     return colGroupElem;
   }
 
-  function addCustomAttributes(element, prefix, object) {
-    for (var key in object) {
-      if (object.hasOwnProperty(key)) {
-        var dashedKey = key.replace(/([A-Z])/g, function(m){
-          return "-" + m.toLowerCase();
-        });
-        element.data(prefix + '-' + dashedKey, object[key]);
-      }
-    }
-  }
-
   function clampProperties(properties) {
     properties.layout.cols = Math.max(1, parseInt(properties.layout.cols));
     properties.layout.rows = Math.max(1, parseInt(properties.layout.rows));
@@ -57,9 +46,11 @@
     tableElem.addClass('wall');
     tableElem.append(createColGroup(editor, properties.columns));
 
-    tableElem.data('eas-layout-position', properties.layout.position);
-    addCustomAttributes(tableElem, 'eas-borders', properties.borders);
-    addCustomAttributes(tableElem, 'eas-headers', properties.headers);
+    for ( var key in properties ) {
+      if ( key != "columns" && key != "layout" && key != "labels" ) {
+        tableElem.data('eas-' + key, properties[key]);
+      }
+    }
 
     // For styling of tables in editor
     var hasHead = false, hasFoot = false;
@@ -212,12 +203,17 @@
     properties.layout = {
       rows: numRows,
       cols: numCols,
-      position: tableElem.getAttribute('data-eas-layout-position')
     };
-    properties.columns = readColAttributes(tableElem);
-    properties.borders = readCustomAttributes(tableElem, 'eas-borders');
-    properties.headers = readCustomAttributes(tableElem, 'eas-headers');
-    properties.labels = readLabelAttributes(tableElem);
+    properties.pos             = tableElem.getAttribute('data-eas-pos');
+    properties.columns         = readColAttributes(tableElem);
+    properties.border          = tableElem.getAttribute('data-eas-border');
+    properties.hrule           = tableElem.getAttribute('data-eas-hrule');
+    properties.vrule           = tableElem.getAttribute('data-eas-vrule');
+    properties.header          = tableElem.getAttribute('data-eas-header');
+    properties.headerfontstyle = tableElem.getAttribute('data-eas-headerfontstyle');
+    properties.headerfontstep  = tableElem.getAttribute('data-eas-headerfontstep');
+    properties.headershading   = tableElem.getAttribute('data-eas-headershading');
+    properties.labels          = readLabelAttributes(tableElem);
 
     return properties;
   }
@@ -280,8 +276,19 @@
               // make sure all DOM changes are treated as one chunk
               editor.fire('updateSnapshot');
 
+              $A(startElement.getAscendant('table',1).$.attributes).each(function(pair) {
+                var name = pair.name;
+                var val = pair.value;
+                var strippedName = name.replace("data-eas-","");
+
+                if ( name.indexOf("data-eas-") !== -1 && !properties[strippedName] ) {
+                  properties[strippedName] = val;
+                }
+              });
+
               // modify existing table
               var newTable = createTable(editor, properties);
+
               var newBody = newTable.getFirst(function(childElem) {
                 return childElem.getName() == 'tbody';
               })

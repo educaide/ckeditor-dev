@@ -111,7 +111,7 @@
                   <div class="option">
                     <div>Outside</div>
                     <div>
-                      <select class="option" id="outsideBorder">
+                      <select class="option" id="border">
                         <option value="none">none</option>
                         <option value="single">single</option>
                         <option value="double">double</option>
@@ -123,7 +123,7 @@
                   <div class="option">
                     <div>Horizontal</div>
                     <div>
-                      <select class="option" id="horizontalBorder">
+                      <select class="option" id="hrule">
                         <option value="none">none</option>
                         <option value="first">first</option>
                         <option value="inner">inner</option>
@@ -134,7 +134,7 @@
                   <div class="option">
                     <div>Vertical</div>
                     <div>
-                      <select class="option" id="verticalBorder">
+                      <select class="option" id="vrule">
                         <option value="none">none</option>
                         <option value="first">first</option>
                         <option value="inner">inner</option>
@@ -165,12 +165,12 @@
               <label for="headerNone">None</label>
             </div>
             <div class="radioImage">
-              <input type="radio" name="header" value="left" id="headerLeft" />
-              <label for="headerLeft">Left</label>
+              <input type="radio" name="header" value="col" id="headerCol" />
+              <label for="headerCol">Left</label>
             </div>
             <div class="radioImage">
-              <input type="radio" name="header" value="top" id="headerTop" />
-              <label for="headerTop">Top</label>
+              <input type="radio" name="header" value="row" id="headerRow" />
+              <label for="headerRow">Top</label>
             </div>
             <div class="radioImage">
               <input type="radio" name="header" value="both" id="headerBoth" />
@@ -190,11 +190,11 @@
             <div>
               <span class="font_label">Font Size:</span>
               <select id="headerFontSize" class="option">
-                <option value="normal">Normal</option>
-                <option value="small">Small</option>
-                <option value="verySmall">Very Small</option>
-                <option value="large">Large</option>
-                <option value="veryLarge">Very Large</option>
+                <option value="0">Normal</option>
+                <option value="-1">Small</option>
+                <option value="-2">Very Small</option>
+                <option value="1">Large</option>
+                <option value="2">Very Large</option>
               </select>
             </div>
           </div>

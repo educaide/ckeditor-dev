@@ -14,7 +14,7 @@
     if (elemClassName == null)
       return foundElem;
 
-    var elementIs = foundElem && foundElem.hasClass(elemClassName);
+    var elementIs = foundElem && ( foundElem.hasClass(elemClassName) || (elemClassName == "intro" && foundElem.getAttribute("id") == "intro" ) ); //not sure why intro element has intro as id instead of class
 
     if (elementIs)
       return foundElem;
@@ -89,11 +89,19 @@
     }
   }
 
+  function setupInputs(iframe,element) {
+    if (element) {
+      iframe.contentWindow.setupInputs(element);
+    } else {
+      console.log("Error setting up element inputs");
+    }
+  }
+
   function saveProperties(args,element) {
     var iframe = $(args.sender.parts.dialog.$).down('iframe');
 
     if (element){
-      var properties = iframe.contentWindow.savePropertiesToElement(element);
+      var properties = iframe.contentWindow.savePropertiesToElement(element, args);
     }
   }
 
@@ -110,6 +118,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getParbox(editor));
           loadProperties(iframe,getParbox(editor));
         },
         {
@@ -125,6 +134,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getEmcee(editor));
           loadProperties(iframe,getEmcee(editor));
         },
         {
@@ -140,6 +150,7 @@
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getElem(editor, "table", null));
           loadProperties(iframe,getElem(editor, "table", null));
         },
         {
@@ -151,16 +162,33 @@
       );
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "figure", "Figure Advanced", this.path + 'figure.html', 300, 400,
+      CKEDITOR.dialog.addIframe(dialogName + "figure", "Image Advanced", this.path + 'figure.html', 300, 400,
         // onContentLoad
         function() {
           var iframe = $(this.domId);
+          setupInputs(iframe,getPlainFigure(editor));
           loadProperties(iframe,getPlainFigure(editor));
         },
         {
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             saveProperties(args,getPlainFigure(editor));
+          }
+        }
+      );
+
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "intro", "Intro Advanced", this.path + 'intro.html', 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $(this.domId);
+          setupInputs(iframe,getIntro(editor));
+          loadProperties(iframe,getIntro(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getIntro(editor));
           }
         }
       );
@@ -175,7 +203,7 @@
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
-      var command = editor.addCommand("tableProperties", {exec: function() { editor.openDialog(dialogName +  "table"); }});
+      var command = editor.addCommand("easTableProperties", {exec: function() { editor.openDialog(dialogName +  "table"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -183,6 +211,9 @@
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
+      var command = editor.addCommand("introProperties", {exec: function() { editor.openDialog(dialogName +  "intro"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
 
       editor.addCommand('parboxDelete', {exec: function() {parboxDelete(editor);}});
 
@@ -196,9 +227,9 @@
             group:   pluginName,
             order:   1
           },
-          tableProperties: {
+          easTableProperties: {
             label:   "Table Advanced...",
-            command: "tableProperties",
+            command: "easTableProperties",
             group:   pluginName,
             order:   1
           },
@@ -213,6 +244,11 @@
             command:  "figureProperties",
             group:    pluginName
           },
+          introProperties: {
+            label: 'Intro Advanced...',
+            command: 'introProperties',
+            group: pluginName
+          },
           parboxDelete: {
             label:   'Remove Paragraph Box',
             command: 'parboxDelete',
@@ -221,29 +257,43 @@
           }
         });
       }
+
+      if ( editor.addMenuItems ) {
+        editor.addMenuGroup('easintro', 444);
+        editor.addMenuItems({
+        });
+      };
+
       // If the "contextmenu" plugin is loaded, register the listeners.
       if (editor.contextMenu) {
         editor.contextMenu.addListener(function(element, selection) {
-          //if (!element || element.isReadOnly()) {
-          //  return null;
-          //}
 
-          var parbox = getParbox(editor);
-          if (parbox) {
-            return { parboxProperties : CKEDITOR.TRISTATE_OFF, parboxDelete : CKEDITOR.TRISTATE_OFF };
+          var properties = {};
+
+          if (getParbox(editor)) {
+            properties.parboxProperties = CKEDITOR.TRISTATE_OFF;
+            properties.parboxDelete = CKEDITOR.TRISTATE_OFF;
           }
 
-          var emcee = getEmcee(editor);
-          if (emcee)
-            return {emceeProperties: CKEDITOR.TRISTATE_OFF };
+          if (getEmcee(editor)) {
+            properties.emceeProperties = CKEDITOR.TRISTATE_OFF;
+          }
 
-          var table = getElem(editor,"table", null);
-          if (table)
-            return {tableProperties: CKEDITOR.TRISTATE_OFF };
+          if (getElem(editor,"table", null)) {
+            properties.easTableProperties = CKEDITOR.TRISTATE_OFF;
+          }
 
-          var figure = getPlainFigure(editor);
-          if (figure)
-            return {figureProperties: CKEDITOR.TRISTATE_OFF };
+          if (getPlainFigure(editor)) {
+            properties.figureProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getIntro(editor)) {
+            properties.introProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if ( Object.keys(properties).length > 0 ) {
+            return properties;
+          }
 
           return null;
         });

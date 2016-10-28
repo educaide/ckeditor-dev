@@ -14,10 +14,6 @@ function setupProperties(){
     var groupDiv = new Element('div', {className: 'propertiesGroup properties'});
     insertLocation.insert(groupDiv);
 
-    //var titleSpan = new Element('span', {className: 'title'});
-    //titleSpan.update(propsGroup.groupName);
-    //groupDiv.insert(titleSpan);
-
     var props = propsGroup.props;
     for (var p = 0; p < props.length; p++) {
       var prop = props[p];
@@ -28,140 +24,299 @@ function setupProperties(){
 
       var propLabel = new Element('label').update(texKey);
       propLabel.setAttribute("for", htmlKey);
+      propLabel.setAttribute("id", htmlKey + "-label");
       row.insert(propLabel);
-
-      var propInput = new Element('input', {id: htmlKey, type: "textbox"});
-      row.insert(propInput);
     }
   }
 }
 
-function setPropertySelect(element, key){
-  if (!element)
-    return;
-    
-  var value =  element.getAttribute(easPrefix + key)
+function setupInput(element, texProp){
+  var dataType = texProp[0];
 
-  if (!value)
-    return;
-    
-  var options = $(easPrefix + key).children
-  for(var i = 0; i < options.length; i++){
-    options[i].selected = options[i].value == value;
-  }
-}
+  var key = texProp[1];
 
-function setPropertyTextbox(element, key){
-  if (!element)
-    return;
-    
-  var value =  element.getAttribute(easPrefix + key)
+  var elemId = easPrefix + key + "-input"
 
-  if (!value)
-    return;
-    
-  $(easPrefix + key).value = value;
-}
+  if (dataType == "Dimension") {
 
-function setWidthAndDimens(element, key){
-  if (!element)
-    return;
+    var dimenId = easPrefix + key + "-dimen"
 
-  var value = element.getAttribute(easPrefix + key);
+    var elem = new Element('input', {id: elemId, type: "textbox"});
 
-  var dimens = /^((\d|\.)+)\s?(em|in|pt|ex|%|cm)/;
-  var tokens = null;
-  if (value){
-    tokens = dimens.exec(value)
-  }
+    elem.setStyle({
+      "width" : "4.5em"
+    });
 
-  if (!value || !tokens){
-    $(easPrefix + key).value = '';
-    $(easPrefix + key + '-dimension').value = 'in';
+    var select = new Element('select', {id: dimenId});
+
+    select.setStyle({
+      "width" : "3em",
+      "margin-left" : "5px"
+    });
+
+    var inDimen = new Element('option', {value: 'in'});
+    inDimen.insert("in");
+    var cmDimen = new Element('option', {value: 'cm'});
+    cmDimen.insert("cm");
+    var ptDimen = new Element('option', {value: 'pt'});
+    ptDimen.insert("pt");
+    var emDimen = new Element('option', {value: 'em'});
+    emDimen.insert("em");
+    var exDimen = new Element('option', {value: 'ex'});
+    exDimen.insert("ex");
+
+    select.insert(inDimen);
+    select.insert(cmDimen);
+    select.insert(ptDimen);
+    select.insert(emDimen);
+    select.insert(exDimen);
+
+    $(easPrefix + key + "-label").up().insert(elem);
+    $(easPrefix + key + "-label").up().insert(select);
+
+  } else if (dataType == "bool?") {
+    var elem = new Element('select', {id: elemId});
+
+    var opt_none = new Element('option', {value: ''});
+    var opt_true = new Element('option', {value: 'true'});
+    opt_true.insert("true");
+    var opt_false = new Element('option', {value: 'false'});
+    opt_false.insert("false");
+
+    elem.insert(opt_none);
+    elem.insert(opt_true);
+    elem.insert(opt_false);
+
+    $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "choice") {
+    var elem = new Element('select', {id: elemId});
+
+    var temp = new Element('option', {value: ''});
+    elem.insert(temp);
+
+    for (var i=0; i < texChoices[key].length; i++) {
+      temp = new Element('option', {value: texChoices[key][i]});
+      temp.insert(texChoices[key][i]);
+      elem.insert(temp);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "color" ) {
+    var elem = new Element('select', {id: elemId});
+
+    var colors = [
+      "black",
+      "white",
+      "gray",
+      "red",
+      "green",
+      "blue",
+      "cyan",
+      "magenta",
+      "yellow",
+      "purple",
+      "orange",
+      "aqua",
+      "fuchsia",
+      "teal",
+      "maroon",
+      "navy",
+      "olive",
+      // dark
+      "dkblue",
+      "dkcyan",
+      "dkgray",
+      "dkgreen",
+      "dkmagenta",
+      "dkred",
+      "dkyellow",
+      // medium dark
+      "mdblue",
+      "mdcyan",
+      "mdgray",
+      "mdgreen",
+      "mdmagenta",
+      "mdred",
+      "mdyellow"
+    ];
+
+    var opt_none = new Element('option', {value: ''});
+    elem.insert(opt_none);
+
+    for ( var i=0; i < colors.length; i++ ) {
+      var opt = new Element('option', {value: colors[i]});
+      opt.insert(colors[i]);
+      elem.insert(opt);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
+  } else if (dataType == "color_background" ) {
+    var elem = new Element('select', {id: elemId});
+
+    var colors_background = [
+      // extra light
+      "xlblue",
+      "xlcyan",
+      "xlgray",
+      "xlgreen",
+      "xlmagenta",
+      "xlred",
+      "xlyellow",
+      /// light
+      "ltblue",
+      "ltcyan",
+      "ltgray",
+      "ltgreen",
+      "ltmagenta",
+      "ltred",
+      "ltyellow",
+      // medium light
+      "mlblue",
+      "mlcyan",
+      "mlgray",
+      "mlgreen",
+      "mlmagenta",
+      "mlred",
+      "mlyellow",
+    ];
+
+    var opt_none = new Element('option', {value: ''});
+    elem.insert(opt_none);
+
+    for ( var i=0; i < colors_background.length; i++ ) {
+      var opt = new Element('option', {value: colors_background[i]});
+      opt.insert(colors_background[i]);
+      elem.insert(opt);
+    }
+
+    $(easPrefix + key + "-label").up().insert(elem);
+
   } else {
-    $(easPrefix + key).value = tokens[1];
-    $(easPrefix + key + '-dimension').value = tokens[3];
+    var elem = new Element('input', {id: elemId, type: "textbox"});
+    $(easPrefix + key + "-label").up().insert(elem);
   }
 
 }
 
-var guiSetProps = ["border", 'pos', 'width'];
+function setPropertyTextbox(element, texProp){
+
+  var key = texProp[1];
+
+  if (!element)
+    return;
+
+  var value = element.getAttribute(easPrefix + key)
+
+  if (!value)
+    return;
+
+  //separate value and dimension if we're restoring a dimension value
+
+  if ( $(easPrefix + key + "-dimen") ) {
+    var dimen = value.replace( /[0-9]/g, '');
+    value = value.replace( /\D/g, '');
+
+    $(easPrefix + key + "-dimen").value = dimen;
+  }
+
+  $(easPrefix + key + "-input").value = value;
+}
 
 function setProperties(element){
   if (!element)
     return;
-  
-  var parbox = texCommand == "parbox";
-  if (parbox) {
-    setPropertySelect(element, 'border');
-    setPropertySelect(element, 'pos');
-    setWidthAndDimens(element, 'width');
-  }
 
   for (var i = 0; i < texProperties.length; i++) {
     var p = texProperties[i];
-    setPropertyTextbox(element, p[1]);
+    setPropertyTextbox(element, p);
   }
 }
 
-function saveProperty(element, key){
-  var input = $(easPrefix + key);
+function setupInputs(element){
+  if (!element)
+    return;
+
+  for (var i = 0; i < texProperties.length; i++) {
+    var p = texProperties[i];
+    setupInput(element,p);
+  }
+}
+
+function saveProperty(element, key, type){
+  var input = $(easPrefix + key + "-input");
   var value = null;
-  
+
+  var dimen = $(easPrefix + key + "-dimen");
+
   if (input)
     value = input.value;
-  
+
   if (value){
+
+    if (type == "Dimension") {
+      if ( isNaN(value) ) {
+        return false;
+      }
+      value = String(value) + String(dimen.value); //append dimension
+    } else if (type == "uint?") {
+      if ( isNaN(value) || value.indexOf('.') > -1 || value < 0 ) {
+        return false;
+      }
+
+    } else if (type == "int?") {
+      if ( isNaN(value) || value.indexOf('.') > -1 ) {
+        return false;
+      }
+    }
+
     element.setAttribute(easPrefix + key, value);
-    // IE does not like using normal attributes for style.
-    // we are building classes to use to set styles in IE of the form:
-    // "parbox-pos-indent
-    return "parbox-" + key + "-" + value;
+    return true;
   } else {
     element.removeAttribute(easPrefix + key);
-    return null;
+    return true;
   }
 }
 
-function savePropertiesToElement(element){
+function savePropertiesToElement(element, args){
 
-  var parbox = texCommand == "parbox";
+  failedKeys = {};
 
-  var styleClasses = [texCommand];
-  if (parbox)
-    styleClasses.push("wall");
+  keyLookup = {
+    "uint?": "natural number",
+    "int?":  "integer",
+    "Dimension": "integer or decimal number",
+  }
 
-  //var keys = ['border', 'pos'];
   for (var i = 0; i < texProperties.length; i++){
     var prop = texProperties[i];
     var key = prop[1];
-    var styleClass = saveProperty(element, key);
-    if (styleClass)
-      styleClasses.push(styleClass);
-  }
-  
-  if (parbox) {
-    if ($(easPrefix + 'width').value){
-      var width = $(easPrefix + 'width').value + $(easPrefix + 'width-dimension').value;
-      element.setAttribute(easPrefix + 'width', width);
-      element.setAttribute('style', "width: " + width + ";");
+    var type = prop[0];
+
+    if ( !saveProperty(element, key, type) ) {
+      failedKeys[key] = type;
     }
-    else {
-      element.removeAttribute(easPrefix + 'width');
-      element.removeAttribute('style');
-    }
+
   }
-  
-  if (texCommand != 'figure')
-    element.setAttribute("class", styleClasses.join(" "));
+
+  if ( Object.keys(failedKeys).length > 0 ) {
+    var errorMessage = "";
+
+    for ( var key in failedKeys ) {
+      errorMessage += "\"" + key + "\" must be a " + keyLookup[failedKeys[key]] + ".\n";
+    }
+
+    alert(errorMessage);
+
+    args.data.hide = false;
+  }
 }
 
 function insertTex(tex){
   var texInput = $('mathtex');
-  
+
   // hack! fix IE later: http://stackoverflow.com/questions/263743/how-to-get-caret-position-in-textarea
   var insertLocation = texInput.selectionStart;
-  
+
   texInput.value = texInput.value.splice(insertLocation, 0, tex);
 }
 
@@ -175,3 +330,4 @@ function insertTex(tex){
     setupProperties();
   }
 })();
+

@@ -4,59 +4,32 @@ document.observe('dom:loaded', attachListeners);
 // note: options stay persistent while resizing table's columns
 var columnWidthOptions = [];
 
-/* properties object
- * properties = {
- *   layout: {
- *     rows: 123
- *     cols: 123
- *     position: left | center | right | indent | none
- *   },
- *   columns: [
- *     {
- *       align: left | center | right | decimal
- *       width: natural | <dimension|percentage string>
- *     }
- *   ],
- *   borders: {
- *     outside: none | single | double | shadow | thick
- *     horizontal: none | first | inner | all
- *     vertical: none | first | inner | all
- *   },
- *   headers:
- *     display: none | left | top | both
- *     fontStyle: normal | bold | italic | alternate
- *     fontSize: normal | small | verySmall | large | veryLarge
- *   },
- *   labels: {
- *     includeTitle: true | false
- *     titleFirst: true | false
- *     includeCaption: true | false
- *     captionLast: true | false
- *   }
- * }
- */
-
 function setProperties(properties) {
   $('rows').disabled = $('cols').disabled = true;
   $('rows').value = properties.layout.rows;
   $('cols').value = properties.layout.cols;
-  $('position').value = properties.layout.position;
+  $('position').value = properties.pos;
 
   columnWidthOptions = properties.columns;
 
-  $('outsideBorder').value = properties.borders.outside;
-  $('horizontalBorder').value = properties.borders.horizontal;
-  $('verticalBorder').value = properties.borders.vertical;
+  $('border').value = properties.border;
+  $('vrule').value  = properties.vrule;
+  $('hrule').value  = properties.hrule;
 
-  if (properties.headers) {
-    if (properties.headers.display) {
-      $('header' + properties.headers.display.capitalize()).checked = true;
+  if (properties.header) {
+    $('header' + properties.header.capitalize()).checked = true;
+
+    $('headerFontStyle').value = properties.headerfontstyle;
+
+    if ( properties.headerfontstep) {
+      $('headerFontSize').value = properties.headerfontstep;
+    } else {
+      $('headerFontSize').value = 0;
     }
 
-    $('headerFontStyle').value = properties.headers.fontStyle;
-    $('headerFontSize').value = properties.headers.fontSize;
-    $('headerShading').checked = properties.headers.shading;
+    $('headerShading').checked = properties.headershading;
   }
+
 
   $('includeTitle').checked   = properties.labels.includeTitle;
   $('includeCaption').checked = properties.labels.includeCaption;
@@ -73,21 +46,17 @@ function getProperties() {
   var properties = {
     layout: {
       rows: $('rows').value,
-      cols: $('cols').value,
-      position: $('position').value
+      cols: $('cols').value
     },
+    pos: $('position').value,
     columns: columnWidthOptions.findAll(function(o, index) { return index < $('cols').value }),
-    borders: {
-      outside: $('outsideBorder').value,
-      horizontal: $('horizontalBorder').value,
-      vertical: $('verticalBorder').value
-    },
-    headers: {
-      display: $('headers').select('input[name="header"]').find(function(e) { return e.checked }).value,
-      fontStyle: $('headerFontStyle').value,
-      fontSize: $('headerFontSize').value,
-      shading: $('headerShading').checked
-    },
+    border: $('border').value,
+    hrule: $('hrule').value,
+    vrule: $('vrule').value,
+    header: $('headers').select('input[name="header"]').find(function(e) { return e.checked }).value,
+    headerfontstyle: $('headerFontStyle').value,
+    headerfontstep: $('headerFontSize').value,
+    headershading: $('headerShading').checked,
     labels: {
       includeTitle: $('includeTitle').checked,
       titleFirst: $('titleFirst').checked,
@@ -124,7 +93,7 @@ function clampRowColElem(elem) {
     else if (newVal != val)
       elem.value = newVal;
   }
-} 
+}
 
 function attachListeners(event) {
   $('rows', 'cols').each(function(sizeElem) {
@@ -166,12 +135,12 @@ function updateFontSelections() {
 function updateWidthEnabled() {
   var decimalAlign = $('alignmentDecimal').checked;
   $('decimalPadding').disabled = !decimalAlign;
-  
+
   var widthEnabled = !decimalAlign;
   $('natural', 'fixed').each(function(elem) {
     elem.disabled = !widthEnabled
   });
-  
+
   var dimensionEnabled = widthEnabled && $('fixed').checked;
   $('width', 'dimension').each(function(elem) {
     elem.disabled = !dimensionEnabled
@@ -184,14 +153,14 @@ function updateColumnsSection(element) {
     var options = columnWidthOptions[$('editColumn').options.selectedIndex];
     var alignRadio = $('columns').select('input[name=alignment]').find(function(r) { return r.checked; });
     options.align = alignRadio.value;
-    
+
     if (options.align == 'decimal'){
       options.align = 'right';
       options.decimal = $('decimalPadding').value;
     } else {
       options.decimal = null;
     }
-    
+
     var widthRadio = $('columns').select('input[name=width]').find(function(r) { return r.checked; });
     if (widthRadio.value == 'natural') {
       options.width = 'natural';
@@ -225,7 +194,7 @@ function updateColumnsSection(element) {
 
     // show alignment/width options for currently-selected column
     var options = columnWidthOptions[$('editColumn').options.selectedIndex];
-   
+
     var alignment = options.align.capitalize();
     if (options.decimal){
       alignment = "Decimal"; // note this should be capitalized to find alignmentDecimal
@@ -258,7 +227,7 @@ function updateBorderPreview() {
   var tableElem = $('borderPreview');
   tableElem.update('');
   var styleObject = {};
-  switch ($('outsideBorder').value) {
+  switch ($('border').value) {
     case 'none':
       styleObject.border = '1px dotted lightgray';
       break;
@@ -289,7 +258,7 @@ function updateBorderPreview() {
       rowElem.insert({ bottom: colElem });
 
       var styleObject = {};
-      switch ($('verticalBorder').value) {
+      switch ($('vrule').value) {
         case 'none':
           styleObject.borderLeft = '1px dotted lightgray';
           styleObject.borderRight = '1px dotted lightgray';
@@ -316,7 +285,7 @@ function updateBorderPreview() {
           styleObject.borderLeft = '1px solid black';
           break;
       }
-      switch ($('horizontalBorder').value) {
+      switch ($('hrule').value) {
         case 'none':
           styleObject.borderTop = '1px dotted lightgray';
           styleObject.borderBottom = '1px dotted lightgray';
