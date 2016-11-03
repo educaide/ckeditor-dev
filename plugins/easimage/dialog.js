@@ -2,11 +2,104 @@ var $j = jQuery.noConflict();
 (function() {
 document.observe('dom:loaded', function() {
   includeTree();
-  onLeafClick();
+  fetchUsersImages();
   attachListeners();
   resizeContent('browser');
   resizeContent('browser2');
 });
+
+(function($) {
+  // configure Dropzone
+  Dropzone.autoDiscover = false;
+
+  $(document).ready(function(){
+    var $userMessages = $("#user-images-messages")
+
+    function switchToUploadPage() {
+      if ($userMessages.html() == "" || $userMessages.html().match(/You have no/)) {
+        $userMessages.html("Uploading files...");
+      }
+
+      $("#user").trigger("click");
+    }
+
+    function createFigureAndSizePage(figure) {
+      var thumb = createThumbnail(figure, true);
+      $("#browser .multi").prepend(thumb);
+      resizeContent('browser');
+      ensureMultiIsShown('browser');
+    }
+
+    function appendError(error) {
+      if ($userMessages.html() == "Uploading files..."){
+        $userMessages.html("")
+      }
+
+      $userMessages.append(error);
+    }
+
+    function successMessageUnlessError() {
+      if (! $userMessages.html().match(/Error/) ) {
+        $userMessages.html("Upload(s) successful.");
+      }
+    }
+
+    $("#file-uploader").dropzone({
+      maxFilesize: 1,
+      maxFiles: 20,
+      acceptedFiles: "image/jpeg,image/png,image/pjpeg",
+      dictDefaultMessage: "Drop files here to upload, or click to launch a file browser",
+      init: function () {
+        this.on("success", function(_image, response) {
+          createFigureAndSizePage(response.figure);
+        });
+
+        this.on("addedfile", function(file) {
+          switchToUploadPage();
+        });
+
+        this.on("complete", function(file, errorMessage, xhrError) {
+          this.removeFile(file);
+        });
+
+        this.on("error", function(file, errorMessage, xhrError) {
+          appendError("<p>Error: (" + file.name + ") " + errorMessage + "</p>")
+        });
+
+        this.on("queuecomplete", function(){
+          successMessageUnlessError();
+          this.reset();
+        });
+      }
+    });
+
+    $("#file-url-uploader").submit(function(e) {
+      switchToUploadPage();
+
+      $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        dataType: 'json',
+        data: $(this).serialize(),
+        beforeSend: function () {
+          $("#url-upload").val("");
+        },
+        success: function( response ) {
+          createFigureAndSizePage(response.figure);
+        },
+        error: function( xhr, err, obj ) {
+          appendError("<p>Error: " + xhr.responseJSON.errors + "</p>")
+        },
+        complete: function() {
+          successMessageUnlessError();
+        }
+      });
+      return false;
+    });
+
+
+  });
+})(jQuery);
 
 window.onresize = function() { resizeContent('browser'); resizeContent('browser2'); }
 
@@ -53,10 +146,8 @@ function attachListeners() {
   $('browser2').down('.preview .single').on('dblclick', '.single', onImageDoubleClick);
   $('browser2').down('.preview .close-preview-button').on('click', closePreview);
 
-  $('cancel-upload').on('click', onToggleUploadClick);
-  $('upload-dialog').down('input[type=file]').on('change', onFileChange);
-  $('upload-dialog').down('input[type=submit]').on('click', onFileSubmit);
   $('backbutton').on('click', goBack);
+
 }
 
 function goBack(){
@@ -90,7 +181,6 @@ function setUpTree(){
     childLIs.first().parent().show();
     $j(this).parent().hide();
   });
-
   $j('.node li').click(treeNavigation);
 }
 
@@ -162,6 +252,7 @@ function onChangeView(event){
     $j('#browser2').find('.preview .multi .thumbnail.selected').removeClass('selected');
     $('browser').hide();
     $j('#browser').find('.preview .multi .thumbnail.selected').removeClass('selected');
+    $j("#user-images-messages").html(""); // clear any current messages
     $('upload-dialog').show();
   }
 }
@@ -189,48 +280,6 @@ function resizeContent(browser) {
   // TODO set maxWidth style on singleEl's img if we want to scale to fit in window
 }
 
-function onFileChange(event) {
-  $('upload-dialog').down('input[type=submit]').enable();
-}
-
-function onFileSubmit(event) {
-  $('upload-dialog').down('form').hide();
-  $('upload-dialog').down('.wait').show();
-
-  /* why does altering state of form controls causes invalid data to be posted?
-  $('upload-dialog').select('button').invoke('disable');
-  $('upload-dialog').select('input').invoke('disable');
-  $('upload-dialog').down('input[type=submit]').value = "Uploading...";
-  */
-}
-
-function onToggleUploadClick(event) {
-  event.stop();
-  var showing = true;
-  // reset file input after hiding
-  if ($('upload-dialog').visible()) {
-    showing = false;
-    var fileEl = $('upload-dialog').down('input[type=file]');
-    fileEl.replace('<input type="file" name="figure[asset]" />');
-    // need to delay so DOM gets a chance to update before re-attaching onchange
-    // listener. would rather listen to form's onchange listener (so that this step
-    // isn't needed), but IE doesn't bubble up change events.
-    window.setTimeout(function() {
-      $('upload-dialog').down('input[type=file]').on('change', onFileChange);
-    }, 1000);
-
-    $('upload-dialog').down('input[type=submit]').disable();
-  }
-
-  $('upload-dialog').toggle();
-  //$('toggle-upload').toggle();
-  resizeContent('browser');
-
-  if (showing && !Prototype.Browser.IE) {
-    $('upload-dialog').down('input[type=file]').click();
-  }
-}
-
 function onImageDoubleClick(event, element) {
   var browser = $j(element).closest('table').attr('id');
   var imgEl = element.down('img');
@@ -252,11 +301,6 @@ function onImageDoubleClick(event, element) {
 
   singleEl.insert({ bottom: createMeta(height, width, dpi, imgFile) });
   removeSpinnerOnImgLoad(singleEl);
-
-  //if (isUserImage) {
-    //var uploadDiv = $('viewport').down('.preview .uploads');
-    //uploadDiv.toggle();
-  //}
 
   close.toggle();
   singleEl.toggle();
@@ -283,16 +327,16 @@ function onThumbnailClick(event, element) {
   element.addClassName('selected');
 }
 
-function onLeafClick() {
+function fetchUsersImages() {
   var url = '/account/figures.json';
-
   var multiEl = $('browser').down('.preview .multi');
-  multiEl.update('Loading...');
+  var $userMessages = $j("#user-images-messages")
+  $userMessages.html("Loading...");
   $j.ajax({
     url: url,
     success: function(response){
       if(response.length > 0){
-        $j(multiEl).empty();
+        $userMessages.html("");
         $j.each(response, function(i, image){
           var thumb = createThumbnail(image.figure, true);
           $j(multiEl).append(thumb );
@@ -305,7 +349,7 @@ function onLeafClick() {
         resizeContent('browser');
         ensureMultiIsShown('browser');
       }else{
-        $(multiEl).update("You have no images to show. To get started, click 'New...' on the left and upload an image.")
+        $userMessages.html("You have no images to show. To get started, click 'New...' on the left and upload an image.");
       }
     }
   });
@@ -407,3 +451,5 @@ function getProperties() {
     dpi: imgEl.readAttribute('data-dpi')
   };
 }
+
+

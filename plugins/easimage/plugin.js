@@ -43,6 +43,8 @@
             var iframe = $(this.domId);
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
             $(inputEl).value = Hachiko.AuthenticityToken;
+            inputEl = iframe.contentWindow.document.getElementById('url_form_authenticity_token');
+            $(inputEl).value = Hachiko.AuthenticityToken;
           }
           else {
             console.log("8ko not detected");
