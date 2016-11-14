@@ -43,6 +43,8 @@
             var iframe = $(this.domId);
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
             $(inputEl).value = Hachiko.AuthenticityToken;
+            inputEl = iframe.contentWindow.document.getElementById('url_form_authenticity_token');
+            $(inputEl).value = Hachiko.AuthenticityToken;
           }
           else {
             console.log("8ko not detected");
@@ -50,6 +52,20 @@
         },
         {
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onShow: function() {
+            var $ourDialog = jQuery('.cke_dialog_contents_body', jQuery(this.getElement().$));
+            var minViewportWidth = 500;
+            var desiredViewportWidth = Math.max(minViewportWidth, jQuery(window).width() - 200);
+            var desiredViewportHeight = jQuery(window).height() - 200;
+
+            $ourDialog.css( {
+              width: desiredViewportWidth,
+              height: desiredViewportHeight,
+            });
+
+            var desiredX = ((jQuery(window).width()) - desiredViewportWidth) / 2
+            this.move(desiredX, 0); // Top center
+          },
           onOk: function(args) {
             // HACK this is here to support using the easimage dialog in non-editor contexts, like in the XFigure panel
             if (args.sender.insertImageOnOk === false) {

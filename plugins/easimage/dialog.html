@@ -4,9 +4,11 @@
     <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
     <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/scriptaculous/1.9/scriptaculous.js" type="text/javascript"></script>
     <script language="javascript" src="https://code.jquery.com/jquery-1.12.3.min.js" type="text/javascript"></script>
+    <script language="javascript" src="dropzone.min.js" type="text/javascript"></script>
     <script language="javascript" src="dialog.js" type="text/javascript"></script>
     <link href="http://yui.yahooapis.com/2.7.0/build/reset/reset-min.css" media="screen" rel="stylesheet" type="text/css" />
   	<link href="dialog.css" rel="stylesheet" type="text/css" />
+  	<link href="dropzone.min.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
@@ -62,6 +64,7 @@
         <tbody>
           <tr>
             <td class="preview">
+              <div id="user-images-messages"></div>
               <div class="multi">
               </div>
               <img src="images/close-icon.png" id="browser-close" class='close-preview-button' style="display:none;"/>
@@ -74,15 +77,23 @@
       </table>
 
       <div id="upload-dialog" style="display: none">
-        <form method="post" enctype="multipart/form-data" action="/account/figures">
+        <form id="file-uploader" method="post" class="dropzone" enctype="multipart/form-data" action="/account/figures">
           <input type="hidden" id="authenticity_token" name="authenticity_token" />
-          <input type="hidden" name="success_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/success" />
-          <input type="hidden" name="error_url" value="/javascripts/ckeditor/plugins/easimage/dialog.html#user_images/error" />
-          <input type="file" name="figure[asset]" />
-          <input type="submit" value="Upload" disabled="disabled" name="commit" />
-          <button id="cancel-upload">Cancel</button>
         </form>
-        <div style="display: none;" class="wait">Uploading, please wait...</div>
+        <h3 style="margin-top: 10px; margin-bottom: 10px">OR upload from a URL</h3>
+        <p>
+          <form id="file-url-uploader" method="post" action="/account/figures">
+            <input type="hidden" id="url_form_authenticity_token" name="authenticity_token" />
+            <input type="text" id="url-upload" name="url" size="50" />
+            <input type="submit" name="Upload" value="Upload"/>
+          </form>
+        </p>
+
+        <h3 style="font-size: 14px; font-weight: bold;  margin-top: 10px; margin-bottom: 10px">Images must be:</h3>
+        <ul style="margin-left: 15px">
+          <li style="padding: 5px; list-style: disc">"png" or "jpg" or "jpeg".</li>
+          <li style="padding: 5px; list-style: disc">A maximum of 1 Megabyte in size.</li>
+        </ul>
       </div>
     </div>
   </body>
