@@ -48,7 +48,7 @@ document.observe('dom:loaded', function() {
       maxFilesize: 1,
       maxFiles: 20,
       acceptedFiles: "image/jpeg,image/png,image/pjpeg",
-      dictDefaultMessage: "Drop files here to upload, or click to launch a file browser",
+      dictDefaultMessage: "Drag and drop images here, OR click this box to browse for images on your computer.",
       init: function () {
         this.on("success", function(_image, response) {
           createFigureAndSizePage(response.figure);

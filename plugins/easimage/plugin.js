@@ -54,8 +54,8 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onShow: function() {
             var $ourDialog = jQuery('.cke_dialog_contents_body', jQuery(this.getElement().$));
-            var minViewportWidth = 500;
-            var desiredViewportWidth = Math.max(minViewportWidth, jQuery(window).width() - 200);
+            var minViewportWidth = 750; //same as width of editor itself.
+            var desiredViewportWidth = Math.max(minViewportWidth, jQuery(window).width() - 400);
             var desiredViewportHeight = jQuery(window).height() - 200;
 
             $ourDialog.css( {
