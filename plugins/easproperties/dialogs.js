@@ -196,6 +196,10 @@ function setupInput(element, texProp){
     $(easPrefix + key + "-label").up().insert(elem);
   }
 
+  // remove curly braces, if entered
+  elem.observe("keyup", function(){
+    $(this).setValue($(this).getValue().replace(/[{}]/g, ""));
+  });
 }
 
 function setPropertyTextbox(element, texProp){
