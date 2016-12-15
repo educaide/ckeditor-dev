@@ -36,7 +36,7 @@
 				editor.addContentsCss( mathQuillPath + 'mathquill.css' );
 			}
 
-			CKEDITOR.scriptLoader.load( mathQuillPath + 'mathquill.min.js?v2.4', function( result ) {
+			CKEDITOR.scriptLoader.load( mathQuillPath + 'mathquill.min.js?v2.5', function( result ) {
 				if ( !result ) {
 					console.error( 'Could not fetch MathQuill script.' );
 				}
