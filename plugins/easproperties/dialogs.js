@@ -209,7 +209,7 @@ function setPropertyTextbox(element, texProp){
   if (!element)
     return;
 
-  var value = element.getAttribute(easPrefix + key)
+  var value = element.getAttribute(easPrefix + key);
 
   if (!value)
     return;
@@ -217,8 +217,13 @@ function setPropertyTextbox(element, texProp){
   //separate value and dimension if we're restoring a dimension value
 
   if ( $(easPrefix + key + "-dimen") ) {
-    var dimen = value.replace( /[0-9]/g, '');
-    value = value.replace( /\D/g, '');
+    //grab last two characters of attribute, which should be dimension abbreviation.
+    var dimen = value.substr(value.length -2);
+    // replace all letters, as we need to leave decimals alone. Still not perfect, but according to Dan
+    // we let people enter garbage, and TeX does the validation.
+    // Still, it should be noted that in the savePropertiesToElement function below
+    // we do some validation. Since this happens in an iFrame it might not make it through, however.
+    value = value.replace( /[a-zA-Z]/g, '');
 
     $(easPrefix + key + "-dimen").value = dimen;
   }
@@ -282,7 +287,6 @@ function saveProperty(element, key, type){
 }
 
 function savePropertiesToElement(element, args){
-
   failedKeys = {};
 
   keyLookup = {
