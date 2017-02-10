@@ -135,10 +135,13 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'subparts' )
+			if ( style == 'emcee' || style == 'subparts' ) {
 				listNode.addClass( style );
-			else
+			}
+			else {
 				listNode.setStyle( 'list-style-type', style );
+				listNode.addClass( 'list' );
+			}
 		} );
 
 		editor.on( 'easListChange', function( evt ) {
@@ -147,15 +150,18 @@
 
 			if ( style == 'emcee' ) {
 				listNode.removeClass( 'subparts' );
-				listNode.removeStyle( 'list-style-type' );
+				listNode.removeClass( 'list' );
 				listNode.addClass( 'emcee' );
+				listNode.removeStyle( 'list-style-type' );
 			} else if ( style == 'subparts' ) {
 				listNode.removeClass( 'emcee' );
+				listNode.removeClass( 'list' );
 				listNode.addClass( 'subparts' );
 				listNode.removeStyle( 'list-style-type' );
 			} else {
 				listNode.removeClass( 'emcee' );
 				listNode.removeClass( 'subparts' );
+				listNode.addClass( 'list' );
 				listNode.setStyle( 'list-style-type', style );
 			}
 		} );

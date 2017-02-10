@@ -8,6 +8,9 @@ var texProperties =
   ["uint?", "abovepenalty"],
   ["uint?", "belowpenalty"],
   ["choice", "pos"],
+  ["choice", "label"],
+  ["choice", "labelfontstyle"],
+  ["choice", "labelpos"],
   ["bool?", "show"],
   ["bool?", "unbox"],
 ];
@@ -31,6 +34,14 @@ var texGroups =
       "belowskip",
       "abovepenalty",
       "belowpenalty"
+    ]
+  },
+  {
+    groupName: "label",
+    props: [
+      "label",
+      "labelfontstyle",
+      "labelpos"
     ]
   },
   {
