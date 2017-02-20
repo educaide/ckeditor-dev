@@ -21,7 +21,7 @@ body
   /* Spacing */
   line-height: 110%;
   padding: 0.5ex;
-  
+
 	/* Text color */
 	color: #222;
 
@@ -29,11 +29,12 @@ body
 	background-color: #fff;
 }
 
-/* preserved spaces for rtl list item bullets. (#6249)*/
+/* preserved spaces for rtl list item bullets. (#6249) */
 ol,ul,dl
 {
     padding-right:40px;
 }
+
 
 html
 {
@@ -60,21 +61,59 @@ img, input, textarea
 /* eas changes */
 
 ol.emcee {
-    margin-left: 1ex; 
-    list-style-position: inside; 
-    list-style: lower-alpha; 
-    padding: 1ex; 
+    margin-left: 1ex;
+    list-style-position: inside;
+    list-style: lower-alpha;
+    padding: 1ex;
 
-    background-color: #ffe; 
+    background-color: #ffe;
     border: 1px solid #dd8;
 }
 
 ol.emcee li.correct {
-    background-color: #cfc; 
+    background-color: #cfc;
 }
 
 ol.subparts {
   list-style-type: lower-alpha;
+}
+
+ol.list {
+  counter-reset: count;
+  list-style-type: none;
+  padding-left: 0 !important;
+}
+
+ol.list li:before {
+  counter-increment: count;
+  display:inline-block;
+  text-align: right;
+  margin-right: 0.3em;
+}
+
+ol.list.upper-alpha li:before,
+ol.list.lower-alpha li:before {
+  content: attr(label-left) counter(count,lower-alpha) attr(label-right) " ";
+}
+
+ol.list.lower-roman li:before {
+  content: attr(label-left) counter(count,lower-roman) attr(label-right) " ";
+  width: 4.5em;
+}
+
+ol.list.upper-roman li:before {
+  content: attr(label-left) counter(count,upper-roman) attr(label-right) " ";
+  width: 5.5em;
+}
+
+ol.list.decimal li:before {
+  content: attr(label-left) counter(count,decimal) attr(label-right) " ";
+  width: 3em;
+}
+
+ol.list.disc li:before {
+  content: '\2022' " ";
+  width: 2em;
 }
 
 /*

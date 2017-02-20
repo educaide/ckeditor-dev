@@ -451,6 +451,11 @@
 			listNode.insertBefore( insertAnchor );
 		else
 			listNode.appendTo( commonParent );
+
+		editor.fire( 'easListCreated', {
+			command: this,
+			node: listNode
+		} );
 	}
 
 	function removeList( editor, groupObj, database ) {

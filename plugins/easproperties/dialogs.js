@@ -264,25 +264,34 @@ function saveProperty(element, key, type){
 
     if (type == "Dimension") {
       if ( isNaN(value) ) {
-        return false;
+        return ["error", -1];
       }
       value = String(value) + String(dimen.value); //append dimension
     } else if (type == "uint?") {
       if ( isNaN(value) || value.indexOf('.') > -1 || value < 0 ) {
-        return false;
+        return ["error",-1];
       }
 
     } else if (type == "int?") {
       if ( isNaN(value) || value.indexOf('.') > -1 ) {
-        return false;
+        return ["error",-1];
       }
     }
 
     element.setAttribute(easPrefix + key, value);
-    return true;
+
+    if ( key == "label" ) {
+      return ["label",value];
+    }
+
+    if ( key == "counter" ) {
+      return ["counter",value];
+    }
+
+    return ["ok",0];
   } else {
     element.removeAttribute(easPrefix + key);
-    return true;
+    return ["ok",0];
   }
 }
 
@@ -295,16 +304,74 @@ function savePropertiesToElement(element, args){
     "Dimension": "integer or decimal number",
   }
 
+  var counter_type = null;
+  var label_type = null;
+
   for (var i = 0; i < texProperties.length; i++){
     var prop = texProperties[i];
     var key = prop[1];
     var type = prop[0];
 
-    if ( !saveProperty(element, key, type) ) {
-      failedKeys[key] = type;
+    saveprop_return = saveProperty(element, key, type);
+
+    if ( saveprop_return[0] == "label" ) {
+      label_type = saveprop_return[1];
     }
 
+    if ( saveprop_return[0] == "counter" ) {
+      counter_type = saveprop_return[1];
+    }
+
+    if ( saveprop_return[0] == "error" ) {
+      failedKeys[key] = type;
+    }
   }
+
+  if ( label_type == "bullet" ) {
+    element.$.className = "list disc";
+  } else if ( label_type == "none" ) {
+    element.$.className = "list none";
+  } else if ( counter_type && label_type ) {
+    var counter_map =
+      {
+        "1"          : "decimal",
+        "A"          : "upper-alpha",
+        "a"          : "lower-alpha",
+        "I"          : "upper-roman",
+        "i"          : "lower-roman"
+      }
+
+
+    var list_type = counter_map[counter_type];
+    element.$.className = "list " + list_type;
+
+
+    var label_map_left =
+    {
+      "#"      : "",
+      "#."     : "",
+      "#)"     : "",
+      "(#)"    : "(",
+      "bullet" : ""
+    }
+
+    var label_map_right =
+    {
+      "#"      : "",
+      "#."     : ".",
+      "#)"     : ")",
+      "(#)"    : ")",
+      "bullet" : ""
+    }
+
+    var children = element.$.children;
+
+    for (var i = 0; i < children.length; i++) {
+      children[i].setAttribute("label-left", label_map_left[label_type]);
+      children[i].setAttribute("label-right", label_map_right[label_type]);
+    }
+  }
+
 
   if ( Object.keys(failedKeys).length > 0 ) {
     var errorMessage = "";

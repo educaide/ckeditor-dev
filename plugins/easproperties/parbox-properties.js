@@ -11,6 +11,7 @@ var texProperties =
   ["choice", "label"],
   ["choice", "labelfontstyle"],
   ["choice", "labelpos"],
+  ["choice", "counter"],
   ["bool?", "show"],
   ["bool?", "unbox"],
 ];
@@ -21,7 +22,8 @@ var texChoices =
 	textalign:      [ "none", "left", "center", "right", "full" ],
 	label:          [ "none", "#", "#.", "#)", "(#)", "bullet" ],
 	labelfontstyle: [ "normal", "bold", "italic", "bolditalic", "alternate" ],
-	labelpos:       [ "left", "right", "alt" ]
+	labelpos:       [ "left", "right", "alt" ],
+	counter:        [ "1", "A", "a", "I", "i" ]
 };
 
 var texGroups =
@@ -41,7 +43,8 @@ var texGroups =
     props: [
       "label",
       "labelfontstyle",
-      "labelpos"
+      "labelpos",
+      "counter"
     ]
   },
   {
@@ -53,3 +56,4 @@ var texGroups =
     ]
   }
 ];
+

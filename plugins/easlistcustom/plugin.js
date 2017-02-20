@@ -139,9 +139,27 @@
 				listNode.addClass( style );
 			}
 			else {
-				listNode.setStyle( 'list-style-type', style );
 				listNode.addClass( 'list' );
+				listNode.addClass( style );
+
+                                var counter_map =
+                                  {
+                                    "decimal"     : "1",
+                                    "upper-alpha" : "A",
+                                    "lower-alpha" : "a",
+                                    "upper-roman" : "I",
+                                    "lower-roman" : "i",
+                                    "disc"        : ""
+                                  }
+
+                                listNode.setAttribute("data-eas-label","#.");
+
+                                listNode.setAttribute("data-eas-counter",counter_map[style]);
 			}
+		} );
+
+		editor.on( 'easListCreated', function( evt ) {
+			editor.fire('easListChange', evt.data);
 		} );
 
 		editor.on( 'easListChange', function( evt ) {
@@ -159,10 +177,62 @@
 				listNode.addClass( 'subparts' );
 				listNode.removeStyle( 'list-style-type' );
 			} else {
-				listNode.removeClass( 'emcee' );
-				listNode.removeClass( 'subparts' );
-				listNode.addClass( 'list' );
-				listNode.setStyle( 'list-style-type', style );
+				listNode.$.className = "list " + style;
+				listNode.removeStyle( 'list-style-type' );
+
+                                var children = listNode.$.children;
+
+                                var label_key = listNode.getAttribute("data-eas-label");
+
+                                var map =
+                                {
+                                  "decimal"      : "1",
+                                  "upper-alpha"  : "A",
+                                  "lower-alpha"  : "a",
+                                  "upper-roman"  : "I",
+                                  "lower-roman"  : "i",
+                                  "none"         : "none",
+                                  "disc"         : "bullet"
+                                }
+
+                                var key = map[style];
+
+                                if ( key == "bullet" ) {
+                                	listNode.setAttribute("data-eas-label",key);
+                                } else {
+                                	listNode.setAttribute("data-eas-counter",key);
+
+                                	if ( label_key == "bullet" && key != "bullet" ) {
+						listNode.setAttribute("data-eas-label","#.");
+						label_key = "#.";
+                                	}
+
+					if ( label_key ) {
+                                		for (var i = 0; i < children.length; i++) {
+
+							var label_map_left =
+							{
+  						  	  "#"      : "",
+  						  	  "#."     : "",
+  						  	  "#)"     : "",
+  						  	  "(#)"    : "(",
+  						  	  "bullet" : ""
+							}
+
+							var label_map_right =
+							{
+  						  	  "#"      : "",
+  						  	  "#."     : ".",
+  						  	  "#)"     : ")",
+  						  	  "(#)"    : ")",
+  						  	  "bullet" : ""
+							}
+
+                                			children[i].setAttribute("label-left", label_map_left[label_key]);
+                                			children[i].setAttribute("label-right", label_map_right[label_key]);
+                                		}
+                                	}
+				}
 			}
 		} );
 	}
