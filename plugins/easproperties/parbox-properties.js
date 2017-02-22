@@ -5,6 +5,7 @@ var texProperties =
   ["choice", "textalign"],
   ["Dimension", "aboveskip"],
   ["Dimension", "belowskip"],
+  ["Dimension", "itemsep"],
   ["uint?", "abovepenalty"],
   ["uint?", "belowpenalty"],
   ["choice", "pos"],
@@ -14,6 +15,7 @@ var texProperties =
   ["choice", "counter"],
   ["bool?", "show"],
   ["bool?", "unbox"],
+  ["bool?", "xfig"]
 ];
 
 var texChoices =
@@ -35,7 +37,8 @@ var texGroups =
       "aboveskip",
       "belowskip",
       "abovepenalty",
-      "belowpenalty"
+      "belowpenalty",
+      "xfig"
     ]
   },
   {
@@ -44,6 +47,7 @@ var texGroups =
       "label",
       "labelfontstyle",
       "labelpos",
+      "itemsep",
       "counter"
     ]
   },
@@ -52,7 +56,7 @@ var texGroups =
     props: [
       "pos",
       "show",
-      "unbox",
+      "unbox"
     ]
   }
 ];
