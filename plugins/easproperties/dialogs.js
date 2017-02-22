@@ -280,15 +280,7 @@ function saveProperty(element, key, type){
 
     element.setAttribute(easPrefix + key, value);
 
-    if ( key == "label" ) {
-      return ["label",value];
-    }
-
-    if ( key == "counter" ) {
-      return ["counter",value];
-    }
-
-    return ["ok",0];
+    return [key, value];
   } else {
     element.removeAttribute(easPrefix + key);
     return ["ok",0];
@@ -304,6 +296,41 @@ function savePropertiesToElement(element, args){
     "Dimension": "integer or decimal number",
   }
 
+  var counter_type = null;
+  var label_type = null;
+
+  if ( element.$.classList.contains("list") ) {
+    saveListKeys( element, texProperties, failedKeys );
+  } else if ( element.$.tagName == "IMG" ) {
+    saveImageKeys( element, texProperties, failedKeys );
+  } else {
+    for (var i = 0; i < texProperties.length; i++){
+      var prop = texProperties[i];
+      var key = prop[1];
+      var type = prop[0];
+
+      saveprop_return = saveProperty(element, key, type);
+
+      if ( saveprop_return[0] == "error" ) {
+        failedKeys[key] = type;
+      }
+    }
+  }
+
+  if ( Object.keys(failedKeys).length > 0 ) {
+    var errorMessage = "";
+
+    for ( var key in failedKeys ) {
+      errorMessage += "\"" + key + "\" must be a " + keyLookup[failedKeys[key]] + ".\n";
+    }
+
+    alert(errorMessage);
+
+    args.data.hide = false;
+  }
+}
+
+function saveListKeys( elem, texProperties, failedKeys ) {
   var counter_type = null;
   var label_type = null;
 
@@ -345,7 +372,6 @@ function savePropertiesToElement(element, args){
     var list_type = counter_map[counter_type];
     element.$.className = "list " + list_type;
 
-
     var label_map_left =
     {
       "#"      : "",
@@ -371,20 +397,41 @@ function savePropertiesToElement(element, args){
       children[i].setAttribute("label-right", label_map_right[label_type]);
     }
   }
+}
+
+function saveImageKeys( elem, texProperties, failedKeys ) {
+  var scale = 1000;
+
+  for (var i = 0; i < texProperties.length; i++){
+    var prop = texProperties[i];
+    var key = prop[1];
+    var type = prop[0];
 
 
-  if ( Object.keys(failedKeys).length > 0 ) {
-    var errorMessage = "";
+    saveprop_return = saveProperty(elem, key, type);
 
-    for ( var key in failedKeys ) {
-      errorMessage += "\"" + key + "\" must be a " + keyLookup[failedKeys[key]] + ".\n";
+    if ( saveprop_return[0] == "scale" ) {
+      scale = Number(saveprop_return[1]);
     }
 
-    alert(errorMessage);
-
-    args.data.hide = false;
+    if ( saveprop_return[0] == "error" ) {
+      failedKeys[key] = type;
+    }
   }
+
+  var height = elem.$.getAttribute("data-height");
+  var width  = elem.$.getAttribute("data-width");
+  var dpi    = elem.$.getAttribute("data-dpi");
+  var align  = elem.$.getAttribute("data-align");
+
+  var width_str = String(width * scale / (10*dpi)) + "px";
+  var height_str = String(height * scale / (10*dpi)) + "px";
+
+  elem.$.style.width         = width_str;
+  elem.$.style.height        = height_str;
+  elem.$.style.verticalAlign = align;
 }
+
 
 function insertTex(tex){
   var texInput = $('mathtex');
