@@ -412,24 +412,49 @@ function saveImageKeys( elem, texProperties, failedKeys ) {
 
     if ( saveprop_return[0] == "scale" ) {
       scale = Number(saveprop_return[1]);
-    }
-
-    if ( saveprop_return[0] == "error" ) {
+    } else if ( saveprop_return[0] == "error" ) {
       failedKeys[key] = type;
     }
+  }
+
+  var align_map_dom =
+  {
+    "top"    : "top",
+    "bottom" : "bottom",
+    "normal" : "bottom",
+    "none"   : "bottom",
+    "center" : "middle"
+  }
+
+  var align_map_properties =
+  {
+    "top"    : "top",
+    "bottom" : "bottom",
+    "center" : "center",
+    "normal" : "none"
   }
 
   var height = elem.$.getAttribute("data-height");
   var width  = elem.$.getAttribute("data-width");
   var dpi    = elem.$.getAttribute("data-dpi");
-  var align  = elem.$.getAttribute("data-align");
 
   var width_str = String(width * scale / (10*dpi)) + "px";
   var height_str = String(height * scale / (10*dpi)) + "px";
-
   elem.$.style.width         = width_str;
   elem.$.style.height        = height_str;
-  elem.$.style.verticalAlign = align;
+
+  elem.$.setAttribute("data-scaling", scale/10);
+
+  var temp_align = elem.$.getAttribute("data-eas-align");
+
+  if ( temp_align ) {
+    elem.$.setAttribute("data-alignment", align_map_properties[temp_align]);
+    var align  = align_map_dom[elem.$.getAttribute("data-eas-align")];
+    elem.$.style.verticalAlign = align;
+  } else {
+    elem.$.setAttribute("data-alignment", "none");
+    elem.$.style.verticalAlign = "bottom";
+  }
 }
 
 

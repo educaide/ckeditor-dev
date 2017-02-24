@@ -30,7 +30,7 @@
     {
       "top"    : "top",
       "bottom" : "bottom",
-      "none  " : "bottom",
+      "none"   : "bottom",
       "center" : "middle"
     }
 
@@ -41,7 +41,7 @@
     imgElem.setStyles({
       'width'          : (properties.width  * scaling * previewScaling) + 'px',
       'height'         : (properties.height * scaling * previewScaling) + 'px',
-      'verticalAlign'  : align_map[properties.alignment]
+      'verticalAlign'  : align_map_dom[properties.alignment]
     });
 
     return imgElem;
