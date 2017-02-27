@@ -93,10 +93,12 @@ ol.list li:before {
 
 ol.list.upper-alpha li:before {
   content: attr(label-left) counter(count,upper-alpha) attr(label-right) " ";
+  width: 2.2em;
 }
 
 ol.list.lower-alpha li:before {
   content: attr(label-left) counter(count,lower-alpha) attr(label-right) " ";
+  width: 2em;
 }
 
 ol.list.lower-roman li:before {
