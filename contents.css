@@ -91,7 +91,10 @@ ol.list li:before {
   margin-right: 0.3em;
 }
 
-ol.list.upper-alpha li:before,
+ol.list.upper-alpha li:before {
+  content: attr(label-left) counter(count,upper-alpha) attr(label-right) " ";
+}
+
 ol.list.lower-alpha li:before {
   content: attr(label-left) counter(count,lower-alpha) attr(label-right) " ";
 }
