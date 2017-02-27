@@ -216,7 +216,8 @@
   						  	  "#."     : "",
   						  	  "#)"     : "",
   						  	  "(#)"    : "(",
-  						  	  "bullet" : ""
+  						  	  "bullet" : "",
+  						  	  "none"   : ""
 							}
 
 							var label_map_right =
@@ -225,7 +226,8 @@
   						  	  "#."     : ".",
   						  	  "#)"     : ")",
   						  	  "(#)"    : ")",
-  						  	  "bullet" : ""
+  						  	  "bullet" : "",
+  						  	  "none"   : ""
 							}
 
                                 			children[i].setAttribute("label-left", label_map_left[label_key]);

@@ -378,7 +378,8 @@ function saveListKeys( element, texProperties, failedKeys ) {
       "#."     : "",
       "#)"     : "",
       "(#)"    : "(",
-      "bullet" : ""
+      "bullet" : "",
+      "none"   : ""
     }
 
     var label_map_right =
@@ -387,7 +388,8 @@ function saveListKeys( element, texProperties, failedKeys ) {
       "#."     : ".",
       "#)"     : ")",
       "(#)"    : ")",
-      "bullet" : ""
+      "bullet" : "",
+      "none"   : ""
     }
 
     var children = element.$.children;
