@@ -330,7 +330,7 @@ function savePropertiesToElement(element, args){
   }
 }
 
-function saveListKeys( elem, texProperties, failedKeys ) {
+function saveListKeys( element, texProperties, failedKeys ) {
   var counter_type = null;
   var label_type = null;
 
