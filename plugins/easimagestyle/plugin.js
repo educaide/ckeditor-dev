@@ -9,7 +9,7 @@
       width: image.data('width'),
       height: image.data('height'),
       dpi: image.data('dpi'),
-      scaling: image.data('scaling') || '100',
+      scaling: image.data('eas-scale')/10 || image.data('scaling') || '100',
       alignment: image.data('alignment') || 'none'
     }
   }
@@ -24,12 +24,25 @@
       imgElem.data(attr, properties[attr]);
     });
 
+    imgElem.data('eas-scale', properties.scaling*10);
+
+    var align_map_dom =
+    {
+      "top"    : "top",
+      "bottom" : "bottom",
+      "none"   : "bottom",
+      "center" : "middle"
+    }
+
+    imgElem.data('eas-align', properties.alignment);
+
     var scaling = properties.scaling / 100.0;
     var previewScaling = 100.0 / properties.dpi;
     imgElem.setStyles({
-      'width'  : (properties.width  * scaling * previewScaling) + 'px',
-      'height' : (properties.height * scaling * previewScaling) + 'px'
-    })
+      'width'          : (properties.width  * scaling * previewScaling) + 'px',
+      'height'         : (properties.height * scaling * previewScaling) + 'px',
+      'verticalAlign'  : align_map_dom[properties.alignment]
+    });
 
     return imgElem;
   }

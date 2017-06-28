@@ -34,6 +34,10 @@
     return getElem(editor, "ol", "emcee");
   }
 
+  function getList(editor) {
+    return getElem(editor, "ol", "list");
+  }
+
   function getPlainFigure(editor) {
     var elem = getElem(editor, "img", null);
     if (elem == null) { return null; }
@@ -193,6 +197,22 @@
         }
       );
 
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "list", "List Advanced", this.path + 'list.html', 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $(this.domId);
+          setupInputs(iframe,getList(editor));
+          loadProperties(iframe,getList(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getList(editor));
+          }
+        }
+      );
+
 
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});
@@ -212,6 +232,10 @@
       command.canUndo = true;
 
       var command = editor.addCommand("introProperties", {exec: function() { editor.openDialog(dialogName +  "intro"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("listProperties", {exec: function() { editor.openDialog(dialogName +  "list"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -249,6 +273,11 @@
             command: 'introProperties',
             group: pluginName
           },
+          listProperties: {
+            label: 'List Advanced...',
+            command: 'listProperties',
+            group: pluginName
+          },
           parboxDelete: {
             label:   'Remove Paragraph Box',
             command: 'parboxDelete',
@@ -281,6 +310,10 @@
 
           if (getElem(editor,"table", null)) {
             properties.easTableProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getList(editor)) {
+            properties.listProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if (getPlainFigure(editor)) {

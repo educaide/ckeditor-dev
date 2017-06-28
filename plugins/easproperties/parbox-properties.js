@@ -5,11 +5,17 @@ var texProperties =
   ["choice", "textalign"],
   ["Dimension", "aboveskip"],
   ["Dimension", "belowskip"],
+  ["Dimension", "itemsep"],
   ["uint?", "abovepenalty"],
   ["uint?", "belowpenalty"],
   ["choice", "pos"],
+  ["choice", "label"],
+  ["choice", "labelfontstyle"],
+  ["choice", "labelpos"],
+  ["choice", "counter"],
   ["bool?", "show"],
   ["bool?", "unbox"],
+  ["bool?", "xfig"]
 ];
 
 var texChoices =
@@ -18,7 +24,8 @@ var texChoices =
 	textalign:      [ "none", "left", "center", "right", "full" ],
 	label:          [ "none", "#", "#.", "#)", "(#)", "bullet" ],
 	labelfontstyle: [ "normal", "bold", "italic", "bolditalic", "alternate" ],
-	labelpos:       [ "left", "right", "alt" ]
+	labelpos:       [ "left", "right", "alt" ],
+	counter:        [ "1", "A", "a", "I", "i" ]
 };
 
 var texGroups =
@@ -30,7 +37,18 @@ var texGroups =
       "aboveskip",
       "belowskip",
       "abovepenalty",
-      "belowpenalty"
+      "belowpenalty",
+      "xfig"
+    ]
+  },
+  {
+    groupName: "label",
+    props: [
+      "label",
+      "labelfontstyle",
+      "labelpos",
+      "itemsep",
+      "counter"
     ]
   },
   {
@@ -38,7 +56,8 @@ var texGroups =
     props: [
       "pos",
       "show",
-      "unbox",
+      "unbox"
     ]
   }
 ];
+

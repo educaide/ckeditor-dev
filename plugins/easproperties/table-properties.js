@@ -15,8 +15,11 @@ var texProperties =
   ["choice","style"],
   ["bool?","xfig"],
   ["choice","header"],
+  ["uint?","headerrows"],
   ["int?","headerfontstep"],
   ["choice","headerfontstyle"],
+  ["choice","headeralign"],
+  ["choice","topleft"],
   ["bool?","headershading"],
   ["color_background","headercolor"]
 ];
@@ -27,10 +30,14 @@ var texChoices =
         vrule:           [ "none", "first", "inner", "all" ],
         hrule:           [ "none", "first", "inner", "all" ],
         rowspacing:      [ "normal", "tight", "verytight", "loose", "veryloose", "double" ],
-        style:           [ "none", "stemleaf", "dotplot", "pictograph", "quantc", "proof", "prooffill", "lftitle", "speaker" ],
+        style:           [ "none", "stemleaf", "dotplot", "pictograph", "quantc", "proof", "prooffill", "lftitle", "speaker", "coefficients", "correlations", "colmatch", "connect", "blanklabels" ],
         header:          [ "none", "col", "row", "both" ],
-        headerfontstyle: [ "normal", "bold", "italic", "bolditalic", "alternate" ]
+        headeralign:     [ "top", "center", "bottom" ],
+        headerfontstyle: [ "normal", "bold", "italic", "bolditalic", "alternate" ],
+        topleft:         [ "normal", "shade", "hide" ]
 };
+
+
 
 var texGroups =
 [
@@ -50,11 +57,13 @@ var texGroups =
       "style",
       "xfig",
       "header",
+      "headerrows",
+      "headeralign",
       "headerfontstep",
       "headerfontstyle",
       "headershading",
-      "headercolor"
+      "headercolor",
+      "topleft"
     ]
   }
 ];
-

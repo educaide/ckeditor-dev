@@ -135,10 +135,31 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'subparts' )
+			if ( style == 'emcee' || style == 'subparts' ) {
 				listNode.addClass( style );
-			else
-				listNode.setStyle( 'list-style-type', style );
+			}
+			else {
+				listNode.addClass( 'list' );
+				listNode.addClass( style );
+
+                                var counter_map =
+                                  {
+                                    "decimal"     : "1",
+                                    "upper-alpha" : "A",
+                                    "lower-alpha" : "a",
+                                    "upper-roman" : "I",
+                                    "lower-roman" : "i",
+                                    "disc"        : ""
+                                  }
+
+                                listNode.setAttribute("data-eas-label","#.");
+
+                                listNode.setAttribute("data-eas-counter",counter_map[style]);
+			}
+		} );
+
+		editor.on( 'easListCreated', function( evt ) {
+			editor.fire('easListChange', evt.data);
 		} );
 
 		editor.on( 'easListChange', function( evt ) {
@@ -147,16 +168,73 @@
 
 			if ( style == 'emcee' ) {
 				listNode.removeClass( 'subparts' );
-				listNode.removeStyle( 'list-style-type' );
+				listNode.removeClass( 'list' );
 				listNode.addClass( 'emcee' );
+				listNode.removeStyle( 'list-style-type' );
 			} else if ( style == 'subparts' ) {
 				listNode.removeClass( 'emcee' );
+				listNode.removeClass( 'list' );
 				listNode.addClass( 'subparts' );
 				listNode.removeStyle( 'list-style-type' );
 			} else {
-				listNode.removeClass( 'emcee' );
-				listNode.removeClass( 'subparts' );
-				listNode.setStyle( 'list-style-type', style );
+				listNode.$.className = "list " + style;
+				listNode.removeStyle( 'list-style-type' );
+
+                                var children = listNode.$.children;
+
+                                var label_key = listNode.getAttribute("data-eas-label");
+
+                                var map =
+                                {
+                                  "decimal"      : "1",
+                                  "upper-alpha"  : "A",
+                                  "lower-alpha"  : "a",
+                                  "upper-roman"  : "I",
+                                  "lower-roman"  : "i",
+                                  "none"         : "none",
+                                  "disc"         : "bullet"
+                                }
+
+                                var key = map[style];
+
+                                if ( key == "bullet" ) {
+                                	listNode.setAttribute("data-eas-label",key);
+                                } else {
+                                	listNode.setAttribute("data-eas-counter",key);
+
+                                	if ( label_key == "bullet" && key != "bullet" ) {
+						listNode.setAttribute("data-eas-label","#.");
+						label_key = "#.";
+                                	}
+
+					if ( label_key ) {
+                                		for (var i = 0; i < children.length; i++) {
+
+							var label_map_left =
+							{
+  						  	  "#"      : "",
+  						  	  "#."     : "",
+  						  	  "#)"     : "",
+  						  	  "(#)"    : "(",
+  						  	  "bullet" : "",
+  						  	  "none"   : ""
+							}
+
+							var label_map_right =
+							{
+  						  	  "#"      : "",
+  						  	  "#."     : ".",
+  						  	  "#)"     : ")",
+  						  	  "(#)"    : ")",
+  						  	  "bullet" : "",
+  						  	  "none"   : ""
+							}
+
+                                			children[i].setAttribute("label-left", label_map_left[label_key]);
+                                			children[i].setAttribute("label-right", label_map_right[label_key]);
+                                		}
+                                	}
+				}
 			}
 		} );
 	}
