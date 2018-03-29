@@ -54,7 +54,9 @@
 	config.skin = 'kama';
 	config.allowedContent = true;
 	config.height = 400;
-    config.minimumChangeMilliseconds = 500;
-    config.disableObjectResizing = true;
+	config.minimumChangeMilliseconds = 500;
+	config.disableObjectResizing = true;
+	config.disableNativeSpellChecker = false;
+	config.browserContextMenuOnCtrl = true;
 	config.pasteFilter = 'plain-text';
 };
