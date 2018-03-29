@@ -3,27 +3,6 @@
 (function() {
   'use strict';
 
-  function createImage(editor, properties) {
-
-    // Setting the width and height directly is necessary becuase otherwise the browser displays 1px of our low quality thumbnail = 1px on the screen, which we do not want.
-    var inch_width  = properties.width  / properties.dpi;
-    var inch_height = properties.height / properties.dpi;
-    var style = "";
-    style += "width:  " + inch_width  + "in;";
-    style += "height: " + inch_height + "in;";
-
-    var imgElem = editor.document.createElement('img');
-    imgElem.setAttribute('src', properties.src);
-    imgElem.setAttribute('alt', properties.filename);
-    imgElem.setAttribute('hasProperties', true);
-    imgElem.setAttribute('style', style);
-    imgElem.data('width', properties.width);
-    imgElem.data('height', properties.height);
-    imgElem.data('dpi', properties.dpi);
-
-    return imgElem;
-  }
-
   CKEDITOR.plugins.add('easimage', {
     requires: 'iframedialog',
     icons: 'easimage',
@@ -81,7 +60,7 @@
 
             // insert new image
             if (properties){
-              var image = createImage(editor, properties);
+              var image = iframe.contentWindow.createImage(editor, properties);
               editor.insertElement(image);
             }
           }

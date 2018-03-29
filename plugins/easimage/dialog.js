@@ -8,16 +8,53 @@ document.observe('dom:loaded', function() {
   resizeContent('browser2');
 });
 
+function userMessagesElem() {
+  return $j("#user-images-messages");
+}
+
 (function($) {
   // configure Dropzone
   Dropzone.autoDiscover = false;
 
-  $(document).ready(function(){
-    var $userMessages = $("#user-images-messages")
+  function createImage(editor, properties) {
 
+    // Setting the width and height directly is necessary becuase otherwise the browser displays 1px of our low quality thumbnail = 1px on the screen, which we do not want.
+    var inch_width  = properties.width  / properties.dpi;
+    var inch_height = properties.height / properties.dpi;
+    var style = "";
+    style += "width:  " + inch_width  + "in;";
+    style += "height: " + inch_height + "in;";
+
+    var imgElem = editor.document.createElement('img');
+    imgElem.setAttribute('src', properties.src);
+    imgElem.setAttribute('alt', properties.filename);
+    imgElem.setAttribute('hasProperties', true);
+    imgElem.setAttribute('style', style);
+    imgElem.data('width', properties.width);
+    imgElem.data('height', properties.height);
+    imgElem.data('dpi', properties.dpi);
+
+    return imgElem;
+  }
+
+  function updateUploadingMultiple(dropzone) {
+    var val = "false";
+
+    if ( dropzone.getQueuedFiles().length != 0 ) {
+      val = "true";
+    }
+
+    $("#uploading-multiple").val(val);
+  }
+
+  function uploadingMultiple() {
+    return ( $("#uploading-multiple").val() === "true" );
+  }
+
+  $(document).ready(function(){
     function switchToUploadPage() {
-      if ($userMessages.html() == "" || $userMessages.html().match(/You have no/)) {
-        $userMessages.html("Uploading files...");
+      if (userMessagesElem().html() === "" || userMessagesElem().html().match(/You have no/)) {
+        userMessagesElem().html("Uploading files...");
       }
 
       $("#user").trigger("click");
@@ -31,17 +68,30 @@ document.observe('dom:loaded', function() {
     }
 
     function appendError(error) {
-      if ($userMessages.html() == "Uploading files..."){
-        $userMessages.html("")
+      if (userMessagesElem().html() === "Uploading files..."){
+        userMessagesElem().html("")
       }
 
-      $userMessages.append(error);
+      userMessagesElem().append(error);
+    }
+
+    function wasError() {
+      return userMessagesElem().html().match(/Error/);
     }
 
     function successMessageUnlessError() {
-      if (! $userMessages.html().match(/Error/) ) {
-        $userMessages.html("Upload(s) successful.");
+      if ( !wasError() ) {
+        userMessagesElem().html("Upload(s) successful.");
       }
+    }
+
+    function addLastImageToEditor() {
+      $("#browser .thumbnail").first().click();
+      var dialog = window.parent.CKEDITOR.dialog.getCurrent();
+      var editor = dialog.getParentEditor();
+      var image = createImage(editor, getProperties());
+      editor.insertElement(image);
+      dialog.hide();
     }
 
     $("#file-uploader").dropzone({
@@ -55,11 +105,18 @@ document.observe('dom:loaded', function() {
         });
 
         this.on("addedfile", function(file) {
-          switchToUploadPage();
+          updateUploadingMultiple(this);
+          if ( uploadingMultiple() || !$("#add-after-upload").prop("checked") ) {
+            switchToUploadPage();
+          }
         });
 
         this.on("complete", function(file, errorMessage, xhrError) {
           this.removeFile(file);
+
+          if ( !uploadingMultiple() && $("#add-after-upload").prop("checked") ) {
+            addLastImageToEditor();
+          }
         });
 
         this.on("error", function(file, errorMessage, xhrError) {
@@ -68,13 +125,14 @@ document.observe('dom:loaded', function() {
 
         this.on("queuecomplete", function(){
           successMessageUnlessError();
-          this.reset();
         });
       }
     });
 
     $("#file-url-uploader").submit(function(e) {
-      switchToUploadPage();
+      if ( !$("#add-after-upload").prop("checked") ) {
+        switchToUploadPage();
+      }
 
       $.ajax({
         url: $(this).attr('action'),
@@ -91,6 +149,12 @@ document.observe('dom:loaded', function() {
           appendError("<p>Error: " + xhr.responseJSON.errors + "</p>")
         },
         complete: function() {
+          if ( !wasError() && $("#add-after-upload").prop("checked") ) {
+            addLastImageToEditor();
+          } else {
+            switchToUploadPage();
+          }
+
           successMessageUnlessError();
         }
       });
@@ -330,13 +394,14 @@ function onThumbnailClick(event, element) {
 function fetchUsersImages() {
   var url = '/account/figures.json';
   var multiEl = $('browser').down('.preview .multi');
-  var $userMessages = $j("#user-images-messages")
-  $userMessages.html("Loading...");
+
+  userMessagesElem().html("Loading...");
+
   $j.ajax({
     url: url,
     success: function(response){
       if(response.length > 0){
-        $userMessages.html("");
+        userMessagesElem().html("");
         $j.each(response, function(i, image){
           var thumb = createThumbnail(image.figure, true);
           $j(multiEl).append(thumb );
@@ -349,7 +414,7 @@ function fetchUsersImages() {
         resizeContent('browser');
         ensureMultiIsShown('browser');
       }else{
-        $userMessages.html("You have no images to show. To get started, click 'New...' on the left and upload an image.");
+        userMessagesElem().html("You have no images to show. To get started, click 'New...' on the left and upload an image.");
       }
     }
   });

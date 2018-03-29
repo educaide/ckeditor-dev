@@ -3,6 +3,10 @@ body, td {
   font-size: 12px;
 }
 
+.upload-option {
+  margin-top: 10px;
+}
+
 .close-preview-button{
   position: absolute;
   left: 725px;
