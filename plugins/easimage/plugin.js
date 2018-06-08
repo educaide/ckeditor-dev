@@ -1,6 +1,6 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   CKEDITOR.plugins.add('easimage', {
@@ -16,26 +16,23 @@
       CKEDITOR.dialog.addIframe(dialogName, "Image Browser", this.path + 'dialog.html', 950, 600,
         // onContentLoad
         function() {
-          $$('.cke_dialog_close_button')[0].hide();
+          jQuery('.cke_dialog_close_button').hide();
           // pass on authenticity token so file uploads work
           if (Hachiko) {
-            var iframe = $(this.domId);
+            var iframe = $("#" + this.domId)[0];
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
-            $(inputEl).value = Hachiko.AuthenticityToken;
+            $(inputEl).val(Hachiko.AuthenticityToken);
             inputEl = iframe.contentWindow.document.getElementById('url_form_authenticity_token');
-            $(inputEl).value = Hachiko.AuthenticityToken;
-          }
-          else {
-            console.log("8ko not detected");
+            $(inputEl).val(Hachiko.AuthenticityToken);
           }
         },
         {
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onShow: function() {
-            var $ourDialog = jQuery('.cke_dialog_contents_body', jQuery(this.getElement().$));
+            var $ourDialog = jQuery('.cke_dialog_contents_body', $(this.getElement().$));
             var minViewportWidth = 750; //same as width of editor itself.
-            var desiredViewportWidth = Math.max(minViewportWidth, jQuery(window).width() - 400);
-            var desiredViewportHeight = jQuery(window).height() - 200;
+            var desiredViewportWidth = Math.max(minViewportWidth, $(window).width() - 400);
+            var desiredViewportHeight = $(window).height() - 200;
 
             $ourDialog.css( {
               width: desiredViewportWidth,
@@ -51,7 +48,7 @@
               return;
             }
 
-            var iframe = $(args.sender.parts.dialog.$).down('iframe');
+            var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
             var properties = iframe.contentWindow.getProperties();
 
             if (!properties) {
@@ -79,7 +76,5 @@
       });
     }
   });
-})();
-
-
+})(jQuery);
 

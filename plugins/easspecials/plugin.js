@@ -1,4 +1,4 @@
-(function() {
+;(function($) {
   'use strict';
 
   function pad(num, size) {
@@ -35,7 +35,7 @@
 
   var insertIconDialogProperties = {
     onOk: function(args) {
-      var iframe = $(args.sender.parts.dialog.$).down('iframe');
+      var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
       var properties = iframe.contentWindow.getProperties();
       var editor = args.sender._.editor;
 
@@ -96,7 +96,7 @@
 
   var insertSpecialDialogProperties = {
     onOk: function(args) {
-      var iframe = $(args.sender.parts.dialog.$).down('iframe');
+      var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
       var properties = iframe.contentWindow.getProperties();
       var editor = args.sender._.editor;
 
@@ -107,7 +107,7 @@
 
   var insertSpaceDialogProperties = {
     onOk: function(args) {
-      var iframe = $(args.sender.parts.dialog.$).down('iframe');
+      var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
       var properties = iframe.contentWindow.getProperties();
       var editor = args.sender._.editor;
 
@@ -301,4 +301,4 @@
       }
     }
   });
-})();
+})(jQuery);

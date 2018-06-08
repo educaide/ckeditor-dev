@@ -2,7 +2,7 @@
  * based off CKEditor's placeholder plugin
  */
 
-(function () {
+;(function () {
   'use strict';
 
   var DefaultMathText = '(insert math)';
@@ -38,7 +38,6 @@
       var selection = editor.getSelection();
       var range = selection.getRanges()[0];
       if (range.startContainer.$ != range.endContainer.$ && selectionContainsElement(selection, 'span', 'math')) {
-        console.log('cannot toggle math: selection spans math element');
         return;
       }
 
@@ -157,7 +156,6 @@
       var leadingText  = existingMathTeX.substring(0, range.startOffset);
       var selectedText = existingMathTeX.substring(range.startOffset, range.endOffset);
       var trailingText = existingMathTeX.substring(range.endOffset, existingMathTeX.length);
-      console.log("[" + leadingText + "][" + selectedText + "][" + trailingText + "]");
 
       var leadingMath = createMathSpan(editor.document, leadingText);
       var trailingMath = createMathSpan(editor.document, trailingText);
@@ -192,7 +190,6 @@
     if (!mathNode.getNext()) {
       var spaceText = new CKEDITOR.dom.text(' ');
       spaceText.insertAfter(mathNode);
-      console.log('added space');
     }
 
     // move cursor to outside of math span
@@ -203,7 +200,6 @@
     range.moveToPosition(mathNode.getNext(), CKEDITOR.POSITION_AFTER_START);
     var selection = new CKEDITOR.dom.selection(event.editor.document);
     selection.selectRanges([range]);
-    console.log('moved selection');
   }
 
   function onSelectionChange(event) {
@@ -221,10 +217,8 @@
   // TODO this is probably useful enough to be moved to a utilities namespace
   // accessible by other plugins
   function selectionContainsElement(selection, tagName, className) {
-    console.log('check selection contains math');
     var range = selection.getRanges()[0];
     if (range.collapsed) {
-      console.log('  collapsed');
       return false;
     }
 
@@ -295,9 +289,6 @@
       while (node && !(node.type == CKEDITOR.NODE_ELEMENT && node.data('easmath'))) {
         node = node.getParent();
       }
-      if (node == null) {
-        console.log('NO selected math');
-      }
       return node;
     },
 
@@ -329,4 +320,3 @@
 
 
 })();
-

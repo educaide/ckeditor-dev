@@ -1,6 +1,6 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   function createColGroup(editor, columnsArray) {
@@ -240,7 +240,7 @@
             return;
           }
 
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           var tableProperties = getTableProperties(table);
 
           iframe.contentWindow.setProperties(tableProperties);
@@ -249,7 +249,7 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             // read data back from dialog and either update existing table or create new table
-            var iframe = $(args.sender.parts.dialog.$).down('iframe');
+            var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
             var properties = clampProperties(iframe.contentWindow.getProperties());
 
             var selection = editor.getSelection(),
@@ -362,7 +362,4 @@
 
     }
   });
-})();
-
-
-
+})(jQuery);

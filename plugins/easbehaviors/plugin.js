@@ -1,30 +1,6 @@
-// requires prototype.js
-
 (function() {
   'use strict';
   function onChange(evt) {
-    // insert spaces after math spans that occur at the end of an element so user can cursor to the right of them
-    /* this isn't reliable (see the TODO in the mathSpans loop). disabling for now.
-    var mathSpans = $A(evt.editor.document.getBody().getElementsByTag('span').$).select(function(span) {
-      var nextSibling = span.nextSibling;
-      var isAtEnd = !nextSibling || (nextSibling.nodeType == CKEDITOR.NODE_TEXT && nextSibling.textContent == "")
-      return span.className.match(/\bmath\b/) != null && isAtEnd;
-    });
-
-    if (mathSpans.length > 0) {
-      evt.editor.fire('saveSnapshot');
-    }
-    mathSpans.each(function(span){
-      // TODO this doesn't seem to work properly on chrome. no spaces look
-      // to be added. but if you change the space to something else, like a !,
-      // everything seems to work just fine.
-      span.parentNode.appendChild(evt.editor.document.$.createTextNode(' '));
-      console.log('math padding inserted!');
-    });
-    if (mathSpans.length > 0) {
-      evt.editor.fire('saveSnapshot');
-    }
-    */
   }
 
   // resize selections that end at the beginning of a new element so that they instead at the end
@@ -46,11 +22,9 @@
         (range.endContainer.getPrevious() && range.endContainer.getPrevious().$ == boundaryNodes.endNode.$)) {
       wasTweaked = true;
       if (range.endContainer.getNext()) {
-        console.log('tweaking range - range.endContainer');
         range.setEndAt(range.endContainer, CKEDITOR.POSITION_BEFORE_END);
       }
       else {
-        console.log('tweaking range - boundaryNodes.endNode');
         range.setEndAt(boundaryNodes.endNode, CKEDITOR.POSITION_BEFORE_END);
       }
       selection.selectRanges([range]);
@@ -115,7 +89,6 @@
 
     // ignore keystrokes that aren't backspace or delete or ctrl+x
     if (evt.data.keyCode != 8 && evt.data.keyCode != 46 && evt.data.keyCode != (CKEDITOR.CTRL + 88) && evt.data.keyCode != 13) {
-      console.log('ignore keystroke');
       return;
     }
 
@@ -135,11 +108,6 @@
         followingWall = elementAfterSelection;
       }
 
-      // cancel if following wall would become first child in its parent
-      //     or if preceding wall would become last child in its parent
-      if (followingWall && !elementBeforeSelection) console.log('cancel: would delete leading p');
-      if (precedingWall && !elementAfterSelection) console.log('cancel: would delete trailing p');
-
       var shouldNotDelete = (followingWall && !elementBeforeSelection) ||
                             (precedingWall && !elementAfterSelection);
       if (shouldNotDelete) {
@@ -158,7 +126,6 @@
       var prevElem = startElement.getPreviousSourceNode(true, CKEDITOR.NODE_ELEMENT);
       if (prevElem && prevElem.hasClass('wall')) {
         // cancel backspace keypresses when cursor is outside the end of a .wall...
-        console.log('cancel: backspace outside end of wall');
         evt.cancel();
       }
       else {
@@ -166,7 +133,6 @@
         var elemPath = new CKEDITOR.dom.elementPath(startElement);
         elemPath.elements.each(function(element) {
           if (element.hasClass('wall') && element.getFirst().equals(elemPath.block || elemPath.blockLimit)) {
-            console.log('cancel: backspace inside start of wall');
             evt.cancel();
           }
         });
@@ -179,7 +145,6 @@
       var nextElem = startElement.getNextSourceNode(true, CKEDITOR.NODE_ELEMENT);
       if (nextElem && nextElem.hasClass('wall')) {
         // cancel delete keypresses when cursor is outside of beginning of a .wall...
-        console.log('cancel: delete outside start of wall');
         evt.cancel();
       }
       else {
@@ -187,7 +152,6 @@
         var elemPath = new CKEDITOR.dom.elementPath(startElement);
         elemPath.elements.each(function(element) {
           if (element.hasClass('wall') && element.getLast().equals(elemPath.block || elemPath.blockLimit)) {
-            console.log('cancel: delete inside endo of wall');
             evt.cancel();
           }
         });

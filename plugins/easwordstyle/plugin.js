@@ -1,12 +1,10 @@
-﻿// requires prototype.js
-
-(function() {
+﻿(function() {
   'use strict';
 
   var wordStyles = [
-    {label: 'None',      className: 'word-none'},
-    {label: 'Emphasis',  className: 'word-emph'},
-    {label: 'Vocab',     className: 'word-vocab'}
+    {label: 'None',      className: 'word-none', command: "noneWordStyle"},
+    {label: 'Emphasis',  className: 'word-emph', command: "emphasisWordStyle"},
+    {label: 'Vocab',     className: 'word-vocab', command: "vocabWordStyle"}
   ];
 
   function WordStyleCommand(styleObject) {
@@ -17,7 +15,7 @@
     var attrVal = ckElement.$.getAttribute('eas-class');
     if (attrVal != null) {
       var found = false;
-      wordStyles.each(function(e) {
+      _.each(wordStyles, function(e) {
         if (e.className == attrVal)
           found = true;
       });
@@ -32,7 +30,7 @@
       return;
 
     var newList = [];
-    editor._.removeFormatFilters.each(function(func) {
+    _.each(editor._.removeFormatFilters, function(func) {
       if (func != removeFormatFilter)
         newList.push(func);
     });
@@ -85,7 +83,7 @@
     for (i = 0; i < pathElements.length; i++) {
       var element = pathElements[i].$;
       var easClass = element.getAttribute('eas-class');
-      if (/^word\-/.match(easClass) && !/\-none$/.match(easClass)) {
+      if (/^word\-/.test(easClass) && !/\-none$/.test(easClass)) {
         command.setState(CKEDITOR.TRISTATE_ON);
         return;
       }
@@ -104,13 +102,12 @@
       var menuGroup = 'easwordstyle';
       var uiMenuItems = {};
 
-      wordStyles.each(function(styleObject) {
-        var camelizedCommand = styleObject.label.toLowerCase().gsub(/\s+/, '-').camelize() + 'WordStyle';
-        editor.addCommand(camelizedCommand, new WordStyleCommand(styleObject));
-        uiMenuItems[camelizedCommand] = {
+      _.each(wordStyles, function(styleObject) {
+        editor.addCommand(styleObject.command, new WordStyleCommand(styleObject));
+        uiMenuItems[styleObject.command] = {
           label: styleObject.label,
           group: menuGroup,
-          command: camelizedCommand
+          command: styleObject.command
         };
       });
 
@@ -130,9 +127,8 @@
         },
         onMenu: function() {
           var returnObject = {};
-          wordStyles.each(function(styleObject) {
-          var camelizedCommand = styleObject.label.toLowerCase().gsub(/\s+/, '-').camelize() + 'WordStyle';
-          returnObject[camelizedCommand] = CKEDITOR.TRISTATE_OFF;
+          _.each(wordStyles, function(styleObject) {
+          returnObject[styleObject.command] = CKEDITOR.TRISTATE_OFF;
           });
           return returnObject;
         }

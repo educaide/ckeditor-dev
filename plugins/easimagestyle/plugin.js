@@ -1,6 +1,6 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   function getImageProperties(image) {
@@ -20,7 +20,7 @@
     imgElem.setAttribute('alt', properties.name);
     imgElem.setAttribute('hasProperties', true);
 
-    $w('width height dpi scaling alignment').each(function(attr) {
+    _.each(["width","height","dpi","scaling","alignment"], function(attr) {
       imgElem.data(attr, properties[attr]);
     });
 
@@ -68,7 +68,7 @@
             return;
           }
 
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           var imageProperties = getImageProperties(image);
 
           iframe.contentWindow.setProperties(imageProperties);
@@ -77,9 +77,8 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             // read data back from dialog and either update existing table or create new table
-            var iframe = $(args.sender.parts.dialog.$).down('iframe');
+            var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
             var properties = iframe.contentWindow.getProperties();
-            console.log(properties)
 
             var selection = editor.getSelection(),
               startElement = selection && selection.getStartElement(),
@@ -131,7 +130,4 @@
 
     }
   });
-})();
-
-
-
+})(jQuery);

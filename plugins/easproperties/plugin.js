@@ -1,6 +1,6 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   function getElem(editor, elemTag, elemClassName) {
@@ -88,21 +88,17 @@
   function loadProperties(iframe,element) {
     if (element) {
       iframe.contentWindow.setProperties(element);
-    } else {
-      console.log("Error loading element properties");
     }
   }
 
   function setupInputs(iframe,element) {
     if (element) {
       iframe.contentWindow.setupInputs(element);
-    } else {
-      console.log("Error setting up element inputs");
     }
   }
 
   function saveProperties(args,element) {
-    var iframe = $(args.sender.parts.dialog.$).down('iframe');
+    var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
 
     if (element){
       var properties = iframe.contentWindow.savePropertiesToElement(element, args);
@@ -121,7 +117,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "parbox", "Parbox Advanced", this.path + 'parbox.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getParbox(editor));
           loadProperties(iframe,getParbox(editor));
         },
@@ -137,7 +133,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "emcee", "Multiple Choice Advanced", this.path + 'emcee.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getEmcee(editor));
           loadProperties(iframe,getEmcee(editor));
         },
@@ -153,7 +149,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "table", "Table Advanced", this.path + 'table.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getElem(editor, "table", null));
           loadProperties(iframe,getElem(editor, "table", null));
         },
@@ -169,7 +165,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "figure", "Image Advanced", this.path + 'figure.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getPlainFigure(editor));
           loadProperties(iframe,getPlainFigure(editor));
         },
@@ -185,7 +181,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "intro", "Intro Advanced", this.path + 'intro.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getIntro(editor));
           loadProperties(iframe,getIntro(editor));
         },
@@ -201,7 +197,7 @@
       CKEDITOR.dialog.addIframe(dialogName + "list", "List Advanced", this.path + 'list.html', 300, 400,
         // onContentLoad
         function() {
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           setupInputs(iframe,getList(editor));
           loadProperties(iframe,getList(editor));
         },
@@ -333,4 +329,4 @@
       }
     }
   });
-})();
+})(jQuery);
