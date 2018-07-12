@@ -131,7 +131,7 @@
       else {
         // ...or inside the beginning of a .wall
         var elemPath = new CKEDITOR.dom.elementPath(startElement);
-        elemPath.elements.each(function(element) {
+        _.each(elemPath.elements, function(element) {
           if (element.hasClass('wall') && element.getFirst().equals(elemPath.block || elemPath.blockLimit)) {
             evt.cancel();
           }
@@ -150,7 +150,7 @@
       else {
         // or inside at end of a .wall...
         var elemPath = new CKEDITOR.dom.elementPath(startElement);
-        elemPath.elements.each(function(element) {
+        _.each(elemPath.elements, function(element) {
           if (element.hasClass('wall') && element.getLast().equals(elemPath.block || elemPath.blockLimit)) {
             evt.cancel();
           }
