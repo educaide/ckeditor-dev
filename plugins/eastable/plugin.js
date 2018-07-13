@@ -17,7 +17,7 @@
         }
         else {
           // TODO handle 'en' widths
-          colElem.setAttribute('style', 'width: ' + colObject.width.gsub(' ', ''));
+          colElem.setAttribute('style', 'width: ' + colObject.width.replace(/ /g, ""));
         }
       }
 
