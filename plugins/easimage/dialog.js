@@ -154,7 +154,7 @@ var currentLeaf = null;
 var publicThumbFolder = null;
 
 // this needs to be a window variable so window.getProperties() can work
-window.publicPreviewFolder = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-print-previews/';
+window.publicPreviewFolder = 'https://d241umpdvf5e0e.cloudfront.net/stock-images-print-previews/';
 
 function includeTree(){
   var url;
@@ -435,7 +435,7 @@ function createThumbnail(figureObj, isUserImage) {
     src  ='/account/figures/' + figureObj.id + '?style=thumb';
   }else{
     fileName = figureObj.file_name;
-    src = 'http://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
+    src = 'https://d241umpdvf5e0e.cloudfront.net/stock-images-thumbs/' + figureObj.file_name;
   }
 
   var properties = {
