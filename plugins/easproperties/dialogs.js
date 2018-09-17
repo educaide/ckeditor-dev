@@ -463,7 +463,6 @@ function saveImageKeys( elem, texProperties, failedKeys ) {
 function insertTex(tex){
   var texInput = $('mathtex');
 
-  // hack! fix IE later: http://stackoverflow.com/questions/263743/how-to-get-caret-position-in-textarea
   var insertLocation = texInput.selectionStart;
 
   texInput.value = texInput.value.splice(insertLocation, 0, tex);

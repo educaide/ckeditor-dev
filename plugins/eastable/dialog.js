@@ -49,7 +49,7 @@ function getProperties() {
       cols: $('cols').value
     },
     pos: $('position').value,
-    columns: columnWidthOptions.findAll(function(o, index) { return index < $('cols').value }),
+    columns: window.parent._.filter(columnWidthOptions, function(_value, index) { return index < $('cols').value }),
     border: $('border').value,
     hrule: $('hrule').value,
     vrule: $('vrule').value,

@@ -1,11 +1,11 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   function createColGroup(editor, columnsArray) {
     var colGroupElem = editor.document.createElement('colgroup');
-    columnsArray.each(function(colObject) {
+    _.each(columnsArray, function(colObject) {
       var colElem = editor.document.createElement('col');
       colElem.setAttribute('align', colObject.align);
 
@@ -17,7 +17,7 @@
         }
         else {
           // TODO handle 'en' widths
-          colElem.setAttribute('style', 'width: ' + colObject.width.gsub(' ', ''));
+          colElem.setAttribute('style', 'width: ' + colObject.width.replace(/ /g, ""));
         }
       }
 
@@ -118,12 +118,11 @@
 
   function readCustomAttributes(element, prefix) {
     var properties = {};
-    var attributes = $A(element.$.attributes);
-    var customAttributes = attributes.findAll(function(att) {
+    var customAttributes = _.filter(element.$.attributes, function(att) {
       return att.nodeName.startsWith('data-' + prefix);
-    })
+    });
 
-    customAttributes.each(function(att) {
+    _.each(customAttributes, function(att) {
       var key = att.nodeName.substring(('data-' + prefix + '-').length).camelize();
       properties[key] = att.nodeValue;
     })
@@ -133,8 +132,8 @@
 
   function readColAttributes(tableElem) {
     var columns = [];
-    var cols = Element.select(tableElem.$, 'colgroup col');
-    cols.each(function(colElement){
+    var $cols = $(tableElem.$).find("colgroup col");
+    _.each($cols, function(colElement){
       var colObject = {
         align: colElement.getAttribute('align') || 'left',
         width: 'natural'
@@ -151,51 +150,49 @@
       }
 
       columns.push(colObject);
-    })
+    });
 
     return columns;
   }
 
   function readLabelAttributes(tableElem) {
-    var titleElem = Element.down(tableElem.$, 'thead td');
-    var captionElem = Element.down(tableElem.$, 'tfoot td');
+    var titleElem = $(tableElem.$).find("thead td");
+    var captionElem = $(tableElem.$).find("tfoot td");
 
     var labels = {
-      includeTitle:   titleElem != undefined,
-      titleFirst:     titleElem != undefined && titleElem.getAttribute('data-eas-first') == 'true',
-      includeCaption: captionElem != undefined,
-      captionLast:    captionElem != undefined && captionElem.getAttribute('data-eas-last') == 'true'
+      includeTitle:   titleElem.length > 0,
+      titleFirst:     titleElem.length > 0 && titleElem[0].getAttribute('data-eas-first') == 'true',
+      includeCaption: captionElem.length > 0,
+      captionLast:    captionElem.length > 0 && captionElem[0].getAttribute('data-eas-last') == 'true'
     };
 
     return labels;
   }
 
   function getTableProperties(tableElem) {
-    var numRows = Element.select(tableElem.$, 'tbody tr').size();
+    var $tableElement = $(tableElem.$);
+    var numRows = $tableElement.find("tbody tr").length;
     var numCols = 0;
-    var styledCols = Element.select(tableElem.$, 'colgroup col').size();
+    var styledCols = $tableElement.find("colgroup col").length;
 
     if (numCols == 0 || numCols == null) {
       numCols = 0;
-      var headRow = Element.select(tableElem.$, 'thead tr td');
-      var footRow = Element.select(tableElem.$, 'tfoot tr td');
-      if (headRow.size() > 0) {
-        numCols = headRow[0].getAttribute('colspan');
+      var headRowSize = $tableElement.find("thead tr td").length
+      var footRowSize = $tableElement.find("tfoot tr td").length
+      if (headRowSize > 0) {
+        numCols = $tableElement.find("thead tr td")[0].getAttribute("colspan")
       }
-      else if (footRow.size() > 0) {
-        numCols = footRow[0].getAttribute('colspan');
+      else if (footRowSize > 0) {
+        numCols = $tableElement.find("tfoot tr td")[0].getAttribute("colspan")
       }
 
       if (numCols == 0) {
-        numCols = Element.select(tableElem.$, 'tbody tr:first-child td').size();
+        numCols = $tableElement.find("tbody tr:first-child td").length
       }
 
-      var colGroup = Element.select(tableElem.$, 'colgroup');
-      if (colGroup != null) {
-        colGroup[0].innerHtml = "";
-        for(var i=styledCols; i<numCols; i++) {
-          colGroup[0].innerHtml += "<col align='center' class='natural'/>";
-        }
+      var colGroup = $tableElement.find("colgroup")
+      if (colGroup.length !== 0) {
+        colGroup[0].innerHtml = "<col align='center' class='natural'/>";
       }
     }
 
@@ -204,6 +201,7 @@
       rows: numRows,
       cols: numCols,
     };
+
     properties.pos             = tableElem.getAttribute('data-eas-pos');
     properties.columns         = readColAttributes(tableElem);
     properties.border          = tableElem.getAttribute('data-eas-border');
@@ -240,7 +238,7 @@
             return;
           }
 
-          var iframe = $(this.domId);
+          var iframe = $("#" + this.domId)[0];
           var tableProperties = getTableProperties(table);
 
           iframe.contentWindow.setProperties(tableProperties);
@@ -249,7 +247,7 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             // read data back from dialog and either update existing table or create new table
-            var iframe = $(args.sender.parts.dialog.$).down('iframe');
+            var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
             var properties = clampProperties(iframe.contentWindow.getProperties());
 
             var selection = editor.getSelection(),
@@ -276,7 +274,7 @@
               // make sure all DOM changes are treated as one chunk
               editor.fire('updateSnapshot');
 
-              $A(startElement.getAscendant('table',1).$.attributes).each(function(pair) {
+              _.each(startElement.getAscendant('table',1).$.attributes, function(pair) {
                 var name = pair.name;
                 var val = pair.value;
                 var strippedName = name.replace("data-eas-","");
@@ -362,7 +360,4 @@
 
     }
   });
-})();
-
-
-
+})(jQuery);

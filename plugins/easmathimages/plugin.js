@@ -1,6 +1,6 @@
 // this plugin requires prototype javascript library to be loaded before cksource library
 
-(function() {
+;(function($) {
   'use strict';
 
   function createImage(editor, properties) {
@@ -53,19 +53,16 @@
 
           startedEmpty = true;
           if (math && math.getAttribute('class') == "maththumb" && math.getAttribute("alt") && math.getAttribute("src")) {
-            var iframe = $(this.domId);
+            var iframe = $("#" + this.domId)[0];
             iframe.contentWindow.setMath(math.getAttribute("alt"), math.getAttribute("src"));
             startedEmpty = false;
           }
 
           // pass on authenticity token so file uploads work
           if (Hachiko) {
-            var iframe = $(this.domId);
+            var iframe = $("#" + this.domId)[0];
             var inputEl = iframe.contentWindow.document.getElementById('authenticity_token');
-            $(inputEl).value = Hachiko.AuthenticityToken;
-          }
-          else {
-            console.log("8ko not detected");
+            $(inputEl).val(Hachiko.AuthenticityToken);
           }
         },
         {
@@ -78,16 +75,14 @@
               return false;
             }
 
-            var iframe = $(args.sender.parts.dialog.$).down('iframe');
+            var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
             var properties = iframe.contentWindow.getProperties();
             // IE8 errors here. if you want the console back, guard it.
-            //console.log(properties);
             if (!properties) {
               if (startedEmpty && iframe.contentWindow.$('mathtex').value == '') {
                 return true;
               }
 
-              //iframe.contentWindow.displayError("Preview before pressing ok.");
               iframe.contentWindow.updatePreview();
               return false;
             }
@@ -141,4 +136,4 @@
       }
     }
   });
-})();
+})(jQuery);

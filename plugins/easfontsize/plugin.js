@@ -4,11 +4,11 @@
   'use strict';
 
   var fontSizes = [
-    {label: 'Normal',     size: 'medium'},
-    {label: 'Large',      size: 'large'},
-    {label: 'Very Large', size: 'x-large'},
-    {label: 'Small',      size: 'small'},
-    {label: 'Very Small', size: 'x-small'}
+    {label: 'Normal',     size: 'medium', command: "normalFontSize"},
+    {label: 'Large',      size: 'large', command: "largeFontSize"},
+    {label: 'Very Large', size: 'x-large', command: "veryLargeFontSize"},
+    {label: 'Small',      size: 'small', command: "smallFontSize"},
+    {label: 'Very Small', size: 'x-small', command: "verySmallFontSize"}
   ];
 
   function FontSizeCommand(sizeObject) {
@@ -40,20 +40,18 @@
 
     init: function(editor) {
       // register editor commands (normalFontSize, veryLargeFontSize, etc)
-      fontSizes.each(function(sizeObject) {
-        var camelizedCommand = sizeObject.label.toLowerCase().gsub(/\s+/, '-').camelize() + 'FontSize';
-        editor.addCommand(camelizedCommand, new FontSizeCommand(sizeObject));
+      _.each(fontSizes, function(sizeObject) {
+        editor.addCommand(sizeObject.command, new FontSizeCommand(sizeObject));
       });
 
       // define menubutton commands
 			var menuGroup = 'easfontsize';
 			var uiMenuItems = {};
-      fontSizes.each(function(sizeObject) {
-        var camelizedCommand = sizeObject.label.toLowerCase().gsub(/\s+/, '-').camelize() + 'FontSize';
-        uiMenuItems[camelizedCommand] = {
+      _.each(fontSizes, function(sizeObject) {
+        uiMenuItems[sizeObject.command] = {
           label: sizeObject.label,
           group: menuGroup,
-          command: camelizedCommand
+          command: sizeObject.command
         };
       });
 
@@ -68,9 +66,8 @@
         onMenu : function() {
           var returnObject = {};
 
-          fontSizes.each(function(sizeObject) {
-            var camelizedCommand = sizeObject.label.toLowerCase().gsub(/\s+/, '-').camelize() + 'FontSize';
-            returnObject[camelizedCommand] = CKEDITOR.TRISTATE_OFF;
+          _.each(fontSizes, function(sizeObject) {
+            returnObject[sizeObject.command] = CKEDITOR.TRISTATE_OFF;
           });
           return returnObject;
         }
