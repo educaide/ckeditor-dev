@@ -60,17 +60,23 @@ img, input, textarea
 
 /* eas changes */
 
-ol.emcee {
-    margin-left: 1ex;
-    list-style-position: inside;
-    list-style: lower-alpha;
-    padding: 1ex;
+ol.emcee, ol.emcee-multi-list {
+  margin-left: 1ex;
+  list-style-position: inside;
+  list-style: lower-alpha;
+  padding: 1ex;
 
-    background-color: #ffe;
-    border: 1px solid #dd8;
+  background-color: #ffe;
+  border: 1px solid #dd8;
 }
 
-ol.emcee li.correct {
+ol.emcee-multi-list {
+  background-color: #e2deef;
+  border: 1px solid #dd9;
+}
+
+ol.emcee li.correct,
+ol.emcee-multi-list li.correct {
     background-color: #cfc;
 }
 
@@ -753,5 +759,4 @@ span[eas-class=word-dropdown] {
   background-color: #ffe;
   border: 1px solid #ccc;
   display: inline-block;
-  margin: 0 10px;
 }

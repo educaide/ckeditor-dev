@@ -31,7 +31,7 @@
   }
 
   function getEmcee(editor) {
-    return getElem(editor, "ol", "emcee");
+    return getElem(editor, "ol", "emcee") || getElem(editor, "ol", "emcee-multi-list");
   }
 
   function getDropdown(editor) {

@@ -16,6 +16,7 @@
 			editor.addCommand( 'bulletslist', listCommand( 'bulletslist', 'disc' ) );
 			if(editor.config.easEditorType == undefined){
 				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
+				editor.addCommand( 'emceemultilist', listCommand( 'emceelist', 'emcee-multi-list' ) );
 			}
 			editor.addCommand( 'subpartlist', listCommand( 'subpartlist', 'subparts' ) );
 			editor.addCommand( 'nolist', listCommand( 'nolist', 'none' ) );
@@ -62,6 +63,12 @@
 					label: 'Multiple-Choice Block',
 					group: menuGroup,
 					command: 'emceelist'
+				};
+
+				uiMenuItems.easMultiEmcee = {
+					label: 'Multi-Select Block',
+					group: menuGroup,
+					command: 'emceemultilist'
 				};
 
 				uiMenuItems.easSubparts = {
@@ -112,6 +119,7 @@
 							easLowerRoman: CKEDITOR.TRISTATE_OFF,
 							easBullets: CKEDITOR.TRISTATE_OFF,
 							easEmcee: CKEDITOR.TRISTATE_OFF,
+							easMultiEmcee: CKEDITOR.TRISTATE_OFF,
 							easSubparts: CKEDITOR.TRISTATE_OFF,
 							easNone: CKEDITOR.TRISTATE_OFF
 						};
@@ -135,7 +143,7 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'subparts' ) {
+			if ( style == 'emcee' || style == 'subparts' || style == 'emcee-multi-list' ) {
 				listNode.addClass( style );
 			}
 			else {
@@ -166,16 +174,15 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' ) {
-				listNode.removeClass( 'subparts' );
-				listNode.removeClass( 'list' );
-				listNode.addClass( 'emcee' );
-				listNode.removeStyle( 'list-style-type' );
-			} else if ( style == 'subparts' ) {
-				listNode.removeClass( 'emcee' );
-				listNode.removeClass( 'list' );
-				listNode.addClass( 'subparts' );
-				listNode.removeStyle( 'list-style-type' );
+			if ( style == 'emcee' || style == 'emcee-multi-list' || style == 'subparts') {
+        if ($(listNode.$).hasClass("emcee-multi-list") && style == 'emcee') {
+          /* then we're converting from multi back to a normal list */
+          $(listNode.$).find("li.correct").removeClass("correct")
+        }
+
+        $(listNode.$)
+          .removeClass()
+          .addClass(style)
 			} else {
 				listNode.$.className = "list " + style;
 				listNode.removeStyle( 'list-style-type' );
