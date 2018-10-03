@@ -33,9 +33,10 @@
 
         // Mark selected LI as correct.
         liElem.addClass( 'correct' );
-      }
-      else if ( this.name == 'listproperties' ) {
-        alert( 'to be implemented' );
+      } else if (this.name == 'addmulticorrectanswer') {
+        liElem.addClass( 'correct' );
+      } else if (this.name == 'clearmultianswer') {
+        liElem.removeClass( 'correct' );
       }
     }
   };
@@ -43,25 +44,32 @@
   CKEDITOR.plugins.easliststyle = {
     init : function( editor ) {
       editor.addCommand( 'markcorrectanswer', new listCommand( 'markcorrectanswer' ) );
-//      editor.addCommand( 'listproperties', new listCommand( 'listproperties' ) );
+      editor.addCommand( 'addmulticorrectanswer', new listCommand( 'addmulticorrectanswer' ) );
+      editor.addCommand( 'clearmultianswer', new listCommand( 'clearmultianswer' ) );
 
       // If the "menu" plugin is loaded, register the menu items.
       if ( editor.addMenuItems ) {
         //Register map group;
-	editor.addMenuGroup("list", 108);
-	editor.addMenuItems({
-          markcorrectanswer :
+        editor.addMenuGroup("list", 108);
+        editor.addMenuItems({
+          markcorrectanswer:
           {
             label : 'Mark Correct Answer',
             group : 'list',
             command: 'markcorrectanswer'
+          },
+          addmulticorrectanswer:
+          {
+            label : 'Mark Correct Answer',
+            group : 'list',
+            command: 'addmulticorrectanswer'
+          },
+          clearmultianswer:
+          {
+            label : 'Clear Correct Answer',
+            group : 'list',
+            command: 'clearmultianswer'
           }
-//          ,listproperties :
-//          {
-//            label : 'List Properties...',
-//            group : 'list',
-//            command: 'listproperties'
-//          }
         });
       }
 
@@ -77,17 +85,14 @@
             return null;
           }
 
-          // TODO
-          var isMultiItemSelection = false;
-
           if ( list.hasClass( 'emcee' ) ) {
             return {
-              markcorrectanswer: isMultiItemSelection ? CKEDITOR.TRISTATE_DISABLED : CKEDITOR.TRISTATE_OFF,
-              listproperties: CKEDITOR.TRISTATE_OFF
+              markcorrectanswer: CKEDITOR.TRISTATE_OFF
             };
-          } else if ( !element.hasClass( 'emcee' ) ) {
+          } else if (list.hasClass('emcee-multi-list')) {
             return {
-              listproperties: CKEDITOR.TRISTATE_OFF
+              addmulticorrectanswer: CKEDITOR.TRISTATE_OFF,
+              clearmultianswer: CKEDITOR.TRISTATE_OFF
             };
           }
         } );
