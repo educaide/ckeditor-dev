@@ -174,18 +174,10 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'emcee-multi-list' ) {
-				listNode.removeClass( 'subparts' );
-				listNode.removeClass( 'emcee' );
-				listNode.removeClass( 'emcee-multi-list' );
-				listNode.removeClass( 'list' );
-				listNode.addClass( style );
-				listNode.removeStyle( 'list-style-type' );
-			} else if ( style == 'subparts' ) {
-				listNode.removeClass( 'emcee' );
-				listNode.removeClass( 'list' );
-				listNode.addClass( 'subparts' );
-				listNode.removeStyle( 'list-style-type' );
+			if ( style == 'emcee' || style == 'emcee-multi-list' || style == 'subparts') {
+        $(listNode.$)
+          .removeClass()
+          .addClass(style)
 			} else {
 				listNode.$.className = "list " + style;
 				listNode.removeStyle( 'list-style-type' );
