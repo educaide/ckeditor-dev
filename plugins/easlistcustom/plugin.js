@@ -175,6 +175,11 @@
 				style = evt.data.command.easStyle;
 
 			if ( style == 'emcee' || style == 'emcee-multi-list' || style == 'subparts') {
+        if ($(listNode.$).hasClass("emcee-multi-list") && style == 'emcee') {
+          /* then we're converting from multi back to a normal list */
+          $(listNode.$).find("li.correct").removeClass("correct")
+        }
+
         $(listNode.$)
           .removeClass()
           .addClass(style)
