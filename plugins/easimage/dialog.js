@@ -31,7 +31,7 @@ function userMessagesElem() {
   }
 
   $(document).ready(function(){
-    function switchToUploadPage() {
+    function switchToYourImagesPane() {
       if (userMessagesElem().html() === "" || userMessagesElem().html().match(/You have no/)) {
         userMessagesElem().html("Uploading files...");
       }
@@ -65,8 +65,14 @@ function userMessagesElem() {
     }
 
     function addLastImageToEditor() {
-      $("#browser .thumbnail").first().click();
       var dialog = window.parent.CKEDITOR.dialog.getCurrent();
+
+      if (dialog.insertImageOnOk === false) {
+        switchToYourImagesPane();
+        return;
+      }
+
+      $("#browser .thumbnail").first().click();
       var editor = dialog.getParentEditor();
       var image = createImage(editor, getProperties());
       editor.insertElement(image);
@@ -86,7 +92,7 @@ function userMessagesElem() {
         this.on("addedfile", function(file) {
           updateUploadingMultiple(this);
           if ( uploadingMultiple() || !$("#add-after-upload").prop("checked") ) {
-            switchToUploadPage();
+            switchToYourImagesPane();
           }
         });
 
@@ -110,7 +116,7 @@ function userMessagesElem() {
 
     $("#file-url-uploader").submit(function(e) {
       if ( !$("#add-after-upload").prop("checked") ) {
-        switchToUploadPage();
+        switchToYourImagesPane();
       }
 
       $.ajax({
@@ -131,7 +137,7 @@ function userMessagesElem() {
           if ( !wasError() && $("#add-after-upload").prop("checked") ) {
             addLastImageToEditor();
           } else {
-            switchToUploadPage();
+            switchToYourImagesPane();
           }
 
           successMessageUnlessError();
