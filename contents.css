@@ -749,3 +749,9 @@ h3{
   font-weight: normal;
 }
 
+span[eas-class=word-dropdown] {
+  background-color: #ffe;
+  border: 1px solid #ccc;
+  display: inline-block;
+  margin: 0 10px;
+}

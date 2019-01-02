@@ -4,7 +4,8 @@
   var wordStyles = [
     {label: 'None',      className: 'word-none', command: "noneWordStyle"},
     {label: 'Emphasis',  className: 'word-emph', command: "emphasisWordStyle"},
-    {label: 'Vocab',     className: 'word-vocab', command: "vocabWordStyle"}
+    {label: 'Vocab',     className: 'word-vocab', command: "vocabWordStyle"},
+    {label: 'Dropdown',  className: 'word-dropdown', command: "dropdownWordStyle"}
   ];
 
   function WordStyleCommand(styleObject) {
@@ -53,7 +54,9 @@
       //   <span eas-class="word-none"><span>blah</span></span>
       var styleDefinition = {
         element:    'span',
-        attributes: { 'eas-class': this.styleObject.className},
+        attributes: {
+          'eas-class': this.styleObject.className
+        },
         overrides:  [{ element: 'span', attributes : { 'eas-class' : /^word\-/ } }]
       };
 
