@@ -70,6 +70,11 @@
       editor.applyStyle(ckStyle);
 
       editor.fire( 'saveSnapshot' );
+      var selection = editor.getSelection();
+      var element1 = CKEDITOR.dom.element.createFromHtml("<span>&#8203;</span>")
+      element1.insertBefore( selection.getStartElement() );
+      var element2 = CKEDITOR.dom.element.createFromHtml("<span>&#8203;</span>")
+      element2.insertAfter( selection.getStartElement() );
     }
   };
 
