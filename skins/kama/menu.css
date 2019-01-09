@@ -136,8 +136,8 @@ Special outer level classes used in this file:
 
 .cke_menubutton_on
 {
-	border: 1px solid #ccc;
-	background-color: #e9f5ff;
+	border: 1px solid #ccc !important;
+	background-color: #e9f5ff !important;
 }
 
 .cke_menubutton_on .cke_menubutton_icon

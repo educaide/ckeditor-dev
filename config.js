@@ -10,7 +10,7 @@
 		'htmlwriter',
 		'entities',
 		'basicstyles',
-		'justify',
+		'easjustifygroup',
 		'list',
 		'lineutils',
 		'indentlist',
@@ -23,6 +23,7 @@
 		'button',
 		'format',
 
+		'easinteractive',
 		'easbehaviors',
 		'easfontsize',
 		'easimage',
@@ -48,7 +49,8 @@
 		[ 'EASWordStyle' ],
 		[ 'EASDropdown' ],
 		[ 'EASFontSize' ],
-		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
+		[ 'JustifyGroup', 'Indent', 'Outdent' ],
+		[ 'EASInteractiveGroup'],
 		[ 'EASList'],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ],
 	];
