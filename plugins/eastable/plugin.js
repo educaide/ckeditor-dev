@@ -211,6 +211,7 @@
     properties.headerfontstyle = tableElem.getAttribute('data-eas-headerfontstyle');
     properties.headerfontstep  = tableElem.getAttribute('data-eas-headerfontstep');
     properties.headershading   = tableElem.getAttribute('data-eas-headershading');
+    properties.dropzone        = tableElem.getAttribute('data-eas-dropzone');
     properties.labels          = readLabelAttributes(tableElem);
 
     return properties;
@@ -226,7 +227,7 @@
       var dialogName = pluginName + '-' + editor.name;
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html', 480, 440,
+      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html', 480, 490,
         // onContentLoad
         function() {
           // set data in dialog to currently selected table's properties, if possible
@@ -273,16 +274,6 @@
             else {
               // make sure all DOM changes are treated as one chunk
               editor.fire('updateSnapshot');
-
-              _.each(startElement.getAscendant('table',1).$.attributes, function(pair) {
-                var name = pair.name;
-                var val = pair.value;
-                var strippedName = name.replace("data-eas-","");
-
-                if ( name.indexOf("data-eas-") !== -1 && !properties[strippedName] ) {
-                  properties[strippedName] = val;
-                }
-              });
 
               // modify existing table
               var newTable = createTable(editor, properties);

@@ -1,5 +1,9 @@
 'use strict';
 
+function specialStyle(style) {
+	return ( style == 'emcee' || style == 'subparts' || style == 'emcee-multi-list' || style == 'dragdroplist' );
+}
+
 ( function() {
 	CKEDITOR.plugins.add( 'easlistcustom', {
 		requires: 'list,menubutton',
@@ -17,6 +21,7 @@
 			if(editor.config.easEditorType == undefined){
 				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
 				editor.addCommand( 'emceemultilist', listCommand( 'emceelist', 'emcee-multi-list' ) );
+        editor.addCommand( 'dragdroplist', listCommand( 'dragdroplist', 'dragdroplist' ) );
 			}
 			editor.addCommand( 'subpartlist', listCommand( 'subpartlist', 'subparts' ) );
 			editor.addCommand( 'nolist', listCommand( 'nolist', 'none' ) );
@@ -71,6 +76,13 @@
 					command: 'emceemultilist'
 				};
 
+				uiMenuItems.easDragDrop = {
+					label: 'Drag-and-Drop Items',
+					group: menuGroup,
+					command: 'dragdroplist'
+				};
+
+
 				uiMenuItems.easSubparts = {
 					label: 'Subparts',
 					group: menuGroup,
@@ -120,6 +132,7 @@
 							easBullets: CKEDITOR.TRISTATE_OFF,
 							easEmcee: CKEDITOR.TRISTATE_OFF,
 							easMultiEmcee: CKEDITOR.TRISTATE_OFF,
+							easDragDrop: CKEDITOR.TRISTATE_OFF,
 							easSubparts: CKEDITOR.TRISTATE_OFF,
 							easNone: CKEDITOR.TRISTATE_OFF
 						};
@@ -143,7 +156,7 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'subparts' || style == 'emcee-multi-list' ) {
+			if (specialStyle(style)) {
 				listNode.addClass( style );
 			}
 			else {
@@ -174,7 +187,7 @@
 			var listNode = evt.data.node,
 				style = evt.data.command.easStyle;
 
-			if ( style == 'emcee' || style == 'emcee-multi-list' || style == 'subparts') {
+			if (specialStyle(style)) {
         if ($(listNode.$).hasClass("emcee-multi-list") && style == 'emcee') {
           /* then we're converting from multi back to a normal list */
           $(listNode.$).find("li.correct").removeClass("correct")

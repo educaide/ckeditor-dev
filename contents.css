@@ -60,7 +60,7 @@ img, input, textarea
 
 /* eas changes */
 
-ol.emcee, ol.emcee-multi-list {
+ol.emcee, ol.emcee-multi-list, ol.dragdroplist {
   margin-left: 1ex;
   list-style-position: inside;
   list-style: lower-alpha;
@@ -73,6 +73,12 @@ ol.emcee, ol.emcee-multi-list {
 ol.emcee-multi-list {
   background-color: #e2deef;
   border: 1px solid #dd9;
+}
+
+ol.dragdroplist {
+  background-color: #f2aeae;
+  border: 1px solid #dd9;
+  list-style: upper-alpha;
 }
 
 ol.emcee li.correct,
@@ -759,4 +765,9 @@ span[eas-class=word-dropdown] {
   background-color: #ffe;
   border: 1px solid #ccc;
   display: inline-block;
+}
+
+table[data-eas-dropzone] {
+  background-color: #f2aeae;
+  border: 1px solid #dd9;
 }

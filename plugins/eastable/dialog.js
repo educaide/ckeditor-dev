@@ -31,6 +31,8 @@ function setProperties(properties) {
   }
 
 
+  $('dropzone').checked = properties.dropzone;
+
   $('includeTitle').checked   = properties.labels.includeTitle;
   $('includeCaption').checked = properties.labels.includeCaption;
   $('titleFirst').checked     = properties.labels.titleFirst;
@@ -57,6 +59,7 @@ function getProperties() {
     headerfontstyle: $('headerFontStyle').value,
     headerfontstep: $('headerFontSize').value,
     headershading: $('headerShading').checked,
+    dropzone: $('dropzone').checked,
     labels: {
       includeTitle: $('includeTitle').checked,
       titleFirst: $('titleFirst').checked,
