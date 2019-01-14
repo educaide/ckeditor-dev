@@ -18,6 +18,7 @@ function specialStyle(style) {
 			editor.addCommand( 'upperromanlist', listCommand( 'upperromanlist', 'upper-roman' ) );
 			editor.addCommand( 'lowerromanlist', listCommand( 'lowerromanlist', 'lower-roman' ) );
 			editor.addCommand( 'bulletslist', listCommand( 'bulletslist', 'disc' ) );
+
 			if(editor.config.easEditorType == undefined){
 				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
 				editor.addCommand( 'emceemultilist', listCommand( 'emceelist', 'emcee-multi-list' ) );
@@ -63,7 +64,8 @@ function specialStyle(style) {
 				group: menuGroup,
 				command: 'bulletslist'
 			};
-			if(editor.config.easEditorType == undefined){
+
+			if(editor.config.easEditorType == undefined && /stem/.test(editor.element.getId())){
 				uiMenuItems.easEmcee = {
 					label: 'Multiple-Choice Block',
 					group: menuGroup,
@@ -82,13 +84,11 @@ function specialStyle(style) {
 					command: 'dragdroplist'
 				};
 
-
 				uiMenuItems.easSubparts = {
 					label: 'Subparts',
 					group: menuGroup,
 					command: 'subpartlist'
 				};
-
 			}
 
 			uiMenuItems.easNone = {
