@@ -227,7 +227,7 @@
       var dialogName = pluginName + '-' + editor.name;
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html', 480, 490,
+      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html' + "?timestamp=" + CKEDITOR.timestamp, 480, 490,
         // onContentLoad
         function() {
           // set data in dialog to currently selected table's properties, if possible
