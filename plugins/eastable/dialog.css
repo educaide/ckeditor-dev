@@ -130,3 +130,15 @@ span.font_label {
   min-width: 70px;
   display: inline-block;
 }
+
+.dropinfo table {
+  margin-top: 20px;
+  margin-left: 10px;
+}
+.dropinfo table th {
+  font-weight: bold;
+}
+
+.dropinfo table td {
+  width: auto;
+}

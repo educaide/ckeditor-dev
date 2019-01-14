@@ -34,6 +34,10 @@
     return getElem(editor, "ol", "emcee") || getElem(editor, "ol", "emcee-multi-list");
   }
 
+  function getDropzoneList(editor) {
+    return getElem(editor, "ol", "dragdroplist");
+  }
+
   function getDropdown(editor) {
     var spanElem = getElem(editor, "span");
     if (!spanElem) { return null }
@@ -157,7 +161,7 @@
       );
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "table", "Table Advanced", this.path + 'table.html', 300, 400,
+      CKEDITOR.dialog.addIframe(dialogName + "table", "Table Advanced", this.path + 'table.html' + "?timestamp=" + CKEDITOR.timestamp, 300, 400,
         // onContentLoad
         function() {
           var iframe = $("#" + this.domId)[0];
@@ -236,6 +240,21 @@
         }
       );
 
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "dropzone", "Dropdown Items Advanced", this.path + 'dropzonelist.html' + "?timestamp=" + CKEDITOR.timestamp, 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          setupInputs(iframe,getDropzoneList(editor));
+          loadProperties(iframe,getDropzoneList(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getDropzoneList(editor));
+          }
+        }
+      );
 
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});
@@ -247,6 +266,10 @@
       command.canUndo = true;
 
       var command = editor.addCommand("dropdownProperties", {exec: function() { editor.openDialog(dialogName +  "dropdown"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("dropzoneListProperties", {exec: function() { editor.openDialog(dialogName +  "dropzone"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -281,6 +304,12 @@
           dropdownProperties: {
             label:   "Dropdown Advanced...",
             command: "dropdownProperties",
+            group:   pluginName,
+            order:   1
+          },
+          dropzoneListProperties: {
+            label:   "Dropzone Advanced...",
+            command: "dropzoneListProperties",
             group:   pluginName,
             order:   1
           },
@@ -359,6 +388,10 @@
 
           if (getDropdown(editor)) {
             properties.dropdownProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getDropzoneList(editor)) {
+            properties.dropzoneListProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if ( Object.keys(properties).length > 0 ) {

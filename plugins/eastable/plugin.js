@@ -116,20 +116,6 @@
     return tableElem;
   }
 
-  function readCustomAttributes(element, prefix) {
-    var properties = {};
-    var customAttributes = _.filter(element.$.attributes, function(att) {
-      return att.nodeName.startsWith('data-' + prefix);
-    });
-
-    _.each(customAttributes, function(att) {
-      var key = att.nodeName.substring(('data-' + prefix + '-').length).camelize();
-      properties[key] = att.nodeValue;
-    })
-
-    return properties;
-  }
-
   function readColAttributes(tableElem) {
     var columns = [];
     var $cols = $(tableElem.$).find("colgroup col");
@@ -212,6 +198,8 @@
     properties.headerfontstep  = tableElem.getAttribute('data-eas-headerfontstep');
     properties.headershading   = tableElem.getAttribute('data-eas-headershading');
     properties.dropzone        = tableElem.getAttribute('data-eas-dropzone');
+    properties.dropnum    = tableElem.getAttribute('data-eas-dropnum');
+    properties.dropcols      = tableElem.getAttribute('data-eas-dropcols');
     properties.labels          = readLabelAttributes(tableElem);
 
     return properties;
