@@ -263,6 +263,23 @@
               // make sure all DOM changes are treated as one chunk
               editor.fire('updateSnapshot');
 
+              // this function tries to copy properties which are on the element (maybe set by Dan directly,
+              // maybe set in keyvalues) onto the table.
+              //
+              // Basically the table-properties _does not expose_ all of the keyvalues, so, we need to make
+              // sure that any which we aren't actually explicitly setting _do_ get copied back onto the
+              // new table which effectively gets created as a part of this onOk.
+              //
+              _.each(existingTable.$.attributes, function(pair) {
+                var name = pair.name;
+                var val = pair.value;
+                var strippedName = name.replace("data-eas-","");
+
+                if ( name.indexOf("data-eas-") !== -1 && _.has(properties, strippedName) == false) {
+                  properties[strippedName] = val;
+                }
+              });
+
               // modify existing table
               var newTable = createTable(editor, properties);
 
