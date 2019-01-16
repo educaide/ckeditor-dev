@@ -2,9 +2,8 @@
   'use strict';
 
   var wordStyles = [
-    {label: 'Emphasis',  className: 'word-emph', command: "emphasisWordStyle"},
-    {label: 'Vocab',     className: 'word-vocab', command: "vocabWordStyle"},
-    {label: 'None',      className: 'word-none', command: "noneWordStyle"},
+    {label: 'Dropdown',  className: 'menu-dropdown', command: "dropdownWordStyle"},
+    {label: 'None',      className: 'menu-none', command: "dropdownNoneWordStyle"},
   ];
 
   function WordStyleCommand(styleObject) {
@@ -79,13 +78,13 @@
 
     // TODO this code doesn't appear to do anything. look into it.
     // highlight toolbar button if cursor is inside a word-styled span
-    var command = event.editor.getCommand('noneWordStyle');
+    var command = event.editor.getCommand('dropdownNoneWordStyle');
     var pathElements = event.data.path.elements;
     var i;
     for (i = 0; i < pathElements.length; i++) {
       var element = pathElements[i].$;
       var easClass = element.getAttribute('eas-class');
-      if (/^word\-/.test(easClass) && !/\-none$/.test(easClass)) {
+      if (/^menu\-/.test(easClass) && !/\-none$/.test(easClass)) {
         command.setState(CKEDITOR.TRISTATE_ON);
         return;
       }
@@ -94,14 +93,14 @@
     command.setState(CKEDITOR.TRISTATE_OFF);
   }
 
-  CKEDITOR.plugins.add('easwordstyle', {
+  CKEDITOR.plugins.add('easdropdown', {
     requires: 'menubutton,removeformat',
-    icons: 'easwordstyle',
+    icons: 'easdropdown',
 
     init: function(editor) {
       // register editor commands (vocabWordStyle, emphWordStyle, etc)
       // and define menubutton commands
-      var menuGroup = 'easwordstyle';
+      var menuGroup = 'easdropdown';
       var uiMenuItems = {};
 
       _.each(wordStyles, function(styleObject) {
@@ -117,12 +116,12 @@
       editor.addMenuItems(uiMenuItems);
 
       // add menubutton
-      editor.ui.add('EASWordStyle', CKEDITOR.UI_MENUBUTTON, {
-        label : "Word Style",
-        icon : 'easwordstyle',
+      editor.ui.add('EASDropdown', CKEDITOR.UI_MENUBUTTON, {
+        label : "Drop Down",
+        icon : 'easdropdown',
         modes : { wysiwyg : 1 },
         onRender: function() {
-          var command = editor.getCommand('noneWordStyle');
+          var command = editor.getCommand('dropdownNoneWordStyle');
           command.on('state', function() {
             this.setState(command.state);
           }, this);

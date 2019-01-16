@@ -38,13 +38,15 @@
 		'easspecials',
 		'eastable',
 		'eastabletoolscustom',
-		'easwordstyle'
+		'easwordstyle',
+    'easdropdown'
 	].join( ',' );
 
 	config.toolbar = [
 		[ 'Undo', 'Redo' ],
 		[ 'Bold','Italic','Underline', '-', 'Subscript', 'Superscript' ],
 		[ 'EASWordStyle' ],
+		[ 'EASDropdown' ],
 		[ 'EASFontSize' ],
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
 		[ 'EASList'],

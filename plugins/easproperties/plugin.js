@@ -42,7 +42,7 @@
     var spanElem = getElem(editor, "span");
     if (!spanElem) { return null }
 
-    if (jQuery(spanElem.$).attr("eas-class") === "word-dropdown") {
+    if (jQuery(spanElem.$).attr("eas-class") === "menu-dropdown") {
       return spanElem;
     } else {
       return null;
