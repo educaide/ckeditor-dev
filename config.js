@@ -23,7 +23,6 @@
 		'button',
 		'format',
 
-		'easinteractive',
 		'easbehaviors',
 		'easfontsize',
 		'easimage',
@@ -50,7 +49,6 @@
 		[ 'EASDropdown' ],
 		[ 'EASFontSize' ],
 		[ 'JustifyGroup', 'Indent', 'Outdent' ],
-		[ 'EASInteractiveGroup'],
 		[ 'EASList'],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ],
 	];
