@@ -21,10 +21,7 @@ var texProperties =
   ["choice","headeralign"],
   ["choice","topleft"],
   ["bool?","headershading"],
-  ["color_background","headercolor"],
-  ["bool?","dropzone"],
-  ["uint?","dropnum"],
-  ["uint?","dropcols"],
+  ["color_background","headercolor"]
 ];
 
 var texChoices =
@@ -66,10 +63,7 @@ var texGroups =
       "headerfontstyle",
       "headershading",
       "headercolor",
-      "topleft",
-      "dropzone",
-      "dropnum",
-      "dropcols"
+      "topleft"
     ]
   }
 ];

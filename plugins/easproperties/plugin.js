@@ -34,21 +34,6 @@
     return getElem(editor, "ol", "emcee") || getElem(editor, "ol", "emcee-multi-list");
   }
 
-  function getDropzoneList(editor) {
-    return getElem(editor, "ol", "dragdroplist");
-  }
-
-  function getDropdown(editor) {
-    var spanElem = getElem(editor, "span");
-    if (!spanElem) { return null }
-
-    if (jQuery(spanElem.$).attr("eas-class") === "menu-dropdown") {
-      return spanElem;
-    } else {
-      return null;
-    }
-  }
-
   function getList(editor) {
     return getElem(editor, "ol", "list");
   }
@@ -224,52 +209,12 @@
         }
       );
 
-      // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "dropdown", "Dropdown Advanced", this.path + 'dropdown.html', 300, 400,
-        // onContentLoad
-        function() {
-          var iframe = $("#" + this.domId)[0];
-          setupInputs(iframe,getDropdown(editor));
-          loadProperties(iframe,getDropdown(editor));
-        },
-        {
-          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
-          onOk: function(args) {
-            saveProperties(args,getDropdown(editor));
-          }
-        }
-      );
-
-      // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "dropzone", "Dropdown Items Advanced", this.path + 'dropzonelist.html' + "?timestamp=" + CKEDITOR.timestamp, 300, 400,
-        // onContentLoad
-        function() {
-          var iframe = $("#" + this.domId)[0];
-          setupInputs(iframe,getDropzoneList(editor));
-          loadProperties(iframe,getDropzoneList(editor));
-        },
-        {
-          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
-          onOk: function(args) {
-            saveProperties(args,getDropzoneList(editor));
-          }
-        }
-      );
-
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
       var command = editor.addCommand("emceeProperties", {exec: function() { editor.openDialog(dialogName +  "emcee"); }});
-      command.modes = { wysiwyg:1, source:0 };
-      command.canUndo = true;
-
-      var command = editor.addCommand("dropdownProperties", {exec: function() { editor.openDialog(dialogName +  "dropdown"); }});
-      command.modes = { wysiwyg:1, source:0 };
-      command.canUndo = true;
-
-      var command = editor.addCommand("dropzoneListProperties", {exec: function() { editor.openDialog(dialogName +  "dropzone"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -298,18 +243,6 @@
           emceeProperties: {
             label:   "Multiple Choice Advanced...",
             command: "emceeProperties",
-            group:   pluginName,
-            order:   1
-          },
-          dropdownProperties: {
-            label:   "Dropdown Advanced...",
-            command: "dropdownProperties",
-            group:   pluginName,
-            order:   1
-          },
-          dropzoneListProperties: {
-            label:   "Dropzone Advanced...",
-            command: "dropzoneListProperties",
             group:   pluginName,
             order:   1
           },
@@ -384,14 +317,6 @@
 
           if (getIntro(editor)) {
             properties.introProperties = CKEDITOR.TRISTATE_OFF;
-          }
-
-          if (getDropdown(editor)) {
-            properties.dropdownProperties = CKEDITOR.TRISTATE_OFF;
-          }
-
-          if (getDropzoneList(editor)) {
-            properties.dropzoneListProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if ( Object.keys(properties).length > 0 ) {
