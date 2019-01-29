@@ -31,7 +31,7 @@
   }
 
   function getEmcee(editor) {
-    return getElem(editor, "ol", "emcee");
+    return getElem(editor, "ol", "emcee") || getElem(editor, "ol", "emcee-multi-list");
   }
 
   function getList(editor) {
@@ -146,7 +146,7 @@
       );
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "table", "Table Advanced", this.path + 'table.html', 300, 400,
+      CKEDITOR.dialog.addIframe(dialogName + "table", "Table Advanced", this.path + 'table.html' + "?timestamp=" + CKEDITOR.timestamp, 300, 400,
         // onContentLoad
         function() {
           var iframe = $("#" + this.domId)[0];
@@ -208,7 +208,6 @@
           }
         }
       );
-
 
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});

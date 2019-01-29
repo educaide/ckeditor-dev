@@ -116,20 +116,6 @@
     return tableElem;
   }
 
-  function readCustomAttributes(element, prefix) {
-    var properties = {};
-    var customAttributes = _.filter(element.$.attributes, function(att) {
-      return att.nodeName.startsWith('data-' + prefix);
-    });
-
-    _.each(customAttributes, function(att) {
-      var key = att.nodeName.substring(('data-' + prefix + '-').length).camelize();
-      properties[key] = att.nodeValue;
-    })
-
-    return properties;
-  }
-
   function readColAttributes(tableElem) {
     var columns = [];
     var $cols = $(tableElem.$).find("colgroup col");
@@ -226,7 +212,7 @@
       var dialogName = pluginName + '-' + editor.name;
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html', 480, 440,
+      CKEDITOR.dialog.addIframe(dialogName, "Table Properties", this.path + 'dialog.html' + "?timestamp=" + CKEDITOR.timestamp, 480, 490,
         // onContentLoad
         function() {
           // set data in dialog to currently selected table's properties, if possible
@@ -274,12 +260,19 @@
               // make sure all DOM changes are treated as one chunk
               editor.fire('updateSnapshot');
 
-              _.each(startElement.getAscendant('table',1).$.attributes, function(pair) {
+              // this function tries to copy properties which are on the element (maybe set by Dan directly,
+              // maybe set in keyvalues) onto the table.
+              //
+              // Basically the table-properties _does not expose_ all of the keyvalues, so, we need to make
+              // sure that any which we aren't actually explicitly setting _do_ get copied back onto the
+              // new table which effectively gets created as a part of this onOk.
+              //
+              _.each(existingTable.$.attributes, function(pair) {
                 var name = pair.name;
                 var val = pair.value;
                 var strippedName = name.replace("data-eas-","");
 
-                if ( name.indexOf("data-eas-") !== -1 && !properties[strippedName] ) {
+                if ( name.indexOf("data-eas-") !== -1 && _.has(properties, strippedName) == false) {
                   properties[strippedName] = val;
                 }
               });

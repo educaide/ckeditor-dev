@@ -30,7 +30,6 @@ function setProperties(properties) {
     $('headerShading').checked = properties.headershading;
   }
 
-
   $('includeTitle').checked   = properties.labels.includeTitle;
   $('includeCaption').checked = properties.labels.includeCaption;
   $('titleFirst').checked     = properties.labels.titleFirst;
