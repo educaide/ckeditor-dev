@@ -31,7 +31,11 @@
   }
 
   function getEmcee(editor) {
-    return getElem(editor, "ol", "emcee") || getElem(editor, "ol", "emcee-multi-list");
+    return getElem(editor, "ol", "emcee");
+  }
+
+  function getEmceeMultiSelect(editor) {
+    return getElem(editor, "ol", "emcee-multi-list");
   }
 
   function getList(editor) {
@@ -130,7 +134,7 @@
       );
 
       // Register the dialog.
-      CKEDITOR.dialog.addIframe(dialogName + "emcee", "Multiple Choice Advanced", this.path + 'emcee.html', 300, 400,
+      CKEDITOR.dialog.addIframe(dialogName + "emcee", "Multiple-Choice Advanced", this.path + 'emcee.html', 300, 400,
         // onContentLoad
         function() {
           var iframe = $("#" + this.domId)[0];
@@ -141,6 +145,22 @@
           resizable: CKEDITOR.DIALOG_RESIZE_NONE,
           onOk: function(args) {
             saveProperties(args,getEmcee(editor));
+          }
+        }
+      );
+
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "emceeMultiSelectProperties", "Multi-Select Advanced", this.path + 'emcee.html', 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          setupInputs(iframe,getEmceeMultiSelect(editor));
+          loadProperties(iframe,getEmceeMultiSelect(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getEmceeMultiSelect(editor));
           }
         }
       );
@@ -218,6 +238,10 @@
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
+      var command = editor.addCommand("emceeMultiSelectProperties", {exec: function() { editor.openDialog(dialogName +  "emceeMultiSelectProperties"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
       var command = editor.addCommand("easTableProperties", {exec: function() { editor.openDialog(dialogName +  "table"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
@@ -241,8 +265,14 @@
         editor.addMenuGroup(pluginName, 110);
         editor.addMenuItems({
           emceeProperties: {
-            label:   "Multiple Choice Advanced...",
+            label:   "Multiple-Choice Advanced...",
             command: "emceeProperties",
+            group:   pluginName,
+            order:   1
+          },
+          emceeMultiSelectProperties: {
+            label:   "Multi-Select Advanced...",
+            command: "emceeMultiSelectProperties",
             group:   pluginName,
             order:   1
           },
@@ -301,6 +331,10 @@
 
           if (getEmcee(editor)) {
             properties.emceeProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getEmceeMultiSelect(editor)) {
+            properties.emceeMultiSelectProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if (getElem(editor,"table", null)) {

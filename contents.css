@@ -71,8 +71,8 @@ ol.emcee, ol.emcee-multi-list, ol.dragdroplist {
 }
 
 ol.emcee-multi-list {
-  background-color: #e2deef;
-  border: 1px solid #dd9;
+  background-color: #eee;
+  border: 1px solid #ccc;
 }
 
 ol.dragdroplist {
