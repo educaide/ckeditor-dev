@@ -78,6 +78,12 @@ function specialStyle(style) {
 					command: 'emceemultilist'
 				};
 
+				uiMenuItems.easDragDrop = {
+					label: 'Drag-and-Drop Items',
+					group: menuGroup,
+					command: 'dragdroplist'
+				};
+
 				uiMenuItems.easSubparts = {
 					label: 'Subparts',
 					group: menuGroup,
