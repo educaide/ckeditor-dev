@@ -1,0 +1,53 @@
+/* TODO unify all eas-specific dialog CSS files */
+
+body {
+  padding: 2ex;
+}
+
+body, td {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+td, td > div {
+  padding: 0.5ex 0;
+}
+
+td {
+  width:  7.5em;
+  vertical-align: top;
+}
+
+fieldset {
+  border: 1px solid #ddd;
+  padding: 1ex 2ex;
+  margin: 2ex 0;
+}
+
+.dependent {
+  padding-top: 0.5ex;
+  padding-left: 1.25em;
+  padding-bottom: 1.5ex;
+}
+
+.tabberlive .tabbertab {
+  padding: 1ex 2ex;
+}
+
+/* dialog-specific styles */
+
+.tabbertab.blanks td.example,
+.tabbertab.spaces td {
+  width: 18em;
+}
+
+.tabbertab.characters td,
+.tabbertab.characters th {
+  width: auto;
+  padding-right: 1em;
+}
+
+.tex {
+  width: auto;
+  font-family: Courier, "Courier New", monospace;
+}

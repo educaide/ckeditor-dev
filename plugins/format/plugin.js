@@ -39,24 +39,24 @@ CKEDITOR.plugins.add( 'format', {
 
 		editor.ui.addRichCombo( 'Format', {
 			label: lang.label,
-			title: lang.panelTitle,
+			//title: lang.panelTitle,
 			toolbar: 'styles,20',
 			allowedContent: allowedContent,
 
 			panel: {
 				css: [ CKEDITOR.skin.getPath( 'editor' ) ].concat( config.contentsCss ),
 				multiSelect: false,
-				attributes: { 'aria-label': lang.panelTitle }
+				//attributes: { 'aria-label': lang.panelTitle }
 			},
 
 			init: function() {
-				this.startGroup( lang.panelTitle );
+				//this.startGroup( lang.panelTitle );
 
 				for ( var tag in styles ) {
 					var label = lang[ 'tag_' + tag ];
 
 					// Add the tag entry to the panel list.
-					this.add( tag, styles[ tag ].buildPreview( label ), label );
+					this.add( tag, label, label );
 				}
 			},
 

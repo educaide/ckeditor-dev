@@ -143,13 +143,16 @@ is its visual representation:
    to display a real name of the property which is visible for an end-user. */
 .cke_panel_listItem a
 {
-	padding: 2px;
+	padding-top: 2px;
+	padding-right: 2px;
+	padding-bottom: 2px;
 	display: block;
 	border: 1px solid #fff;
 	color: inherit !important;
 	text-decoration: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	padding-left: 30px;
 }
 
 /* IE6 */
@@ -168,10 +171,23 @@ is its visual representation:
 	color: #000;
 }
 
+.cke_panel_listItem.cke_selected{
+	background-color: #d3d3d3 !important;
+}
+
 .cke_panel_listItem.cke_selected a
 {
-	border: 1px solid #ccc;
-	background-color: #e9f5ff;
+	background-color: #d3d3d3 !important;
+}
+.cke_panel_listItem.cke_selected a:before {
+	content: '\2713';
+	background-color: #d3d3d3;
+	margin-left: -20px;
+	padding-right: 6px;
+}
+
+.cke_panel_listItem a:hover:before{
+	background-color: #dff1ff;
 }
 
 .cke_panel_listItem a:hover,

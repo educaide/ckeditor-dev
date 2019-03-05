@@ -1,10 +1,10 @@
-/*
-Copyright (c) 2003-2018, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+﻿/*
+Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or http://ckeditor.com/license
 */
 CKEDITOR.plugins.setLang( 'stylescombo', 'en-au', {
-	label: 'Styles',
-	panelTitle: 'Formatting Styles',
+	label: 'Style',
+	panelTitle: 'Formatting Styles', // MISSING
 	panelTitle1: 'Block Styles',
 	panelTitle2: 'Inline Styles',
 	panelTitle3: 'Object Styles'
