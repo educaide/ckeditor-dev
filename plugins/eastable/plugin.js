@@ -197,6 +197,9 @@
     properties.headerfontstyle = tableElem.getAttribute('data-eas-headerfontstyle');
     properties.headerfontstep  = tableElem.getAttribute('data-eas-headerfontstep');
     properties.headershading   = tableElem.getAttribute('data-eas-headershading');
+    properties.dropzone        = tableElem.getAttribute('data-eas-dropzone');
+    properties.dropnum    = tableElem.getAttribute('data-eas-dropnum');
+    properties.dropcols      = tableElem.getAttribute('data-eas-dropcols');
     properties.labels          = readLabelAttributes(tableElem);
 
     return properties;

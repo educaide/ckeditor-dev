@@ -39,6 +39,7 @@ function setProperties(properties) {
   updateBorderPreview();
   updateLabelCheckboxes();
   updateFontSelections();
+  updateDropzoneSection(properties);
 }
 
 function getProperties() {
@@ -56,6 +57,7 @@ function getProperties() {
     headerfontstyle: $('headerFontStyle').value,
     headerfontstep: $('headerFontSize').value,
     headershading: $('headerShading').checked,
+    dropzone: $('dropzone').checked,
     labels: {
       includeTitle: $('includeTitle').checked,
       titleFirst: $('titleFirst').checked,
@@ -63,6 +65,9 @@ function getProperties() {
       captionLast: $('captionLast').checked
     }
   };
+
+  updateDropzoneProperties(properties)
+
 
   return properties;
 }
@@ -118,6 +123,30 @@ function attachListeners(event) {
   updateBorderPreview();
   updateLabelCheckboxes();
   updateFontSelections();
+}
+
+function updateDropzoneProperties(properties) {
+  if ($('dropnumfixed').checked) {
+    var value = parseInt($('dropnumfixedvalue').value)
+    if(value && value > 0 && value <= 20) {
+      properties.dropnum = value
+    } else {
+      properties.dropnum = 0; //auto
+    }
+  } else {
+    properties.dropnum = 0; //auto
+  }
+
+  if ($('dropcolsfixed').checked) {
+    var value = parseInt($('dropcolsfixedvalue').value)
+    if(value && value > 0 && value <= 20) {
+      properties.dropcols = value
+    } else {
+      properties.dropcols = 0; //auto
+    }
+  } else {
+    properties.dropcols = 0; //auto
+  }
 }
 
 function onColumnWidgetChange(event) {
@@ -217,6 +246,28 @@ function updateColumnsSection(element) {
   }
 
   updateWidthEnabled();
+}
+
+function updateDropzoneSection(properties) {
+  $('dropzone').checked = properties.dropzone;
+
+  if (properties.dropzone) {
+    if (properties.dropnum && properties.dropnum > 0) {
+      $('dropnumauto').checked = false;
+      $('dropnumfixed').checked = true;
+      $('dropnumfixedvalue').value = properties.dropnum;
+    }
+    if (properties.dropcols && properties.dropcols > 0) {
+      $('dropcolsauto').checked = false;
+      $('dropcolsfixed').checked = true;
+      $('dropcolsfixedvalue').value = properties.dropcols;
+    }
+  } else {
+    $('dropnumauto').checked = true;
+    $('dropnumfixed').checked = false;
+    $('dropcolsauto').checked = true;
+    $('dropcolsfixed').checked = false;
+  }
 }
 
 function updateBorderPreview() {
