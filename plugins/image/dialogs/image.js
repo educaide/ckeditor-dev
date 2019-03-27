@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 ( function() {
@@ -107,7 +107,7 @@
 
 					var oImageOriginal = dialog.originalElement;
 
-					// Dialog may already closed. (#5505)
+					// Dialog may already closed. (https://dev.ckeditor.com/ticket/5505)
 					if ( !oImageOriginal )
 						return null;
 
@@ -116,20 +116,25 @@
 						if ( !dialog.userlockRatio && oImageOriginal.getCustomData( 'isReady' ) == 'true' ) {
 							var width = dialog.getValueOf( 'info', 'txtWidth' ),
 								height = dialog.getValueOf( 'info', 'txtHeight' ),
-								originalRatio = oImageOriginal.$.width * 1000 / oImageOriginal.$.height,
-								thisRatio = width * 1000 / height;
+								originalRatio = oImageOriginal.$.width / oImageOriginal.$.height,
+								thisRatio = width / height;
+
 							dialog.lockRatio = false; // Default: unlock ratio
 
-							if ( !width && !height )
+							if ( !width && !height ) {
 								dialog.lockRatio = true;
-							else if ( !isNaN( originalRatio ) && !isNaN( thisRatio ) ) {
-								if ( Math.round( originalRatio ) == Math.round( thisRatio ) )
+							} else {
+								// Round ratio to two decimal places so ratio locking will be less precise (#2254).
+								var ratioComparison = Math.round( ( originalRatio / thisRatio ) * 100 ) / 100;
+
+								if ( ratioComparison == 1 ) {
 									dialog.lockRatio = true;
+								}
 							}
 						}
-					} else if ( value !== undefined )
+					} else if ( value !== undefined ) {
 						dialog.lockRatio = value;
-					else {
+					} else {
 						dialog.userlockRatio = 1;
 						dialog.lockRatio = !dialog.lockRatio;
 					}
@@ -233,7 +238,7 @@
 					this.firstLoad = false;
 					this.dontResetSize = false;
 
-					// Possible fix for #12818.
+					// Possible fix for https://dev.ckeditor.com/ticket/12818.
 					updatePreview( this );
 				};
 
@@ -270,7 +275,7 @@
 
 			return {
 				title: editor.lang.image[ dialogType == 'image' ? 'title' : 'titleButton' ],
-				minWidth: 420,
+				minWidth: ( CKEDITOR.skinName || editor.config.skin ) == 'moono-lisa' ? 500 : 420,
 				minHeight: 360,
 				onShow: function() {
 					this.imageElement = false;
@@ -310,7 +315,7 @@
 						this.linkEditMode = true;
 
 						// If there is an existing link, by default keep it (true).
-						// It will be removed if certain conditions are met and Link tab is enabled. (#13351)
+						// It will be removed if certain conditions are met and Link tab is enabled. (https://dev.ckeditor.com/ticket/13351)
 						this.addLink = true;
 
 						// Look for Image element.
@@ -490,6 +495,7 @@
 							type: 'hbox',
 							widths: [ '280px', '110px' ],
 							align: 'right',
+							className: 'cke_dialog_image_url',
 							children: [ {
 								id: 'txtUrl',
 								type: 'text',
@@ -541,7 +547,7 @@
 										this.getDialog().dontResetSize = true;
 
 										field.setValue( url ); // And call this.onChange()
-										// Manually set the initial value.(#4191)
+										// Manually set the initial value.(https://dev.ckeditor.com/ticket/4191)
 										field.setInitValue();
 									}
 								},
@@ -619,7 +625,7 @@
 											var aMatch = this.getValue().match( regexGetSizeOrEmpty ),
 												isValid = !!( aMatch && parseInt( aMatch[ 1 ], 10 ) !== 0 );
 											if ( !isValid )
-												alert( editor.lang.common.invalidWidth ); // jshint ignore:line
+												alert( editor.lang.common.invalidLength.replace( '%1', editor.lang.common.width ).replace( '%2', 'px, %' ) ); // jshint ignore:line
 											return isValid;
 										},
 										setup: setupDimension,
@@ -660,7 +666,7 @@
 											var aMatch = this.getValue().match( regexGetSizeOrEmpty ),
 												isValid = !!( aMatch && parseInt( aMatch[ 1 ], 10 ) !== 0 );
 											if ( !isValid )
-												alert( editor.lang.common.invalidHeight ); // jshint ignore:line
+												alert( editor.lang.common.invalidLength.replace( '%1', editor.lang.common.height ).replace( '%2', 'px, %' ) ); // jshint ignore:line
 											return isValid;
 										},
 										setup: setupDimension,
@@ -692,6 +698,7 @@
 								{
 									id: 'ratioLock',
 									type: 'html',
+									className: 'cke_dialog_image_ratiolock',
 									style: 'margin-top:30px;width:40px;height:40px;',
 									onLoad: function() {
 										// Activate Reset button
@@ -900,8 +907,8 @@
 									'default': '',
 									items: [
 										[ editor.lang.common.notSet, '' ],
-										[ editor.lang.common.alignLeft, 'left' ],
-										[ editor.lang.common.alignRight, 'right' ]
+										[ editor.lang.common.left, 'left' ],
+										[ editor.lang.common.right, 'right' ]
 										// Backward compatible with v2 on setup when specified as attribute value,
 										// while these values are no more available as select options.
 										//	[ editor.lang.image.alignAbsBottom , 'absBottom'],
@@ -1014,6 +1021,7 @@
 					{
 						type: 'button',
 						id: 'browse',
+						className: 'cke_dialog_image_browse',
 						filebrowser: {
 							action: 'Browse',
 							target: 'Link:txtUrl',

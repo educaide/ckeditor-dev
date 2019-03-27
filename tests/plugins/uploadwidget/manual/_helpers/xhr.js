@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 'use strict';
@@ -8,17 +8,19 @@
 // Mock the real XMLHttpRequest so the upload test may work locally.
 
 window.FormData = function() {
-	var total, filename;
+	var total, uploadedFilename;
 	return {
 		append: function( name, file, filename ) {
-			total = file.size;
-			filename = filename;
+			if ( CKEDITOR.tools.array.indexOf( [ 'upload', 'file' ], name ) !== -1 ) {
+				total = file.size;
+				uploadedFilename = filename;
+			}
 		},
 		getTotal: function() {
 			return total;
 		},
 		getFileName: function() {
-			return filename;
+			return uploadedFilename;
 		}
 	};
 };
@@ -30,12 +32,16 @@ window.XMLHttpRequest = function() {
 	return {
 		open: function() {},
 
+		setRequestHeader: function() {},
+
+		upload: {},
+
 		send: function( formData ) {
 			var total = formData.getTotal(),
 				loaded = 0,
 				step = Math.round( total / 10 ),
 				xhr = this,
-				onprogress = this.onprogress,
+				onprogress = this.upload.onprogress,
 				onload = this.onload;
 
 			// Wait 400 ms for every step.
@@ -48,7 +54,7 @@ window.XMLHttpRequest = function() {
 
 				// If file is not loaded call onprogress.
 				if ( loaded < total ) {
-					onprogress( { loaded: loaded } );
+					onprogress( { loaded: loaded, total: total, lengthComputable: true } );
 				}
 				// If file is loaded call onload.
 				else {

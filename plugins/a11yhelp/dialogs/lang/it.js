@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'it', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'it', {
 			{
 			name: ' Aiuto Accessibilità',
 			legend: 'Premi ${a11yHelp}'
+		},
+			{
+			name: 'Incolla come testo semplice',
+			legend: 'Premi ${pastetext}',
+			legendEdge: 'Premi ${pastetext}, seguito da ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Invio',
-	shift: 'Maiusc',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pausa',
 	capslock: 'Bloc Maiusc',
 	escape: 'Esc',
 	pageUp: 'Pagina sù',
 	pageDown: 'Pagina giù',
-	end: 'Fine',
-	home: 'Inizio',
 	leftArrow: 'Freccia sinistra',
 	upArrow: 'Freccia su',
 	rightArrow: 'Freccia destra',
 	downArrow: 'Freccia giù',
 	insert: 'Ins',
-	'delete': 'Canc',
 	leftWindowKey: 'Tasto di Windows sinistro',
 	rightWindowKey: 'Tasto di Windows destro',
 	selectKey: 'Tasto di selezione',

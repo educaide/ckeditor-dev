@@ -1,6 +1,6 @@
-﻿/*
-Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+/*
+Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'forms', 'ku', {
 	button: {
@@ -16,7 +16,7 @@ CKEDITOR.plugins.setLang( 'forms', 'ku', {
 		radioTitle: 'خاسیەتی جێگرەوەی دوگمە',
 		value: 'نرخ',
 		selected: 'هەڵبژاردرا',
-		required: 'Required' // MISSING
+		required: 'پێویستە'
 	},
 	form: {
 		title: 'خاسیەتی داڕشتە',
@@ -38,7 +38,7 @@ CKEDITOR.plugins.setLang( 'forms', 'ku', {
 		size: 'گەورەیی',
 		lines: 'هێڵەکان',
 		chkMulti: 'ڕێدان بەفره هەڵبژارده',
-		required: 'Required', // MISSING
+		required: 'پێویستە',
 		opText: 'دەق',
 		opValue: 'نرخ',
 		btnAdd: 'زیادکردن',
@@ -59,7 +59,7 @@ CKEDITOR.plugins.setLang( 'forms', 'ku', {
 		value: 'نرخ',
 		charWidth: 'پانی نووسە',
 		maxChars: 'ئەوپەڕی نووسە',
-		required: 'Required', // MISSING
+		required: 'پێویستە',
 		type: 'جۆر',
 		typeText: 'دەق',
 		typePass: 'پێپەڕەوشە',

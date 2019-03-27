@@ -1,7 +1,8 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
+
 CKEDITOR.dialog.add( 'radio', function( editor ) {
 	return {
 		title: editor.lang.forms.checkboxAndRadio.radioTitle,
@@ -25,10 +26,9 @@ CKEDITOR.dialog.add( 'radio', function( editor ) {
 				editor = this.getParentEditor();
 				element = editor.document.createElement( 'input' );
 				element.setAttribute( 'type', 'radio' );
+				editor.insertElement( element );
 			}
 
-			if ( isInsertMode )
-				editor.insertElement( element );
 			this.commitContent( { element: element } );
 		},
 		contents: [ {
@@ -87,7 +87,13 @@ CKEDITOR.dialog.add( 'radio', function( editor ) {
 					var element = data.element;
 
 					if ( !CKEDITOR.env.ie ) {
-						if ( this.getValue() )
+						var value = this.getValue();
+						// Blink/Webkit needs to change checked property, not attribute. (https://dev.ckeditor.com/ticket/12465)
+						if ( CKEDITOR.env.webkit ) {
+							element.$.checked = value;
+						}
+
+						if ( value )
 							element.setAttribute( 'checked', 'checked' );
 						else
 							element.removeAttribute( 'checked' );
@@ -100,6 +106,12 @@ CKEDITOR.dialog.add( 'radio', function( editor ) {
 								'></input>', editor.document );
 							element.copyAttributes( replace, { type: 1, checked: 1 } );
 							replace.replace( element );
+
+							// Ugly hack which fix IE issues with radiobuttons (#834).
+							if ( isChecked ) {
+								replace.setAttribute( 'checked', 'checked' );
+							}
+
 							editor.getSelection().selectElement( replace );
 							data.element = replace;
 						}
@@ -113,9 +125,7 @@ CKEDITOR.dialog.add( 'radio', function( editor ) {
 				'default': '',
 				accessKey: 'Q',
 				value: 'required',
-				setup: function( element ) {
-					this.setValue( element.getAttribute( 'required' ) );
-				},
+				setup: CKEDITOR.plugins.forms._setupRequiredAttribute,
 				commit: function( data ) {
 					var element = data.element;
 					if ( this.getValue() )

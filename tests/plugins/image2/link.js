@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,widget */
+/* bender-tags: editor,widget */
 /* bender-ckeditor-plugins: image2,link,toolbar */
 /* global widgetTestsTools, image2TestsTools */
 
@@ -715,7 +715,7 @@
 			} );
 		},
 
-		// #11801
+		// https://dev.ckeditor.com/ticket/11801
 		'test load editor anchors into link dialog when linking for the first time': function() {
 			var bot = this.editorBot,
 				editor = bot.editor,
@@ -767,7 +767,7 @@
 			} );
 		},
 
-		// #13197
+		// https://dev.ckeditor.com/ticket/13197
 		'test align classes transfered from nested image to widget wrapper': function() {
 			var bot = this.editorBots.editor1,
 				html = '<p>' +
@@ -782,6 +782,61 @@
 				assert.isTrue( widget.wrapper.hasClass( 'align-right' ) );
 				assert.areSame( 'right', widget.data.align );
 				assert.isFalse( widget.parts.image.hasClass( 'align-right' ) );
+			} );
+		},
+
+		// https://dev.ckeditor.com/ticket/13885
+		'test custom link attributes getter': function() {
+			CKEDITOR.plugins.image2.getLinkAttributesGetter = function() {
+				return function() {
+					return {
+						set: {
+							'data-cke-saved-href': 'custom-href',
+							'data-custom': 'custom'
+						},
+						removed: [ 'target' ]
+					};
+				};
+			};
+
+			this.setWidgetData( 'custom-link-getter', {
+				link: {
+					type: 'url',
+					url: {
+						protocol: 'ftp://',
+						url: 'y'
+					},
+					target: {
+						type: null
+					},
+					advanced: {
+						advId: 'foo',
+						advLangDir: 'rtl'
+					}
+				}
+			}, inlineStructureWithLink, [ 2, 2 ] );
+		},
+
+		// https://dev.ckeditor.com/ticket/13885
+		'test custom link attributes parser': function() {
+			var bot = this.editorBot;
+
+			CKEDITOR.plugins.image2.getLinkAttributesParser = function() {
+				return function() {
+					return {
+						href: 'foo',
+						bar: 'baz'
+					};
+				};
+			};
+
+			bot.setData( '<p><a href="http://x"><img alt="x" id="x" src="_assets/foo.png" /></a></p>', function() {
+				var widget = getById( bot.editor, 'x' );
+
+				objectAssert.areEqual( {
+					href: 'foo',
+					bar: 'baz'
+				}, widget.data.link, 'Custom attributes parser output.' );
 			} );
 		}
 	} );

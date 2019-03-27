@@ -1,13 +1,13 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 'use strict';
 
 ( function() {
 	CKEDITOR.plugins.add( 'uploadwidget', {
-		lang: 'cs,da,de,en,eo,fr,gl,hu,it,ko,nb,nl,pl,pt-br,ru,sv,tr,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'az,bg,ca,cs,da,de,de-ch,el,en,en-au,eo,es,es-mx,et,eu,fa,fr,gl,hr,hu,id,it,ja,km,ko,ku,lv,nb,nl,no,oc,pl,pt,pt-br,ro,ru,sk,sq,sv,tr,ug,uk,zh,zh-cn', // %REMOVE_LINE_CORE%
 		requires: 'widget,clipboard,filetools,notificationaggregator',
 
 		init: function( editor ) {
@@ -84,7 +84,29 @@
 	 *			}
 	 *		} );
 	 *
-	 * If you need custom `paste` handling you need to mark the pasted element to be changed into an upload widget
+	 * If you need to pass additional data to the request, you can do this using the
+	 * {@link CKEDITOR.fileTools.uploadWidgetDefinition#additionalRequestParameters additionalRequestParameters} property.
+	 * That data is then passed to the upload method defined by {@link CKEDITOR.fileTools.uploadWidgetDefinition#loadMethod},
+	 * and to the {@link CKEDITOR.editor#fileUploadRequest} event (as part of the `requestData` property).
+	 * The syntax of that parameter is compatible with the {@link CKEDITOR.editor#fileUploadRequest} `requestData` property.
+	 *
+	 *		CKEDITOR.fileTools.addUploadWidget( editor, 'uploadFile', {
+	 *			additionalRequestParameters: {
+	 *				foo: 'bar'
+	 *			},
+	 *
+	 *			fileToElement: function( file ) {
+	 *				var el = new CKEDITOR.dom.element( 'span' );
+	 *				el.setText( '...' );
+	 *				return el;
+	 *			},
+	 *
+	 *			onUploaded: function( upload ) {
+	 *				this.replaceWith( '<a href="' + upload.url + '" target="_blank">' + upload.fileName + '</a>' );
+	 *			}
+	 *		} );
+	 *
+	 * If you need custom `paste` handling, you need to mark the pasted element to be changed into an upload widget
 	 * using {@link CKEDITOR.fileTools#markElement markElement}. For example, instead of the `fileToElement` helper from the
 	 * example above, a `paste` listener can be created manually:
 	 *
@@ -151,6 +173,8 @@
 		if ( def.fileToElement ) {
 			editor.on( 'paste', function( evt ) {
 				var data = evt.data,
+					// Fetch runtime widget definition as it might get changed in editor#widgetDefinition event.
+					def = editor.widgets.registered[ name ],
 					dataTransfer = data.dataTransfer,
 					filesCount = dataTransfer.getFilesCount(),
 					loadMethod = def.loadMethod || 'loadAndUpload',
@@ -166,14 +190,14 @@
 					// No def.supportedTypes means all types are supported.
 					if ( !def.supportedTypes || fileTools.isTypeSupported( file, def.supportedTypes ) ) {
 						var el = def.fileToElement( file ),
-							loader = uploads.create( file );
+							loader = uploads.create( file, undefined, def.loaderType );
 
 						if ( el ) {
-							loader[ loadMethod ]( def.uploadUrl );
+							loader[ loadMethod ]( def.uploadUrl, def.additionalRequestParameters );
 
 							CKEDITOR.fileTools.markElement( el, name, loader.id );
 
-							if ( loadMethod == 'loadAndUpload' || loadMethod == 'upload' ) {
+							if ( ( loadMethod == 'loadAndUpload' || loadMethod == 'upload' ) && !def.skipNotifications ) {
 								CKEDITOR.fileTools.bindNotifications( editor, loader );
 							}
 
@@ -195,9 +219,9 @@
 		 * should not be overwritten.
 		 *
 		 * Also, the upload widget definition defines a few properties ({@link #fileToElement}, {@link #supportedTypes},
-		 * {@link #loadMethod loadMethod} and {@link #uploadUrl}) used in the {@link CKEDITOR.editor#paste} listener
-		 * which is registered by {@link CKEDITOR.fileTools#addUploadWidget} if the upload widget definition contains
-		 * the {@link #fileToElement} callback.
+		 * {@link #loadMethod loadMethod}, {@link #uploadUrl} and {@link #additionalRequestParameters}) used in the
+		 * {@link CKEDITOR.editor#paste} listener which is registered by {@link CKEDITOR.fileTools#addUploadWidget}
+		 * if the upload widget definition contains the {@link #fileToElement} callback.
 		 *
 		 * @abstract
 		 * @class CKEDITOR.fileTools.uploadWidgetDefinition
@@ -228,9 +252,17 @@
 					oldStyle, newStyle;
 
 				loader.on( 'update', function( evt ) {
+					// (#1454)
+					if ( loader.status === 'abort' ) {
+						if ( typeof widget.onAbort === 'function' ) {
+							widget.onAbort( loader );
+						}
+					}
+
 					// Abort if widget was removed.
 					if ( !widget.wrapper || !widget.wrapper.getParent() ) {
-						if ( !editor.editable().find( '[data-cke-upload-id="' + id + '"]' ).count() ) {
+						// Uploading should be aborted if the editor is already destroyed (#966) or the upload widget was removed.
+						if ( !CKEDITOR.instances[ editor.name ] || !editor.editable().find( '[data-cke-upload-id="' + id + '"]' ).count() ) {
 							loader.abort();
 						}
 						evt.removeListener();
@@ -243,7 +275,7 @@
 					// `onUploaded` method will be called, if exists.
 					var methodName = 'on' + capitalize( loader.status );
 
-					if ( typeof widget[ methodName ] === 'function' ) {
+					if ( loader.status !== 'abort' && typeof widget[ methodName ] === 'function' ) {
 						if ( widget[ methodName ]( loader ) === false ) {
 							editor.fire( 'unlockSnapshot' );
 							return;
@@ -313,7 +345,15 @@
 				} else {
 					editor.getSelection().selectBookmarks( bookmarks );
 				}
+			},
 
+			/**
+			 * @private
+			 * @returns {CKEDITOR.fileTools.fileLoader/null} The loader associated with this widget instance or `null` if not found.
+			 */
+			_getLoader: function() {
+				var marker = this.wrapper.findOne( '[data-cke-upload-id]' );
+				return marker ? this.editor.uploadRepository.loaders[ marker.data( 'cke-upload-id' ) ] : null;
 			}
 
 			/**
@@ -342,17 +382,39 @@
 			 */
 
 			/**
+			 * Loader type that should be used for creating file tools requests.
+			 *
+			 * @property {Function} [loaderType]
+			 */
+
+			/**
+			 * An object containing additional data that should be passed to the function defined by {@link #loadMethod}.
+			 *
+			 * @property {Object} [additionalRequestParameters]
+			 */
+
+			/**
 			 * The type of loading operation that should be executed as a result of pasting a file. Possible options are:
 			 *
-			 * * 'loadAndUpload' &ndash; Default behavior, the {@link CKEDITOR.fileTools.fileLoader#loadAndUpload} method will be
+			 * * `'loadAndUpload'` &ndash; Default behavior. The {@link CKEDITOR.fileTools.fileLoader#loadAndUpload} method will be
 			 * executed, the file will be loaded first and uploaded immediately after loading is done.
-			 * * 'load' &ndash; The {@link CKEDITOR.fileTools.fileLoader#load} method will be executed. This loading type should
+			 * * `'load'` &ndash; The {@link CKEDITOR.fileTools.fileLoader#load} method will be executed. This loading type should
 			 * be used if you only want to load file data without uploading it.
-			 * * 'upload' &ndash; The {@link CKEDITOR.fileTools.fileLoader#upload} method will be executed, the file will be uploaded
+			 * * `'upload'` &ndash; The {@link CKEDITOR.fileTools.fileLoader#upload} method will be executed, the file will be uploaded
 			 * without loading it to memory. This loading type should be used if you want to upload a big file,
 			 * otherwise you can get an "out of memory" error.
 			 *
 			 * @property {String} [loadMethod=loadAndUpload]
+			 */
+
+			/**
+			 * Indicates whether default notification handling should be skipped.
+			 *
+			 * By default upload widget will use [Notification](https://ckeditor.com/cke4/addon/notification) plugin to provide
+			 * feedback for upload progress and eventual success / error message.
+			 *
+			 * @since 4.8.0
+			 * @property {Boolean} [skipNotifications=false]
 			 */
 
 			/**
@@ -442,33 +504,16 @@
 	 * @param {CKEDITOR.fileTools.fileLoader} loader The file loader instance.
 	 */
 	function bindNotifications( editor, loader ) {
-		var aggregator = editor._.uploadWidgetNotificaionAggregator;
-
-		// Create one notification agregator for all types of upload widgets for the editor.
-		if ( !aggregator || aggregator.isFinished() ) {
-			aggregator = editor._.uploadWidgetNotificaionAggregator = new CKEDITOR.plugins.notificationAggregator(
-				editor, editor.lang.uploadwidget.uploadMany, editor.lang.uploadwidget.uploadOne );
-
-			aggregator.once( 'finished', function() {
-				var tasks = aggregator.getTaskCount();
-
-				if ( tasks === 0 ) {
-					aggregator.notification.hide();
-				} else {
-					aggregator.notification.update( {
-						message: tasks == 1 ?
-							editor.lang.uploadwidget.doneOne :
-							editor.lang.uploadwidget.doneMany.replace( '%1', tasks ),
-						type: 'success',
-						important: 1
-					} );
-				}
-			} );
-		}
-
-		var task = aggregator.createTask( { weight: loader.total } );
+		var aggregator,
+			task = null;
 
 		loader.on( 'update', function() {
+			// Value of uploadTotal is known after upload start. Task will be created when uploadTotal is present.
+			if ( !task && loader.uploadTotal ) {
+				createAggregator();
+				task = aggregator.createTask( { weight: loader.uploadTotal } );
+			}
+
 			if ( task && loader.status == 'uploading' ) {
 				task.update( loader.uploaded );
 			}
@@ -485,8 +530,37 @@
 
 		loader.on( 'abort', function() {
 			task && task.cancel();
-			editor.showNotification( editor.lang.uploadwidget.abort, 'info' );
+			// Editor could be already destroyed (#966).
+			if ( CKEDITOR.instances[ editor.name ] ) {
+				editor.showNotification( editor.lang.uploadwidget.abort, 'info' );
+			}
 		} );
+
+		function createAggregator() {
+			aggregator = editor._.uploadWidgetNotificaionAggregator;
+
+			// Create one notification aggregator for all types of upload widgets for the editor.
+			if ( !aggregator || aggregator.isFinished() ) {
+				aggregator = editor._.uploadWidgetNotificaionAggregator = new CKEDITOR.plugins.notificationAggregator(
+					editor, editor.lang.uploadwidget.uploadMany, editor.lang.uploadwidget.uploadOne );
+
+				aggregator.once( 'finished', function() {
+					var tasks = aggregator.getTaskCount();
+
+					if ( tasks === 0 ) {
+						aggregator.notification.hide();
+					} else {
+						aggregator.notification.update( {
+							message: tasks == 1 ?
+								editor.lang.uploadwidget.doneOne :
+								editor.lang.uploadwidget.doneMany.replace( '%1', tasks ),
+							type: 'success',
+							important: 1
+						} );
+					}
+				} );
+			}
+		}
 	}
 
 	// Two plugins extend this object.

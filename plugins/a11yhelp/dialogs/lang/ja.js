@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'ja', {
@@ -65,7 +65,7 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'ja', {
 			legend: '${link} をクリック'
 		},
 			{
-			name: 'ツールバーを縮める',
+			name: 'ツールバーをたたむ',
 			legend: '${toolbarCollapse} をクリック'
 		},
 			{
@@ -73,35 +73,32 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'ja', {
 			legend: '${accessPreviousSpace} を押すとカーソルより前にあるカーソルキーで入り込めないスペースへ移動できます。例えば、HRエレメントが2つ接している場合などです。離れた場所へは、複数回キーを押します。'
 		},
 			{
-			name: '次のカーソル移動のできないポイントへ',
+			name: '次のカーソルポイントへ移動する',
 			legend: '${accessNextSpace} を押すとカーソルより後ろにあるカーソルキーで入り込めないスペースへ移動できます。例えば、HRエレメントが2つ接している場合などです。離れた場所へは、複数回キーを押します。'
 		},
 			{
 			name: 'ユーザー補助ヘルプ',
 			legend: '${a11yHelp} をクリック'
+		},
+			{
+			name: ' Paste as plain text', // MISSING
+			legend: 'Press ${pastetext}', // MISSING
+			legendEdge: 'Press ${pastetext}, followed by ${paste}' // MISSING
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: '左矢印',
 	upArrow: '上矢印',
 	rightArrow: '右矢印',
 	downArrow: '下矢印',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: '左Windowキー',
 	rightWindowKey: '右のWindowキー',
 	selectKey: 'Select',

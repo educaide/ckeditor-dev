@@ -1,10 +1,10 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 /**
- * @fileOverview The Magic Line plugin that makes it easier to access some document areas that
+ * @fileOverview The [Magic Line](https://ckeditor.com/cke4/addon/magicline) plugin that makes it easier to access some document areas that
  * are difficult to focus.
  */
 
@@ -12,7 +12,7 @@
 
 ( function() {
 	CKEDITOR.plugins.add( 'magicline', {
-		lang: 'af,ar,bg,ca,cs,cy,da,de,el,en,en-gb,eo,es,et,eu,fa,fi,fr,fr-ca,gl,he,hr,hu,id,it,ja,km,ko,ku,lv,nb,nl,no,pl,pt,pt-br,ru,si,sk,sl,sq,sv,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'af,ar,az,bg,ca,cs,cy,da,de,de-ch,el,en,en-au,en-gb,eo,es,es-mx,et,eu,fa,fi,fr,fr-ca,gl,he,hr,hu,id,it,ja,km,ko,ku,lv,nb,nl,no,oc,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sv,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
 		init: initPlugin
 	} );
 
@@ -38,7 +38,7 @@
 		// %REMOVE_START%
 		// Internal DEBUG uses tools located in the topmost window.
 
-		// (#9701) Due to security limitations some browsers may throw
+		// (https://dev.ckeditor.com/ticket/9701) Due to security limitations some browsers may throw
 		// errors when accessing window.top object. Do it safely first then.
 		try {
 			that.debug = window.top.DEBUG;
@@ -278,7 +278,7 @@
 				var elements, element, i;
 
 				for ( var t in { p: 1, br: 1, div: 1 } ) {
-					// document.find is not available in QM (#11149).
+					// document.find is not available in QM (https://dev.ckeditor.com/ticket/11149).
 					elements = editor.document.getElementsByTag( t );
 
 					for ( i = elements.count(); i--; ) {
@@ -340,7 +340,7 @@
 
 			// This one allows testing and debugging. It reveals some
 			// inner methods to the world.
-			this.backdoor = {
+			editor._.magiclineBackdoor = {
 				accessFocusSpace: accessFocusSpace,
 				boxTrigger: boxTrigger,
 				isLine: isLine,
@@ -428,7 +428,7 @@
 		function elementFromPoint( doc, mouse ) {
 			var pointedElement = doc.$.elementFromPoint( mouse.x, mouse.y );
 
-			// IE9QM: from times to times it will return an empty object on scroll bar hover. (#12185)
+			// IE9QM: from times to times it will return an empty object on scroll bar hover. (https://dev.ckeditor.com/ticket/12185)
 			return pointedElement && pointedElement.nodeType ?
 				new CKEDITOR.dom.element( pointedElement ) :
 				null;
@@ -483,7 +483,7 @@
 			// If trigger is an element, neither editable nor editable's ascendant.
 			if ( trigger && that.editable.contains( trigger ) ) {
 				// Check for closest editable limit.
-				// Don't consider trigger as a limit as it may be nested editable (includeSelf=false) (#12009).
+				// Don't consider trigger as a limit as it may be nested editable (includeSelf=false) (https://dev.ckeditor.com/ticket/12009).
 				var limit = getClosestEditableLimit( trigger );
 
 				// Trigger in nested editable area.
@@ -494,8 +494,6 @@
 					return limit;
 				else
 					return null;
-
-				return trigger;
 			} else {
 				return null;
 			}
@@ -572,7 +570,7 @@
 	function initLine( that ) {
 		var doc = that.doc,
 			// This the main box element that holds triangles and the insertion button
-			line = newElementFromHtml( '<span contenteditable="false" style="' + CSS_COMMON + 'position:absolute;border-top:1px dashed ' + that.boxColor + '"></span>', doc ),
+			line = newElementFromHtml( '<span contenteditable="false" data-cke-magic-line="1" style="' + CSS_COMMON + 'position:absolute;border-top:1px dashed ' + that.boxColor + '"></span>', doc ),
 			iconPath = CKEDITOR.getUrl( this.path + 'images/' + ( env.hidpi ? 'hidpi/' : '' ) + 'icon' + ( that.rtl ? '-rtl' : '' ) + '.png' );
 
 		extend( line, {
@@ -732,7 +730,7 @@
 
 					// Consider the editable to be an element with overflow:scroll
 					// and non-zero scrollTop/scrollLeft value.
-					// For example: divarea editable. (#9383)
+					// For example: divarea editable. (https://dev.ckeditor.com/ticket/9383)
 					styleSet.top += view.editable.scroll.top;
 					styleSet.left += view.editable.scroll.left;
 				}
@@ -933,7 +931,7 @@
 					var selected = editor.getSelection().getStartElement(),
 						limit;
 
-					// (#9833) Go down to the closest non-inline element in DOM structure
+					// (https://dev.ckeditor.com/ticket/9833) Go down to the closest non-inline element in DOM structure
 					// since inline elements don't participate in in magicline.
 					selected = selected.getAscendant( DTD_BLOCK, 1 );
 
@@ -1777,6 +1775,9 @@
  * causes the magic line to appear. This option accepts a value in pixels, without the unit (for example:
  * `15` for 15 pixels).
  *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
+ *
  *		// Changes the offset to 15px.
  *		CKEDITOR.config.magicline_triggerOffset = 15;
  *
@@ -1786,9 +1787,12 @@
  */
 
 /**
- * Defines the distance between the mouse pointer and the box, within
+ * Defines the distance between the mouse pointer and the box within
  * which the magic line stays revealed and no other focus space is offered to be accessed.
  * This value is relative to {@link #magicline_triggerOffset}.
+ *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
  *
  *		// Increases the distance to 80% of CKEDITOR.config.magicline_triggerOffset.
  *		CKEDITOR.config.magicline_holdDistance = .8;
@@ -1799,8 +1803,11 @@
  */
 
 /**
- * Defines the default keystroke that access the closest unreachable focus space **before**
- * the caret (start of the selection). If there's no any focus space, selection remains.
+ * Defines the default keystroke that accesses the closest unreachable focus space **before**
+ * the caret (start of the selection). If there is no focus space available, the selection remains unchanged.
+ *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
  *
  *		// Changes the default keystroke to "Ctrl + ,".
  *		CKEDITOR.config.magicline_keystrokePrevious = CKEDITOR.CTRL + 188;
@@ -1811,8 +1818,11 @@
 CKEDITOR.config.magicline_keystrokePrevious = CKEDITOR.CTRL + CKEDITOR.SHIFT + 51; // CTRL + SHIFT + 3
 
 /**
- * Defines the default keystroke that access the closest unreachable focus space **after**
- * the caret (start of the selection). If there's no any focus space, selection remains.
+ * Defines the default keystroke that accesses the closest unreachable focus space **after**
+ * the caret (start of the selection). If there is no focus space available, the selection remains unchanged.
+ *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
  *
  *		// Changes keystroke to "Ctrl + .".
  *		CKEDITOR.config.magicline_keystrokeNext = CKEDITOR.CTRL + 190;
@@ -1826,6 +1836,9 @@ CKEDITOR.config.magicline_keystrokeNext = CKEDITOR.CTRL + CKEDITOR.SHIFT + 52; /
  * Defines a list of attributes that, if assigned to some elements, prevent the magic line from being
  * used within these elements.
  *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
+ *
  *		// Adds the "data-tabu" attribute to the magic line tabu list.
  *		CKEDITOR.config.magicline_tabuList = [ 'data-tabu' ];
  *
@@ -1835,6 +1848,9 @@ CKEDITOR.config.magicline_keystrokeNext = CKEDITOR.CTRL + CKEDITOR.SHIFT + 52; /
 
 /**
  * Defines the color of the magic line. The color may be adjusted to enhance readability.
+ *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
  *
  *		// Changes magic line color to blue.
  *		CKEDITOR.config.magicline_color = '#0000FF';
@@ -1846,6 +1862,9 @@ CKEDITOR.config.magicline_keystrokeNext = CKEDITOR.CTRL + CKEDITOR.SHIFT + 52; /
 /**
  * Activates the special all-encompassing mode that considers all focus spaces between
  * {@link CKEDITOR.dtd#$block} elements as accessible by the magic line.
+ *
+ * Read more in the {@glink guide/dev_magicline documentation}
+ * and see the {@glink examples/magicline example}.
  *
  *		// Enables the greedy "put everywhere" mode.
  *		CKEDITOR.config.magicline_everywhere = true;

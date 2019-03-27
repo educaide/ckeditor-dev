@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'no', {
 	acccessKey: 'Aksessknapp',
@@ -19,6 +19,8 @@ CKEDITOR.plugins.setLang( 'link', 'no', {
 	anchorName: 'Anker etter navn',
 	charset: 'Lenket tegnsett',
 	cssClasses: 'Stilarkklasser',
+	download: 'Force Download', // MISSING
+	displayText: 'Tekst som skal vises',
 	emailAddress: 'E-postadresse',
 	emailBody: 'Melding',
 	emailSubject: 'Meldingsemne',
@@ -33,7 +35,9 @@ CKEDITOR.plugins.setLang( 'link', 'no', {
 	noAnchors: '(Ingen anker i dokumentet)',
 	noEmail: 'Vennligst skriv inn e-postadressen',
 	noUrl: 'Vennligst skriv inn lenkens URL',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<annen>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Avhenging (Netscape)',
 	popupFeatures: 'Egenskaper for popup-vindu',
 	popupFullScreen: 'Fullskjerm (IE)',
@@ -58,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'no', {
 	toAnchor: 'Lenke til anker i teksten',
 	toEmail: 'E-post',
 	toUrl: 'URL',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Sett inn/Rediger lenke',
 	type: 'Lenketype',
 	unlink: 'Fjern lenke',

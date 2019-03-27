@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 CKEDITOR.dialog.add( 'select', function( editor ) {
 	// Add a new option to a SELECT object (combo or list).
@@ -210,6 +210,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 			},
 			{
 				type: 'hbox',
+				className: 'cke_dialog_forms_select_order_txtsize',
 				widths: [ '175px', '170px' ],
 				children: [ {
 					id: 'txtSize',
@@ -248,6 +249,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 			{
 				type: 'hbox',
 				widths: [ '115px', '115px', '100px' ],
+				className: 'cke_dialog_forms_select_order',
 				children: [ {
 					type: 'vbox',
 					children: [ {
@@ -488,8 +490,9 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 						accessKey: 'Q',
 						value: 'checked',
 						setup: function( name, element ) {
-							if ( name == 'select' )
-								this.setValue( element.getAttribute( 'required' ) );
+							if ( name == 'select' ) {
+								CKEDITOR.plugins.forms._setupRequiredAttribute.call( this, element );
+							}
 						},
 						commit: function( element ) {
 							if ( this.getValue() )

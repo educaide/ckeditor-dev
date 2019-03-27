@@ -1,11 +1,34 @@
 /**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 'use strict';
 
 ( function() {
+	var uniqueNameCounter = 0,
+		// Black rectangle which is shown before the image is loaded.
+		loadingImage = 'data:image/gif;base64,R0lGODlhDgAOAIAAAAAAAP///yH5BAAAAAAALAAAAAAOAA4AAAIMhI+py+0Po5y02qsKADs=';
+
+	// Returns number as a string. If a number has 1 digit only it returns it prefixed with an extra 0.
+	function padNumber( input ) {
+		if ( input <= 9 ) {
+			input = '0' + input;
+		}
+
+		return String( input );
+	}
+
+	// Returns a unique image file name.
+	function getUniqueImageFileName( type ) {
+		var date = new Date(),
+			dateParts = [ date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds() ];
+
+		uniqueNameCounter += 1;
+
+		return 'image-' + CKEDITOR.tools.array.map( dateParts, padNumber ).join( '' ) + '-' + uniqueNameCounter + '.' + type;
+	}
+
 	CKEDITOR.plugins.add( 'uploadimage', {
 		requires: 'uploadwidget',
 
@@ -27,16 +50,12 @@
 				uploadUrl = fileTools.getUploadUrl( editor.config, 'image' );
 
 			if ( !uploadUrl ) {
-				window.console && window.console.log(
-					'Error: Upload URL for the Upload Image feature was not defined. ' +
-					'For more information see: http://docs.ckeditor.com/#!/guide/dev_file_upload'
-				);
 				return;
 			}
 
 			// Handle images which are available in the dataTransfer.
 			fileTools.addUploadWidget( editor, 'uploadimage', {
-				supportedTypes: /image\/(jpeg|png|gif)/,
+				supportedTypes: /image\/(jpeg|png|gif|bmp)/,
 
 				uploadUrl: uploadUrl,
 
@@ -56,10 +75,15 @@
 				},
 
 				onUploaded: function( upload ) {
+					// Width and height could be returned by server (https://dev.ckeditor.com/ticket/13519).
+					var $img = this.parts.img.$,
+						width = upload.responseData.width || $img.naturalWidth,
+						height = upload.responseData.height || $img.naturalHeight;
+
 					// Set width and height to prevent blinking.
 					this.replaceWith( '<img src="' + upload.url + '" ' +
-						'width="' + this.parts.img.$.naturalWidth + '" ' +
-						'height="' + this.parts.img.$.naturalHeight + '">' );
+						'width="' + width + '" ' +
+						'height="' + height + '">' );
 				}
 			} );
 
@@ -87,13 +111,22 @@
 				for ( i = 0; i < imgs.count(); i++ ) {
 					img = imgs.getItem( i );
 
-					// Image have to contain src=data:...
-					var isDataInSrc = img.getAttribute( 'src' ) && img.getAttribute( 'src' ).substring( 0, 5 ) == 'data:',
+					// Assign src once, as it might be a big string, so there's no point in duplicating it all over the place.
+					var imgSrc = img.getAttribute( 'src' ),
+						// Image have to contain src=data:...
+						isDataInSrc = imgSrc && imgSrc.substring( 0, 5 ) == 'data:',
 						isRealObject = img.data( 'cke-realelement' ) === null;
 
-					// We are not uploading images in non-editable blocs and fake objects (#13003).
+					// We are not uploading images in non-editable blocs and fake objects (https://dev.ckeditor.com/ticket/13003).
 					if ( isDataInSrc && isRealObject && !img.data( 'cke-upload-id' ) && !img.isReadOnly( 1 ) ) {
-						var loader = editor.uploadRepository.create( img.getAttribute( 'src' ) );
+						// Note that normally we'd extract this logic into a separate function, but we should not duplicate this string, as it might
+						// be large.
+						var imgFormat = imgSrc.match( /image\/([a-z]+?);/i ),
+							loader;
+
+						imgFormat = ( imgFormat && imgFormat[ 1 ] ) || 'jpg';
+
+						loader = editor.uploadRepository.create( imgSrc, getUniqueImageFileName( imgFormat ) );
 						loader.upload( uploadUrl );
 
 						fileTools.markElement( img, 'uploadimage', loader.id );
@@ -106,11 +139,6 @@
 			} );
 		}
 	} );
-
-	// jscs:disable maximumLineLength
-	// Black rectangle which is shown before image is loaded.
-	var loadingImage = 'data:image/gif;base64,R0lGODlhDgAOAIAAAAAAAP///yH5BAAAAAAALAAAAAAOAA4AAAIMhI+py+0Po5y02qsKADs=';
-	// jscs:enable maximumLineLength
 
 	/**
 	 * The URL where images should be uploaded.

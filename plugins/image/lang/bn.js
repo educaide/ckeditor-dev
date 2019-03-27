@@ -1,6 +1,6 @@
-﻿/*
-Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+/*
+Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'image', 'bn', {
 	alt: 'বিকল্প টেক্সট',
@@ -15,7 +15,7 @@ CKEDITOR.plugins.setLang( 'image', 'bn', {
 	menu: 'ছবির প্রোপার্টি',
 	resetSize: 'সাইজ পূর্বাবস্থায় ফিরিয়ে দাও',
 	title: 'ছবির প্রোপার্টি',
-	titleButton: 'ছবি বাটন প্রোপার্টি',
+	titleButton: 'ছবির বাটন সম্বন্ধীয়',
 	upload: 'আপলোড',
 	urlMissing: 'Image source URL is missing.', // MISSING
 	vSpace: 'ভার্টিকেল স্পেস',

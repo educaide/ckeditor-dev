@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 /* exported CKEDITOR_LANGS */
@@ -9,6 +9,7 @@ var CKEDITOR_LANGS = ( function() {
 	var langs = {
 		af: 'Afrikaans',
 		ar: 'Arabic',
+		az: 'Azerbaijani',
 		bg: 'Bulgarian',
 		bn: 'Bengali/Bangla',
 		bs: 'Bosnian',
@@ -17,6 +18,7 @@ var CKEDITOR_LANGS = ( function() {
 		cy: 'Welsh',
 		da: 'Danish',
 		de: 'German',
+		'de-ch': 'German (Switzerland)',
 		el: 'Greek',
 		en: 'English',
 		'en-au': 'English (Australia)',
@@ -24,6 +26,7 @@ var CKEDITOR_LANGS = ( function() {
 		'en-gb': 'English (United Kingdom)',
 		eo: 'Esperanto',
 		es: 'Spanish',
+		'es-mx': 'Spanish (Mexico)',
 		et: 'Estonian',
 		eu: 'Basque',
 		fa: 'Persian',
@@ -53,6 +56,7 @@ var CKEDITOR_LANGS = ( function() {
 		nb: 'Norwegian Bokmal',
 		nl: 'Dutch',
 		no: 'Norwegian',
+		oc: 'Occitan',
 		pl: 'Polish',
 		pt: 'Portuguese (Portugal)',
 		'pt-br': 'Portuguese (Brazil)',

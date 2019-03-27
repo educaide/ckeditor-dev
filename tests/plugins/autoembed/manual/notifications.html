@@ -1,7 +1,7 @@
 <p>Non-embeddable URLs</p>
 
 <ul>
-	<li><input type="text" value="http://ckeditor.com/"></li>
+	<li><input type="text" value="http://ckeditor.test/"></li>
 	<li><input type="text" value="http://foo/bar/"></li>
 </ul>
 
@@ -19,6 +19,7 @@
 	CKEDITOR.replace( 'editor1', {
 		extraPlugins: 'embed',
 		height: 500,
-		width: 600
+		width: 600,
+		embed_provider: '//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}'
 	} );
 </script>
