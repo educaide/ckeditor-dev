@@ -5,7 +5,11 @@
 
 /* global jQuery */
 
+
 ( function() {
+	// used by the mathQuillButton command,
+	// set by beforeCommandExec since that's when we have access to the focused element
+	var mqWidget;
 	'use strict';
 
 	// A list of commands that should be blocked when MathQuill widget is focused.
@@ -87,6 +91,10 @@
 
 			// Some commands might need to be blocked while the MathQuill widget is focused, e.g. list indentation.
 			editor.on( 'beforeCommandExec', function( evt ) {
+				if (evt.data.name === "mathQuillButton") {
+					mqWidget = checkIfWidgetIsFocused(evt.editor);
+				}
+
 				if ( !checkIfWidgetIsFocused( evt.editor ) ) {
 					// We want to cancel certian commands only if the MathQuill widget is focused.
 					return;
@@ -194,6 +202,27 @@
 					return span;
 				}
 			} );
+
+			var command = editor.addCommand("mathQuillButton", {
+				exec: function(editor) {
+					// mqWidget is set by beforeCommandExec since that's when we have access to the focused element
+					if ( mqWidget ) {
+						moveSelectionAfterElement( editor, mqWidget.getParent() );
+
+						if ( CKEDITOR.env.gecko ) {
+							editor.focus();
+						}
+					} else {
+						editor.execCommand( 'mathQuill' );
+					}
+				}
+			});
+
+			editor.ui.addButton("mathQuill", {
+			  label: "MathQuill",
+			  icon: "mathquill",
+			  command: "mathQuillButton"
+			});
 		}
 	} );
 
