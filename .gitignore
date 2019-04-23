@@ -9,6 +9,7 @@
 
 node_modules/**
 build/**
+coverage/**
 
 dev/builder/release/**
 dev/builder/ckbuilder/**
@@ -19,8 +20,13 @@ samples/toolbarconfigurator/.bender/**
 samples/toolbarconfigurator/node_modules/**
 samples/toolbarconfigurator/docs/**
 
+tests/security
 tests/plugins/mathjax/_assets/mathjax/**
 
 *.css.map
 
 bender-*.log
+
+!.github/*
+!.npm/*
+.DS_Store

@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'tr', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'tr', {
 			{
 			name: 'Erişilebilirlik Yardımı',
 			legend: '${a11yHelp}\'e basın'
+		},
+			{
+			name: 'Düz Metin Olarak Yapıştır',
+			legend: '${pastetext} basın',
+			legendEdge: 'Önce ${pastetext} ardından${paste} basın'
 		}
 		]
 	}
 	],
-	backspace: 'Silme',
 	tab: 'Sekme tuşu',
-	enter: 'Gir tuşu',
-	shift: '"Shift" Kaydırma tuşu',
-	ctrl: '"Ctrl" Kontrol tuşu',
-	alt: '"Alt" Anahtar tuşu',
 	pause: 'Durdurma tuşu',
 	capslock: 'Büyük harf tuşu',
 	escape: 'Vazgeç tuşu',
 	pageUp: 'Sayfa Yukarı',
 	pageDown: 'Sayfa Aşağı',
-	end: 'Sona',
-	home: 'En başa',
 	leftArrow: 'Sol ok',
 	upArrow: 'Yukarı ok',
 	rightArrow: 'Sağ ok',
 	downArrow: 'Aşağı ok',
 	insert: 'Araya gir',
-	'delete': 'Silme',
 	leftWindowKey: 'Sol windows tuşu',
 	rightWindowKey: 'Sağ windows tuşu',
 	selectKey: 'Seçme tuşu',

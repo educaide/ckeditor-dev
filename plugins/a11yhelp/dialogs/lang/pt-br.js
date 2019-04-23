@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'pt-br', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'pt-br', {
 			{
 			name: ' Ajuda de Acessibilidade',
 			legend: 'Pressione ${a11yHelp}'
+		},
+			{
+			name: 'Colar como texto sem formatação',
+			legend: 'Pressione ${pastetext}',
+			legendEdge: 'Pressione ${pastetext}, seguido de ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Tecla Backspace',
 	tab: 'Tecla Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Seta à Esquerda',
 	upArrow: 'Seta à Cima',
 	rightArrow: 'Seta à Direita',
 	downArrow: 'Seta à Baixo',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: 'Tecla do Windows Esquerda',
 	rightWindowKey: 'Tecla do Windows Direita',
 	selectKey: 'Tecla Selecionar',

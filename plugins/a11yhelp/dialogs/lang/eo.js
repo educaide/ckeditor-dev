@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'eo', {
@@ -18,7 +18,7 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'eo', {
 			{
 			name: 'Redaktildialogo',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'En dialogo, premu la TABAN klavon por navigi al la sekva dialogelemento, premu la MAJUSKLIGAN+TABAN klavon por iri al la antaŭa dialogelemento, premu la ENEN klavon por sendi la dialogon, premu la ESKAPAN klavon por nuligi la dialogon. Kiam dialogo havas multajn langetojn, eblas atingi la langetliston aŭ per ALT+F10 aŭ per la TABA klavo kiel parton de la dialoga taba ordo. En langetlisto, moviĝu al la sekva kaj antaŭa langeto per la klavoj SAGO DEKSTREN KAJ MALDEKSTREN respektive.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'eo', {
 			{
 			name: 'Helpilo pri atingeblo',
 			legend: 'Premu ${a11yHelp}'
+		},
+			{
+			name: 'Algluu kiel platan tekston',
+			legend: 'Presu ${pastetext}',
+			legendEdge: 'Presu ${pastetext}, sekvatan de ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Retropaŝo',
 	tab: 'Tabo',
-	enter: 'Enigi',
-	shift: 'Registrumo',
-	ctrl: 'Stirklavo',
-	alt: 'Alt-klavo',
 	pause: 'Paŭzo',
 	capslock: 'Majuskla baskulo',
 	escape: 'Eskapa klavo',
 	pageUp: 'Antaŭa Paĝo',
 	pageDown: 'Sekva Paĝo',
-	end: 'Fino',
-	home: 'Hejmo',
 	leftArrow: 'Sago Maldekstren',
 	upArrow: 'Sago Supren',
 	rightArrow: 'Sago Dekstren',
 	downArrow: 'Sago Suben',
 	insert: 'Enmeti',
-	'delete': 'Forigi',
 	leftWindowKey: 'Maldekstra Windows-klavo',
 	rightWindowKey: 'Dekstra Windows-klavo',
 	selectKey: 'Selektklavo',

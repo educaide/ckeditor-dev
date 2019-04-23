@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'sv', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sv', {
 			{
 			name: 'Hjälp om tillgänglighet',
 			legend: 'Tryck ${a11yHelp}'
+		},
+			{
+			name: 'Klistra in som vanlig text',
+			legend: 'Tryck ${pastetext}',
+			legendEdge: 'Tryck ${pastetext}, följt av ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Backsteg',
 	tab: 'Tab',
-	enter: 'Retur',
-	shift: 'Skift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Paus',
 	capslock: 'Caps lock',
 	escape: 'Escape',
 	pageUp: 'Sida Up',
 	pageDown: 'Sida Ned',
-	end: 'Slut',
-	home: 'Hem',
 	leftArrow: 'Vänsterpil',
 	upArrow: 'Uppil',
 	rightArrow: 'Högerpil',
 	downArrow: 'Nedåtpil',
 	insert: 'Infoga',
-	'delete': 'Radera',
 	leftWindowKey: 'Vänster Windowstangent',
 	rightWindowKey: 'Höger Windowstangent',
 	selectKey: 'Välj tangent',

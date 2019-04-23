@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'sr', {
 	acccessKey: 'Приступни тастер',
@@ -19,6 +19,8 @@ CKEDITOR.plugins.setLang( 'link', 'sr', {
 	anchorName: 'По називу сидра',
 	charset: 'Linked Resource Charset',
 	cssClasses: 'Stylesheet класе',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'Адреса електронске поште',
 	emailBody: 'Садржај поруке',
 	emailSubject: 'Наслов',
@@ -33,7 +35,9 @@ CKEDITOR.plugins.setLang( 'link', 'sr', {
 	noAnchors: '(Нема доступних сидра)',
 	noEmail: 'Откуцајте адресу електронске поште',
 	noUrl: 'Унесите УРЛ линка',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<друго>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Зависно (Netscape)',
 	popupFeatures: 'Могућности искачућег прозора',
 	popupFullScreen: 'Приказ преко целог екрана (ИE)',
@@ -58,6 +62,7 @@ CKEDITOR.plugins.setLang( 'link', 'sr', {
 	toAnchor: 'Сидро на овој страници',
 	toEmail: 'Eлектронска пошта',
 	toUrl: 'УРЛ',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Унеси/измени линк',
 	type: 'Врста линка',
 	unlink: 'Уклони линк',

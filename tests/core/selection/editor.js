@@ -1,7 +1,10 @@
-/* bender-tags: editor,unit,autoparagraphing */
+/* bender-tags: editor,autoparagraphing */
 /* global doc, checkRangeEqual, assertSelectionsAreEqual */
 
 'use strict';
+
+var fillingCharSequence = CKEDITOR.dom.selection.FILLING_CHAR_SEQUENCE,
+	fillingCharSequenceLength = fillingCharSequence.length;
 
 function noSelectionOnBlur( editor ) {
 	return editor.elementMode == CKEDITOR.ELEMENT_MODE_INLINE || CKEDITOR.env.ie;
@@ -18,7 +21,8 @@ bender.editors = {
 		config: {
 			autoParagraph: false,
 			fillEmptyBlocks: false,
-			allowedContent: true
+			allowedContent: true,
+			plugins: 'undo'
 		}
 	},
 	editorInline: {
@@ -53,7 +57,7 @@ bender.test( {
 		var fillingChar = editable.getCustomData( 'cke-fillingChar' );
 		assert.isTrue( !!fillingChar, 'Filling char exists - ' + msg );
 		assert.areSame( parent, fillingChar.getParent(), 'Filling char parent - ' + msg );
-		assert.areSame( contents, fillingChar.getText(), 'Filling char contents - ' + msg );
+		assert.areSame( fillingCharSequence + contents, fillingChar.getText(), 'Filling char contents - ' + msg );
 
 		return fillingChar;
 	},
@@ -61,7 +65,7 @@ bender.test( {
 	'test selection on initial focus': function() {
 		var ed = this.editors.editor;
 		ed.editable().focus();
-		assert.areEqual( '<p>^foo</p>', bender.tools.getHtmlWithSelection( ed ), 'Selection goes into editable on focus (#9507).' );
+		assert.areEqual( '<p>^foo</p>', bender.tools.getHtmlWithSelection( ed ), 'Selection goes into editable on focus (https://dev.ckeditor.com/ticket/9507).' );
 	},
 
 	'test selection on initial focus - ensure new doc': function() {
@@ -72,7 +76,7 @@ bender.test( {
 			ed.setData( '<p>foo</p>', function() {
 				resume( function() {
 					ed.editable().focus();
-					assert.areEqual( '<p>^foo</p>', bender.tools.getHtmlWithSelection( ed ), 'Selection goes into editable on focus (#10115).' );
+					assert.areEqual( '<p>^foo</p>', bender.tools.getHtmlWithSelection( ed ), 'Selection goes into editable on focus (https://dev.ckeditor.com/ticket/10115).' );
 				} );
 			} );
 		} );
@@ -143,6 +147,14 @@ bender.test( {
 			ed.removeListener( 'selectionChange', onSelectionChange );
 			assert.areSame( 2, firedTimes, 'times of selectionChange fired doesn\'t match.' );
 		}, 200 );
+	},
+
+	// (#2276)
+	'test "selectionCheck" fires for mouse, key and touch events': function() {
+		testSelectionCheck( this.editors.editor, 'touchstart' );
+		testSelectionCheck( this.editors.editor, 'touchend' );
+		testSelectionCheck( this.editors.editor, 'keyup' );
+		testSelectionCheck( this.editors.editor, 'mouseup' );
 	},
 
 	'test "selectionChange" not fired when editor selection is locked': function() {
@@ -218,7 +230,7 @@ bender.test( {
 		} );
 	},
 
-	// #7174
+	// https://dev.ckeditor.com/ticket/7174
 	'test "selectionChange" fired after the same selection set after data loaded': function() {
 		var bot = this.editorBots.editor,
 			editor = this.editors.editor,
@@ -322,10 +334,10 @@ bender.test( {
 		wait();
 	},
 
-	// #10115
+	// https://dev.ckeditor.com/ticket/10115
 	// Of course this test doesn't check if caret is visible.
 	// It only verifies if fixInitialSelection works correctly and does not confilct
-	// with browser or editor (#9507) fixing selection.
+	// with browser or editor (https://dev.ckeditor.com/ticket/9507) fixing selection.
 	'test initial selection after set data in autoparagraphing editor': function() {
 		doc.getById( 'input1' ).focus();
 
@@ -352,6 +364,11 @@ bender.test( {
 	},
 
 	'test initial selection after set data in autoparagraphing inline editor': function() {
+		// https://dev.ckeditor.com/ticket/13154
+		if ( CKEDITOR.env.ie && CKEDITOR.env.version < 11 ) {
+			assert.ignore();
+		}
+
 		doc.getById( 'input1' ).focus();
 
 		var editor = this.editors.editorInline;
@@ -376,7 +393,26 @@ bender.test( {
 		wait();
 	},
 
-	// #10315
+	// https://dev.ckeditor.com/ticket/13816
+	'test remove filling character from snapshots and data': function() {
+		if ( !CKEDITOR.env.webkit )
+			assert.ignore();
+
+		var editor = this.editors.editor,
+			bot = this.editorBots.editor;
+
+		bot.setData( '<p>foo</p>', function() {
+			var fc = new CKEDITOR.dom.text( fillingCharSequence );
+
+			fc.appendTo( editor.document.findOne( 'p' ), 1 );
+
+			assert.areSame( '<p>' + fillingCharSequence + 'foo</p>', editor.editable().getHtml(), 'FC in DOM.' );
+			assert.areSame( '<p>foo</p>', new CKEDITOR.plugins.undo.Image( editor ).contents, 'No FC in snapshots.' );
+			assert.areSame( '<p>foo</p>', editor.getData(), 'No FC in data.' );
+		} );
+	},
+
+	// https://dev.ckeditor.com/ticket/10315
 	'test selection is invalidating filling char after editable is replaced by new one': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
@@ -394,13 +430,15 @@ bender.test( {
 				editor.setData( '<p id="p">foo<em>bar</em></p>' );
 				editor.setMode( 'wysiwyg', function() {
 					resume( function() {
+						// Editor needs to have focus to remove FC on keydown. (https://dev.ckeditor.com/ticket/14714)
+						editor.focus();
 						// TC1 - on keydown
 						// <p>foo^<em>...
 						var range = editor.createRange();
 						range.setStart( editor.document.getById( 'p' ), 1 );
 						editor.getSelection().selectRanges( [ range ] );
 
-						assert.isMatching( /^<p id="p">foo\u200b<em>bar<\/em><\/p>$/, editor.editable().getHtml(), 'Filling char was inserted' );
+						assert.isMatching( '^<p id="p">foo' + fillingCharSequence + '<em>bar<\/em><\/p>$', editor.editable().getHtml(), 'Filling char was inserted' );
 
 						// Fire event imitating left arrow, what will trigger
 						// removeFillingChar() on Webkit.
@@ -415,19 +453,8 @@ bender.test( {
 						range.setStart( editor.document.getById( 'p' ), 1 );
 						editor.getSelection().selectRanges( [ range ] );
 
-						assert.isMatching( /^<p id="p">foo\u200b<em>bar<\/em><\/p>$/, editor.editable().getHtml(), 'Filling char was inserted 2' );
-
-						editor.dataProcessor = {
-							toHtml: function( html ) {
-								return html;
-							},
-							toDataFormat: function( html ) {
-								return html;
-							}
-						};
-
+						assert.isMatching( '^<p id="p">foo' + fillingCharSequence + '<em>bar<\/em><\/p>$', editor.editable().getHtml(), 'Filling char was inserted 2' );
 						assert.isMatching( /^<p id="p">foo<em>bar<\/em><\/p>$/, editor.getData(), 'Filling char was removed on getData' );
-
 
 						// TC3 - on undo image
 						// <p>foo^<em>...
@@ -435,7 +462,7 @@ bender.test( {
 						range.setStart( editor.document.getById( 'p' ), 1 );
 						editor.getSelection().selectRanges( [ range ] );
 
-						assert.isMatching( /^<p id="p">foo\u200b<em>bar<\/em><\/p>$/, editor.editable().getHtml(), 'Filling char was inserted 2' );
+						assert.isMatching( '^<p id="p">foo' + fillingCharSequence + '<em>bar<\/em><\/p>$', editor.editable().getHtml(), 'Filling char was inserted 2' );
 
 						assert.isMatching( /^<p id="p">foo<em>bar<\/em><\/p>$/, new CKEDITOR.plugins.undo.Image( editor ).contents, 'Filling char was removed on beforeUndoImage' );
 					} );
@@ -446,32 +473,33 @@ bender.test( {
 		} );
 	},
 
-	'test filling char is removed and restored when taking snapshot': function() {
+	'test filling char remains untouched when taking snapshot': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
 
 		var editor = this.editors.editor,
 			editable = editor.editable(),
-			range = editor.createRange();
+			range;
 
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after set selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after set selection' );
 
 		editor.fire( 'beforeUndoImage' );
 		this.assertFillingChar( editable, uEl, '', 'after beforeUndoImage' );
 
 		editor.fire( 'afterUndoImage' );
-		fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after afterUndoImage' );
+		fillingChar = this.assertFillingChar( editable, uEl, '', 'after afterUndoImage' );
 
 		range = editor.getSelection().getRanges()[ 0 ];
-		assert.areSame( fillingChar, range.startContainer, 'Selection was restored - container' );
-		assert.areSame( 1, range.startOffset, 'Selection was restored - offset after ZWS' );
+		range.optimize();
+		assert.areSame( fillingChar.getParent(), range.startContainer, 'Selection remains - container' );
+		assert.areSame( 1, range.startOffset, 'Selection remains - offset after FC' );
 	},
 
-	// #12489
-	'test filling char is removed and restored when taking snapshot if selection is not right after the filling char': function() {
+	// https://dev.ckeditor.com/ticket/12489
+	'test filling char remains when taking snapshot if selection is not right after the filling char': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
 
@@ -482,27 +510,27 @@ bender.test( {
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after set selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after set selection' );
 
 		// Happens when typing and navigating...
 		// Setting selection using native API to avoid losing the filling char on selection.setRanges().
 		fillingChar.setText( fillingChar.getText() + 'abcd' );
-		editor.document.$.getSelection().setPosition( fillingChar.$, 3 ); // ZWSab^cd
+		editor.document.$.getSelection().setPosition( fillingChar.$, fillingChar.$.nodeValue.length - 2 ); // FCab^cd
 
-		this.assertFillingChar( editable, uEl, '\u200babcd', 'after type' );
+		this.assertFillingChar( editable, uEl, 'abcd', 'after type' );
 
 		editor.fire( 'beforeUndoImage' );
 		this.assertFillingChar( editable, uEl, 'abcd', 'after beforeUndoImage' );
 
 		editor.fire( 'afterUndoImage' );
-		fillingChar = this.assertFillingChar( editable, uEl, '\u200babcd', 'after afterUndoImage' );
+		fillingChar = this.assertFillingChar( editable, uEl, 'abcd', 'after afterUndoImage' );
 
 		range = editor.getSelection().getRanges()[ 0 ];
-		assert.areSame( fillingChar, range.startContainer, 'Selection was restored - container' );
-		assert.areSame( 3, range.startOffset, 'Selection was restored - offset in ZWSab^cd' );
+		assert.areSame( fillingChar, range.startContainer, 'Selection remains - container' );
+		assert.areSame( fillingCharSequenceLength + 2, range.startOffset, 'Selection remains - offset in FCab^cd' );
 	},
 
-	// #8617
+	// https://dev.ckeditor.com/ticket/8617
 	'test selection is preserved when removing filling char on left-arrow': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
@@ -514,14 +542,17 @@ bender.test( {
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after setting selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after setting selection' );
 
 		// Happens when typing and navigating...
 		// Setting selection using native API to avoid losing the filling char on selection.setRanges().
 		fillingChar.setText( fillingChar.getText() + 'abc' );
-		editor.document.$.getSelection().setPosition( fillingChar.$, 4 ); // ZWSabc^
+		editor.document.$.getSelection().setPosition( fillingChar.$, fillingChar.$.nodeValue.length ); // FCabc^
 
-		this.assertFillingChar( editable, uEl, '\u200babc', 'after typing' );
+		this.assertFillingChar( editable, uEl, 'abc', 'after typing' );
+
+		// Editor needs to have focus to remove FC on keydown. (https://dev.ckeditor.com/ticket/14714)
+		editor.focus();
 
 		// Mock LEFT arrow.
 		editor.document.fire( 'keydown', new CKEDITOR.dom.event( { keyCode: 37 } ) );
@@ -533,7 +564,7 @@ bender.test( {
 		assert.areSame( 3, range.startOffset, 'Selection was restored - offset in abc^' );
 	},
 
-	// #12419
+	// https://dev.ckeditor.com/ticket/12419
 	'test selection is preserved when removing filling char on select all': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
@@ -545,14 +576,14 @@ bender.test( {
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after setting selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after setting selection' );
 
 		// Happens when typing and navigating...
 		// Setting selection using native API to avoid losing the filling char on selection.setRanges().
 		fillingChar.setText( fillingChar.getText() + 'abc' );
-		editor.document.$.getSelection().setPosition( fillingChar.$, 4 ); // ZWSabc^
+		editor.document.$.getSelection().setPosition( fillingChar.$, fillingChar.$.nodeValue.length ); // FCabc^
 
-		this.assertFillingChar( editable, uEl, '\u200babc', 'after typing' );
+		this.assertFillingChar( editable, uEl, 'abc', 'after typing' );
 
 		// Select all contents.
 		range.selectNodeContents( editable.findOne( 'p' ) );
@@ -574,21 +605,21 @@ bender.test( {
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after setting selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after setting selection' );
 
 		// Happens when typing and making selection from right to left...
 		// Setting selection using native API to avoid losing the filling char on selection.setRanges().
 		fillingChar.setText( fillingChar.getText() + 'abc' );
 		range = editor.document.$.createRange();
-		// ZWSabc]
-		range.setStart( fillingChar.$, 4 );
+		// FCabc]
+		range.setStart( fillingChar.$, fillingChar.$.nodeValue.length );
 		var nativeSel = editor.document.$.getSelection();
 		nativeSel.removeAllRanges();
 		nativeSel.addRange( range );
-		// ZWSa[bc
-		nativeSel.extend( fillingChar.$, 2 );
+		// FCa[bc
+		nativeSel.extend( fillingChar.$, fillingChar.$.nodeValue.length - 2 );
 
-		this.assertFillingChar( editable, uEl, '\u200babc', 'after typing' );
+		this.assertFillingChar( editable, uEl, 'abc', 'after typing' );
 
 		// Mock LEFT arrow.
 		editor.document.fire( 'keydown', new CKEDITOR.dom.event( { keyCode: 37 } ) );
@@ -602,7 +633,7 @@ bender.test( {
 
 	// This particular scenario is reproducible when after typing in an empty inline element
 	// user tries to select text by mouse from right to left in that element - selection is lost.
-	// #12491 comment:3
+	// https://dev.ckeditor.com/ticket/12491 comment:3
 	'test direction of selection is preserved when taking snapshot': function() {
 		if ( !CKEDITOR.env.webkit )
 			assert.ignore();
@@ -614,31 +645,31 @@ bender.test( {
 		this.setSelectionInEmptyInlineElement( editor );
 
 		var uEl = editable.findOne( 'u' ),
-			fillingChar = this.assertFillingChar( editable, uEl, '\u200b', 'after set selection' );
+			fillingChar = this.assertFillingChar( editable, uEl, '', 'after set selection' );
 
 		// Happens when typing and making selection from right to left...
 		// Setting selection using native API to avoid losing the filling char on selection.setRanges().
 		fillingChar.setText( fillingChar.getText() + 'abc' );
 		range = editor.document.$.createRange();
-		// ZWSabc]
-		range.setStart( fillingChar.$, 4 );
+		// FCabc]
+		range.setStart( fillingChar.$, fillingChar.$.nodeValue.length );
 		var nativeSel = editor.document.$.getSelection();
 		nativeSel.removeAllRanges();
 		nativeSel.addRange( range );
-		// ZWSa[bc
-		nativeSel.extend( fillingChar.$, 2 );
+		// FCa[bc
+		nativeSel.extend( fillingChar.$, fillingChar.$.nodeValue.length - 2 );
 
-		this.assertFillingChar( editable, uEl, '\u200babc', 'after type' );
+		this.assertFillingChar( editable, uEl, 'abc', 'after type' );
 
 		editor.fire( 'beforeUndoImage' );
 		this.assertFillingChar( editable, uEl, 'abc', 'after beforeUndoImage' );
 
 		editor.fire( 'afterUndoImage' );
-		this.assertFillingChar( editable, uEl, '\u200babc', 'after afterUndoImage' );
+		this.assertFillingChar( editable, uEl, 'abc', 'after afterUndoImage' );
 
 		nativeSel = editor.document.$.getSelection();
-		assert.areSame( 4, nativeSel.anchorOffset, 'sel.anchorOffset' );
-		assert.areSame( 2, nativeSel.focusOffset, 'sel.focusOffset' );
+		assert.areSame( fillingCharSequenceLength + 3, nativeSel.anchorOffset, 'sel.anchorOffset' );
+		assert.areSame( fillingCharSequenceLength + 1, nativeSel.focusOffset, 'sel.focusOffset' );
 	},
 
 	'test selection in source mode': function() {
@@ -674,7 +705,7 @@ bender.test( {
 		} );
 	},
 
-	// #11500 & #5217#comment:32
+	// https://dev.ckeditor.com/ticket/11500 & https://dev.ckeditor.com/ticket/5217#comment:32
 	// This test doesn't make much sense on !IE, because only on IE
 	// selection is locked when blurring framed editor.
 	// But the more cases we test the better, so let's see.
@@ -694,7 +725,7 @@ bender.test( {
 		} );
 	},
 
-	// #11500 & #5217#comment:32
+	// https://dev.ckeditor.com/ticket/11500 & https://dev.ckeditor.com/ticket/5217#comment:32
 	'test selection unlocked on setData in inline editor': function() {
 		var editor = this.editors.editorInline,
 			bot = this.editorBots.editorInline;
@@ -709,6 +740,47 @@ bender.test( {
 			assert.isFalse( !!sel.isLocked, 'selection is not locked' );
 			assert.areNotSame( 'bar', sel.getSelectedText(), 'selection was reset' );
 		} );
-	}
+	},
 
+	// (#1113)
+	'test "selectionChange" fires properly with nested contentEditable': function() {
+		var editor = this.editors.editorInline,
+			editable = editor.editable(),
+			stub = sinon.stub( editor, 'selectionChange' );
+
+		bender.tools.setHtmlWithSelection( editor, '<div contenteditable=true><div contenteditable=false><div contenteditable=true id="nested">xxx</div></div></div>' );
+
+		var event = CKEDITOR.env.webkit && 'DOMFocusIn' || CKEDITOR.env.gecko && 'focusin' || 'focus';
+		editable.fire( event, new CKEDITOR.dom.event( { target: editable.findOne( '#nested' ) } ) );
+
+		assert.isTrue( stub.called );
+	},
+
+	// (#1113)
+	'test focused nested editable changes elementPath': function() {
+		var editor = this.editors.editorInline;
+
+		bender.tools.setHtmlWithSelection( editor, '<div contenteditable=true>^xxx<div contenteditable=false><em contenteditable=true id="nested">xxx</em></div></div>' );
+
+		assert.areEqual( 'div', editor.elementPath().blockLimit.getName() );
+
+		editor.editable().findOne( '#nested' ).focus();
+
+		assert.areEqual( 'em', editor.elementPath().blockLimit.getName() );
+	}
 } );
+
+function testSelectionCheck( editor, event ) {
+	var onSelectionChange = sinon.spy();
+
+	bender.tools.setHtmlWithSelection( editor, '<p>[test]</p>' );
+
+	editor.on( 'selectionCheck', onSelectionChange );
+	editor.editable().fire( event );
+
+	// selection change has a 200ms delay.
+	wait( function() {
+		editor.removeListener( 'selectionCheck', onSelectionChange );
+		assert.isTrue( onSelectionChange.calledOnce, 'selectionCheck not fired on ' + event );
+	}, 200 );
+}

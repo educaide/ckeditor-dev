@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
  /**
@@ -14,7 +14,7 @@
 
 	CKEDITOR.plugins.add( 'codesnippet', {
 		requires: 'widget,dialog',
-		lang: 'ar,bg,ca,cs,da,de,el,en,en-gb,eo,es,et,fa,fi,fr,fr-ca,gl,he,hr,hu,it,ja,km,ko,ku,lt,lv,nb,nl,no,pl,pt,pt-br,ro,ru,sk,sl,sq,sv,th,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'ar,az,bg,ca,cs,da,de,de-ch,el,en,en-au,en-gb,eo,es,es-mx,et,eu,fa,fi,fr,fr-ca,gl,he,hr,hu,id,it,ja,km,ko,ku,lt,lv,nb,nl,no,oc,pl,pt,pt-br,ro,ru,sk,sl,sq,sv,th,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
 		icons: 'codesnippet', // %REMOVE_LINE_CORE%
 		hidpi: true, // %REMOVE_LINE_CORE%
 
@@ -46,6 +46,11 @@
 				editor._.codesnippet.langsRegex = new RegExp( '(?:^|\\s)language-(' +
 					CKEDITOR.tools.objectKeys( langs ).join( '|' ) + ')(?:\\s|$)' );
 			};
+
+			editor.once( 'pluginsLoaded', function() {
+				// Remove method once it can't be used, because it leaks editor reference (#589).
+				this.setHighlighter = null;
+			}, this );
 		},
 
 		onLoad: function() {
@@ -130,7 +135,7 @@
 	/**
 	 * Global helpers and classes of the Code Snippet plugin.
 	 *
-	 * For more information see the [Code Snippet Guide](#!/guide/dev_codesnippet).
+	 * For more information see the {@glink guide/dev_codesnippet Code Snippet Guide}.
 	 *
 	 * @class
 	 * @singleton
@@ -242,7 +247,7 @@
 		 *		}
 		 *
 		 * More information on how to change the list of languages is available
-		 * in the [Code Snippet documentation](#!/guide/dev_codesnippet-section-changing-languages-list).
+		 * in the {@glink guide/dev_codesnippet#changing-supported-languages Code Snippet documentation}.
 		 *
 		 * @property {Object} languages
 		 */
@@ -357,7 +362,7 @@
 				if ( childrenArray.length != 1 || ( code = childrenArray[ 0 ] ).name != 'code' )
 					return;
 
-				// Upcast <code> with text only: http://dev.ckeditor.com/ticket/11926#comment:4
+				// Upcast <code> with text only: https://dev.ckeditor.com/ticket/11926#comment:4
 				if ( code.children.length != 1 || code.children[ 0 ].type != CKEDITOR.NODE_TEXT )
 					return;
 
@@ -367,7 +372,7 @@
 				if ( matchResult )
 					data.lang = matchResult[ 1 ];
 
-				// Use textarea to decode HTML entities (#11926).
+				// Use textarea to decode HTML entities (https://dev.ckeditor.com/ticket/11926).
 				textarea.setHtml( code.getHtml() );
 				data.code = textarea.getValue();
 
@@ -430,6 +435,9 @@
  * highlighter (the default is [highlight.js](http://highlightjs.org)).
  * See {@link CKEDITOR.plugins.codesnippet.highlighter} to read more.
  *
+ * Read more in the {@glink guide/dev_codesnippet documentation}
+ * and see the {@glink examples/codesnippet example}.
+ *
  * @since 4.4
  * @cfg {String} [codeSnippet_codeClass='hljs']
  * @member CKEDITOR.config
@@ -443,14 +451,14 @@ CKEDITOR.config.codeSnippet_codeClass = 'hljs';
  * **Note**: If using a custom highlighter library (the default is [highlight.js](http://highlightjs.org)),
  * you may need to refer to external documentation to set `config.codeSnippet_languages` properly.
  *
+ * Read more in the [documentation](#!/guide/dev_codesnippet-section-changing-supported-languages)
+ * and see the {@glink examples/codesnippet example}.
+ *
  *		// Restricts languages to JavaScript and PHP.
  *		config.codeSnippet_languages = {
  *			javascript: 'JavaScript',
  *			php: 'PHP'
  *		};
- *
- * More information on how to change the list of languages list is available
- * in the [Code Snippet documentation](#!/guide/dev_codesnippet-section-changing-languages-list).
  *
  * @since 4.4
  * @cfg {Object} [codeSnippet_languages=null]
@@ -463,11 +471,11 @@ CKEDITOR.config.codeSnippet_codeClass = 'hljs';
  * **Note**: This will only work with the default highlighter
  * ([highlight.js](http://highlightjs.org/static/test.html)).
  *
+ * Read more in the [documentation](#!/guide/dev_codesnippet-section-changing-highlighter-theme)
+ * and see the {@glink examples/codesnippet example}.
+ *
  *		// Changes the theme to "pojoaque".
  *		config.codeSnippet_theme = 'pojoaque';
- *
- * More information on how to change the highlighter theme is available
- * in the [Code Snippet documentation](#!/guide/dev_codesnippet-section-changing-highlighter-theme).
  *
  * @since 4.4
  * @cfg {String} [codeSnippet_theme='default']

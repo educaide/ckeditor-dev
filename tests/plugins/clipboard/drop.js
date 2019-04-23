@@ -1,4 +1,4 @@
-/* bender-tags: clipboard, 13468, 13015, 13140, 12806, 13011 */
+/* bender-tags: clipboard, 13468, 13015, 13140, 12806, 13011, 13453 */
 /* bender-ckeditor-plugins: toolbar,clipboard,undo */
 /* bender-include: _helpers/pasting.js */
 
@@ -90,23 +90,26 @@ function drop( editor, evt, config, onDrop, onFinish ) {
 
 	finishListener = function() {
 		resume( function() {
-			// Drop event asserts
-			assert.areSame( 1, values.dropEventCounter, 'There should be always one drop.' );
-			assert.isTrue( values.dropInstanceOfDataTransfer, 'On drop: dropEvt.data.dataTransfer should be instance of dataTransfer.' );
-			if ( config.expectedText && isCustomDataTypesSupported ) {
-				assert.areSame( config.expectedText, values.dropDataText, 'On drop: text data should match.' );
-			}
-			if ( config.expectedHtml ) {
-				// isInnerHtmlMatching remove space from the end of strings we compare, adding 'x' fix this problem.
-				assert.isInnerHtmlMatching( 'x' + config.expectedHtml + 'x', 'x' + values.dropDataHtml + 'x', 'On drop: HTML data should match.' );
-			}
-			assert.isTrue( values.dropRangeStartContainerMatch, 'On drop: drop range start container should match.' );
-			assert.isTrue( values.dropRangeStartContainerMatch, 'On drop: drop range start offset should match.' );
+			if ( !config.expectedDropPrevented ) {
+				// Drop event asserts
+				assert.areSame( 1, values.dropEventCounter, 'There should be always one drop.' );
 
-			assert.isTrue( values.dropNativeEventMatch, 'On drop: native event should match.' );
-			// Check that it's the mocked drop target created by the mockDropEvent().
-			assert.areSame( CKEDITOR.NODE_TEXT, values.dropTarget.type, 'On drop: drop target node type should match.' );
-			assert.areSame( 'targetMock', values.dropTarget.getText(), 'On drop: drop target should match.' );
+				assert.isTrue( values.dropInstanceOfDataTransfer, 'On drop: dropEvt.data.dataTransfer should be instance of dataTransfer.' );
+				if ( config.expectedText && isCustomDataTypesSupported ) {
+					assert.areSame( config.expectedText, values.dropDataText, 'On drop: text data should match.' );
+				}
+				if ( config.expectedHtml ) {
+					// isInnerHtmlMatching remove space from the end of strings we compare, adding 'x' fix this problem.
+					assert.isInnerHtmlMatching( 'x' + config.expectedHtml + 'x', 'x' + values.dropDataHtml + 'x', 'On drop: HTML data should match.' );
+				}
+				assert.isTrue( values.dropRangeStartContainerMatch, 'On drop: drop range start container should match.' );
+				assert.isTrue( values.dropRangeStartContainerMatch, 'On drop: drop range start offset should match.' );
+
+				assert.isTrue( values.dropNativeEventMatch, 'On drop: native event should match.' );
+				// Check that it's the mocked drop target created by the mockDropEvent().
+				assert.areSame( CKEDITOR.NODE_TEXT, values.dropTarget.type, 'On drop: drop target node type should match.' );
+				assert.areSame( 'targetMock', values.dropTarget.getText(), 'On drop: drop target should match.' );
+			}
 
 			// Paste event asserts
 			assert.areSame( expectedBeforePasteEventCount, values.beforePasteEventCounter, 'Before paste event should be called ' + expectedBeforePasteEventCount + ' time(s).' );
@@ -356,7 +359,31 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// Integration test (#12806).
+		// https://dev.ckeditor.com/ticket/13453
+		'test drop inside drag range has no effect': function( editor ) {
+			var bot = bender.editorBots[ editor.name ],
+				evt = bender.tools.mockDropEvent();
+
+			bot.setHtmlWithSelection( '<p class="p">[Lorem <b>ipsum</b> dolor sit] amet.</p>' );
+			editor.resetUndo();
+
+			drag( editor, evt );
+
+			drop( editor, evt, {
+				dropContainer: editor.editable().findOne( 'b' ).getChild( 0 ),
+				dropOffset: 0,
+				expectedTransferType: CKEDITOR.DATA_TRANSFER_INTERNAL,
+				expectedPasteEventCount: 1,
+				expectedText: 'Lorem ipsum dolor sit',
+				expectedHtml: 'Lorem <b>ipsum</b> dolor sit',
+				expectedDataType: 'html',
+				expectedDataValue: 'Lorem <b>ipsum</b> dolor sit'
+			}, null, function() {
+				assert.isInnerHtmlMatching( '<p class="p">Lorem <b>ipsum</b> dolor sit^ amet.@</p>', getWithHtml( editor ), htmlMatchOpts, 'after drop' );
+			} );
+		},
+
+		// Integration test (https://dev.ckeditor.com/ticket/12806).
 		'test drop part of the link': function( editor ) {
 			var bot = bender.editorBots[ editor.name ],
 				evt = bender.tools.mockDropEvent();
@@ -375,10 +402,10 @@ var testsForMultipleEditor = {
 				expectedDataType: 'html',
 				expectedDataValue: '<a href="foo">ipsum</a>'
 			}, null, function() {
-				assert.isInnerHtmlMatching(
-					'<p class="p" style="margin-left:20px"><a href="foo">Lorem dolor</a> sit<a data-cke-saved-href="foo" href="foo">' +
-					'ipsum' + ( ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) ? '</a>^' : '^</a>' ) + ' amet.@</p>',
-					getWithHtml( editor ), htmlMatchOpts, 'after drop' );
+				assert.isInnerHtmlMatching( [
+						'<p class="p" style="margin-left:20px"><a href="foo">Lorem dolor</a> sit<a data-cke-saved-href="foo" href="foo">ipsum</a>^ amet.@</p>',
+						'<p class="p" style="margin-left:20px"><a href="foo">Lorem dolor</a> sit<a data-cke-saved-href="foo" href="foo">ipsum^</a> amet.@</p>'
+					], getWithHtml( editor ), htmlMatchOpts, 'after drop' );
 			} );
 		},
 
@@ -466,7 +493,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// #13468
+		// https://dev.ckeditor.com/ticket/13468
 		'test drop custom type from external source': function( editor ) {
 			var bot = bender.editorBots[ editor.name ],
 				evt = {};
@@ -606,6 +633,57 @@ var testsForMultipleEditor = {
 			}, function() {
 				assert.areSame( '<p class="p">^foo</p>', bender.tools.getHtmlWithSelection( editor ), 'after drop' );
 			} );
+		},
+
+		// https://dev.ckeditor.com/ticket/13879
+		'test prevent drop': function( editor, bot ) {
+			var evt = bender.tools.mockDropEvent();
+
+			// Simulate calling evt.data.preventDefault.
+			evt.$.defaultPrevented = true;
+
+			bot.setHtmlWithSelection( '<p class="p">^foo</p>' );
+			editor.resetUndo();
+
+			drag( editor, evt );
+
+			drop( editor, evt, {
+				dropContainer: editor.editable().findOne( '.p' ).getChild( 0 ),
+				dropOffset: 0,
+				expectedPasteEventCount: 0,
+				expectedDropPrevented: true
+			}, function() {
+				return true;
+			}, function() {
+				assert.areSame( '<p class="p">^foo</p>', bender.tools.getHtmlWithSelection( editor ), 'after drop' );
+			} );
+		},
+		// #(2292)
+		'test internal drag and drop on editors margin': function( editor ) {
+			var evt = bender.tools.mockDropEvent();
+
+			bender.tools.selection.setWithHtml( editor,
+				'<ol>' +
+					'<li><a href="http://test.com">{one</a></li>' +
+					'<li>two</li>' +
+					'<li>three</li>' +
+					'<li>four}</li>' +
+				'</ol>'
+			);
+
+			drag( editor, evt );
+			drop( editor, evt, {
+				dropContainer: editor.editable().find( 'li' ).getItem( 3 ),
+				dropOffset: 0,
+				expectedPasteEventCount: 1,
+				expectedDropPrevented: false,
+				expectedTransferType: CKEDITOR.DATA_TRANSFER_INTERNAL,
+				expectedText: CKEDITOR.env.edge ? 'onetwothreefour' : 'one\ntwo\nthree\nfour',
+				expectedHtml: '<ol><li><a href="http://test.com">one</a>@</li><li>two</li><li>three</li><li>four</li></ol>',
+				expectedDataType: 'html',
+				expectedDataValue: '<ol><li><a href="http://test.com">one</a>@</li><li>two</li><li>three</li><li>four</li></ol>'
+			} );
+
 		}
 	},
 	testsForOneEditor = {
@@ -690,7 +768,7 @@ var testsForMultipleEditor = {
 			assert.isInnerHtmlMatching( '<p class="p">lorem^ ipsum sit amet.@</p>', getWithHtml( editor ), htmlMatchOpts );
 		},
 
-		'test fix split nodes 2 (#13011)': function() {
+		'test fix split nodes 2 (https://dev.ckeditor.com/ticket/13011)': function() {
 			// <p id="p"> " f o o " " b a r " <img /> </p>
 			//                     ^         [       ]
 			//                     drop      drag
@@ -857,7 +935,7 @@ var testsForMultipleEditor = {
 			assert.isFalse( CKEDITOR.plugins.clipboard.isDropRangeAffectedByDragRange( dragRange, dropRange ) );
 		},
 
-		'test isDropRangeAffectedByDragRange adjacent positions (#13140)': function() {
+		'test isDropRangeAffectedByDragRange adjacent positions (https://dev.ckeditor.com/ticket/13140)': function() {
 			var editor = this.editors.framed,
 				bot = this.editorBots[ editor.name ],
 				dragRange = editor.createRange(),
@@ -1081,7 +1159,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		'test drop on non editable (#13015)': function() {
+		'test drop on non editable (https://dev.ckeditor.com/ticket/13015)': function() {
 			var editor = this.editors.divarea,
 				bot = this.editorBots[ editor.name ],
 				evt = bender.tools.mockDropEvent();
@@ -1126,6 +1204,25 @@ var testsForMultipleEditor = {
 
 			assert.isTrue( spy.called, 'preventDefault called.' );
 			assert.areEqual( 'none', data.$.dataTransfer.dropEffect, 'dropEffect reset to \'none\'' );
+		},
+
+		'test dragOver Edge': function() {
+			if ( !CKEDITOR.env.edge ) {
+				assert.ignore();
+			}
+
+			var editor = this.editors.divarea,
+				bot = this.editorBots[ editor.name ],
+				spy = sinon.spy(),
+				data = {
+					preventDefault: spy
+				};
+
+			bot.setHtmlWithSelection( '<p>Test area.</p>' );
+
+			editor.editable().fire( 'dragover', data );
+
+			assert.isTrue( spy.called, 'preventDefault called.' );
 		}
 	};
 

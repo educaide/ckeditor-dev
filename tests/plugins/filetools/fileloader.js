@@ -1,16 +1,63 @@
-/* bender-tags: editor,unit,clipboard,filetools */
+/* bender-tags: editor,clipboard,filetools */
 /* bender-ckeditor-plugins: filetools */
+/* bender-include: _helpers/tools.js */
+/* global fileTools */
 
 'use strict';
 
 ( function() {
-	var FileReaderBackup = window.FileReader,
+	// IE/Edge doesn't support File constructor, so there is a need to mimic it.
+	fileTools.mockFileType();
+
+	var File = window.File,
+		Blob = window.Blob,
+		FormData = window.FormData,
+		FileReaderBackup = window.FileReader,
 		XMLHttpRequestBackup = window.XMLHttpRequest,
 		FileLoader, resumeAfter,
 		pngBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAAxJREFUCNdjYGBgAAAABAABJzQnCgAAAABJRU5ErkJggg==',
 		testFile, lastFormData,
 		listeners = [],
-		editorMock = {};
+		editorMock = {
+			config: {
+				fileTools_requestHeaders: {
+					foo: 'bar',
+					hello: 'world'
+				}
+			}
+		},
+		editorMockDefaultFileName = {
+			config: {
+				fileTools_defaultFileName: 'default-file-name'
+			}
+		};
+
+	function createFormDataMock() {
+		window.FormData = function() {
+			var entries = {},
+				mock = {
+					get: function( name ) {
+						return entries[ name ] || null;
+					},
+					append: function( name, value, fileName ) {
+						if ( value instanceof File && ( value.name === fileName || !fileName ) )
+							entries[ name ] = value;
+						else if ( value instanceof Blob ) {
+							fileName = fileName || value.name || 'blob';
+
+							entries [ name ] = new File( [ value ], fileName );
+						}
+						else
+							entries[ name ] = value + '';
+					},
+					has: function( name ) {
+						return Object.prototype.hasOwnProperty.call( entries, name );
+					}
+				};
+
+			return mock;
+		};
+	}
 
 	function createFileReaderMock( scenario ) {
 		var isAborted = false;
@@ -65,6 +112,8 @@
 					open: function() {
 					},
 
+					upload: {},
+
 					send: function( formData ) {
 						lastFormData = formData;
 
@@ -78,16 +127,23 @@
 
 											switch ( scenario[ i ] ) {
 												case 'progress':
-													evt = { loaded: 41 };
+													// Report total upload size larger than file size. It will happen
+													// when file will be embedded in FormData.
+													evt = { loaded: 41, total: 100, lengthComputable: true };
+													xhr.upload.onprogress( evt );
 													break;
 												case 'load':
 													xhr.status = ( response && response.responseStatus ) ? response.responseStatus : 200;
 													xhr.responseText = ( response && response.responseText ) ? response.responseText :
 														'{"fileName":"name2.png","uploaded":1,"url":"http:\/\/url\/name2.png"}';
+													xhr.onload( evt );
+													break;
+												case 'error':
+													xhr.onerror( evt );
 													break;
 											}
 
-											xhr[ 'on' + scenario[ i ] ]( evt );
+
 										};
 									} else {
 										action = scenario[ i ];
@@ -105,7 +161,9 @@
 						setTimeout( function() {
 							xhr.onabort();
 						}, 0 );
-					}
+					},
+
+					setRequestHeader: sinon.stub()
 				};
 
 			return xhr;
@@ -125,7 +183,7 @@
 
 
 			observer.events += evt.name + '[' + loader.status + ',' + loader.fileName + ',' +
-				loader.uploaded + '/' + loader.loaded + '/' + loader.total + ',' +
+				loader.uploaded + '/' + loader.loaded + '/' + loader.total + '/' + loader.uploadTotal + ',' +
 				message  + ',' + data + ',' + url + ']|';
 		}
 
@@ -181,6 +239,11 @@
 				assert.ignore();
 			}
 
+			// FormData in IE & Chrome 47- supports only adding data, not getting it, so mocking (polyfilling?) is required.
+			// Note that mocking is needed only for tests, as CKEditor.fileTools uses only append method
+			if ( !FormData.prototype.get || !FormData.prototype.has )
+				createFormDataMock();
+
 			FileLoader = CKEDITOR.fileTools.fileLoader;
 			resumeAfter = bender.tools.resumeAfter;
 			testFile = bender.tools.getTestPngFile();
@@ -200,7 +263,7 @@
 		},
 
 		'test constructor string, no name': function() {
-			var loader = new FileLoader( {}, pngBase64 );
+			var loader = new FileLoader( editorMock, pngBase64 );
 
 			assert.areSame( 'image.png', loader.fileName );
 			assert.areSame( pngBase64, loader.data );
@@ -211,8 +274,20 @@
 			assert.areSame( 'created', loader.status );
 		},
 
+		'test constructor string, no name, default file name provided': function() {
+			var loader = new FileLoader( editorMockDefaultFileName, pngBase64 );
+
+			assert.areSame( editorMockDefaultFileName.config.fileTools_defaultFileName + '.png', loader.fileName );
+			assert.areSame( pngBase64, loader.data );
+			assert.isObject( loader.file );
+			assert.areSame( 82, loader.total );
+			assert.areSame( 82, loader.loaded );
+			assert.areSame( 0, loader.uploaded );
+			assert.areSame( 'created', loader.status );
+		},
+
 		'test constructor string, filename': function() {
-			var loader = new FileLoader( {}, pngBase64, 'foo' );
+			var loader = new FileLoader( editorMock, pngBase64, 'foo' );
 
 			assert.areSame( 'foo', loader.fileName );
 			assert.areSame( pngBase64, loader.data );
@@ -224,7 +299,7 @@
 		},
 
 		'test constructor file, no name': function() {
-			var loader = new FileLoader( {}, testFile );
+			var loader = new FileLoader( editorMock, testFile );
 
 			assert.areSame( 'name.png', loader.fileName );
 			assert.isNull( loader.data );
@@ -236,7 +311,7 @@
 		},
 
 		'test constructor file, filename': function() {
-			var loader = new FileLoader( {}, testFile, 'bar' );
+			var loader = new FileLoader( editorMock, testFile, 'bar' );
 
 			assert.areSame( 'bar', loader.fileName );
 			assert.isNull( loader.data );
@@ -251,9 +326,24 @@
 			var testFileWithoutName = bender.tools.getTestPngFile();
 			testFileWithoutName.name = undefined;
 
-			var loader = new FileLoader( {}, testFileWithoutName );
+			var loader = new FileLoader( editorMock, testFileWithoutName );
 
 			assert.areSame( 'image.png', loader.fileName );
+			assert.isNull( loader.data );
+			assert.isObject( loader.file );
+			assert.areSame( 82, loader.total );
+			assert.areSame( 0, loader.loaded );
+			assert.areSame( 0, loader.uploaded );
+			assert.areSame( 'created', loader.status );
+		},
+
+		'test constructor file, no filename in file, default file name provided': function() {
+			var testFileWithoutName = bender.tools.getTestPngFile();
+			testFileWithoutName.name = undefined;
+
+			var loader = new FileLoader( editorMockDefaultFileName, testFileWithoutName );
+
+			assert.areSame( editorMockDefaultFileName.config.fileTools_defaultFileName + '.png', loader.fileName );
 			assert.isNull( loader.data );
 			assert.isObject( loader.file );
 			assert.areSame( 82, loader.total );
@@ -270,11 +360,11 @@
 
 			resumeAfter( loader, 'loaded', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'loaded[loaded,name.png,0/82/82,-,result,-]',
-					'update[loaded,name.png,0/82/82,-,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'loaded[loaded,name.png,0/82/82/null,-,result,-]',
+					'update[loaded,name.png,0/82/82/null,-,result,-]' ] );
 			}, 3 );
 
 			loader.load();
@@ -290,11 +380,12 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/82/82,-,data:image/png;base64,-]',
-					'update[uploading,name.png,0/82/82,-,data:image/png;base64,-]',
-					'update[uploading,name.png,41/82/82,-,data:image/png;base64,-]',
-					'uploaded[uploaded,name2.png,82/82/82,-,data:image/png;base64,http://url/name2.png]',
-					'update[uploaded,name2.png,82/82/82,-,data:image/png;base64,http://url/name2.png]' ] );
+					'uploading[uploading,name.png,0/82/82/null,-,data:image/png;base64,-]',
+					'update[uploading,name.png,0/82/82/null,-,data:image/png;base64,-]',
+					'update[uploading,name.png,41/82/82/100,-,data:image/png;base64,-]',
+					'update[uploading,name.png,41/82/82/100,-,data:image/png;base64,-]',
+					'uploaded[uploaded,name2.png,100/82/82/100,-,data:image/png;base64,http://url/name2.png]',
+					'update[uploaded,name2.png,100/82/82/100,-,data:image/png;base64,http://url/name2.png]' ] );
 			}, 3 );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -304,7 +395,62 @@
 			wait();
 		},
 
-		'test upload response not encoded (#13030)': function() {
+		'test upload with custom field name (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, pngBase64, 'name.png' );
+
+			attachListener( editorMock, 'fileUploadRequest', function( evt ) {
+				var requestData = evt.data.requestData;
+
+				requestData.myFile = requestData.upload;
+
+				delete requestData.upload;
+			} );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.isTrue( lastFormData.has( 'myFile' ) );
+				assert.isFalse( lastFormData.has( 'upload' ) );
+
+				// FormData converts all Blob objects into File ones, so we must "revert" it
+				objectAssert.areEqual( new Blob( [ lastFormData.get( 'myFile' ) ], {} ), loader.file );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test upload with additional request parameters provided (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, pngBase64, 'name.png' );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( 'test', lastFormData.get( 'test' ) );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/', { test: 'test' } );
+
+			wait();
+		},
+
+		'test if name of file is correctly attached (https://dev.ckeditor.com/ticket/13518)': function() {
+			var name = 'customName.png',
+				loader = new FileLoader( editorMock, pngBase64, name );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( name, lastFormData.get( 'upload' ).name );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test upload response not encoded (https://dev.ckeditor.com/ticket/13030)': function() {
 			var loader = new FileLoader( editorMock, pngBase64, 'na me.png' ),
 				observer = observeEvents( loader );
 
@@ -314,11 +460,12 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'uploading[uploading,na me.png,0/82/82,-,data:image/png;base64,-]',
-					'update[uploading,na me.png,0/82/82,-,data:image/png;base64,-]',
-					'update[uploading,na me.png,41/82/82,-,data:image/png;base64,-]',
-					'uploaded[uploaded,na me2.png,82/82/82,-,data:image/png;base64,http://url/na me2.png]',
-					'update[uploaded,na me2.png,82/82/82,-,data:image/png;base64,http://url/na me2.png]' ] );
+					'uploading[uploading,na me.png,0/82/82/null,-,data:image/png;base64,-]',
+					'update[uploading,na me.png,0/82/82/null,-,data:image/png;base64,-]',
+					'update[uploading,na me.png,41/82/82/100,-,data:image/png;base64,-]',
+					'update[uploading,na me.png,41/82/82/100,-,data:image/png;base64,-]',
+					'uploaded[uploaded,na me2.png,100/82/82/100,-,data:image/png;base64,http://url/na me2.png]',
+					'update[uploaded,na me2.png,100/82/82/100,-,data:image/png;base64,http://url/na me2.png]' ] );
 			}, 3 );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -337,14 +484,15 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'uploading[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,41/82/82,-,result,-]',
-					'uploaded[uploaded,name2.png,82/82/82,-,result,http://url/name2.png]',
-					'update[uploaded,name2.png,82/82/82,-,result,http://url/name2.png]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'uploading[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'uploaded[uploaded,name2.png,100/82/82/100,-,result,http://url/name2.png]',
+					'update[uploaded,name2.png,100/82/82/100,-,result,http://url/name2.png]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -358,8 +506,8 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'abort[abort,name.png,0/0/82,-,-,-]',
-					'update[abort,name.png,0/0/82,-,-,-]' ] );
+					'abort[abort,name.png,0/0/82/null,-,-,-]',
+					'update[abort,name.png,0/0/82/null,-,-,-]' ] );
 			} );
 
 			loader.abort();
@@ -378,10 +526,10 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'abort[abort,name.png,0/0/82,-,-,-]',
-					'update[abort,name.png,0/0/82,-,-,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'abort[abort,name.png,0/0/82/null,-,-,-]',
+					'update[abort,name.png,0/0/82/null,-,-,-]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -400,11 +548,11 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'abort[abort,name.png,0/41/82,-,-,-]',
-					'update[abort,name.png,0/41/82,-,-,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'abort[abort,name.png,0/41/82/null,-,-,-]',
+					'update[abort,name.png,0/41/82/null,-,-,-]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -423,11 +571,11 @@
 
 			resumeAfter( loader, 'loaded', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'loaded[loaded,name.png,0/82/82,-,result,-]',
-					'update[loaded,name.png,0/82/82,-,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'loaded[loaded,name.png,0/82/82/null,-,result,-]',
+					'update[loaded,name.png,0/82/82/null,-,result,-]' ] );
 			} );
 
 			loader.load();
@@ -447,13 +595,13 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'uploading[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,0/82/82,-,result,-]',
-					'abort[abort,name.png,0/82/82,-,result,-]',
-					'update[abort,name.png,0/82/82,-,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'uploading[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,0/82/82/null,-,result,-]',
+					'abort[abort,name.png,0/82/82/null,-,result,-]',
+					'update[abort,name.png,0/82/82/null,-,result,-]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -473,14 +621,14 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'uploading[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,41/82/82,-,result,-]',
-					'abort[abort,name.png,41/82/82,-,result,-]',
-					'update[abort,name.png,41/82/82,-,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'uploading[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'abort[abort,name.png,41/82/82/100,-,result,-]',
+					'update[abort,name.png,41/82/82/100,-,result,-]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -500,14 +648,15 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'uploading[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,41/82/82,-,result,-]',
-					'uploaded[uploaded,name2.png,82/82/82,-,result,http://url/name2.png]',
-					'update[uploaded,name2.png,82/82/82,-,result,http://url/name2.png]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'uploading[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'uploaded[uploaded,name2.png,100/82/82/100,-,result,http://url/name2.png]',
+					'update[uploaded,name2.png,100/82/82/100,-,result,http://url/name2.png]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -528,11 +677,11 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'error[error,name.png,0/41/82,errorMsg,-,-]',
-					'update[error,name.png,0/41/82,errorMsg,-,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'error[error,name.png,0/41/82/null,errorMsg,-,-]',
+					'update[error,name.png,0/41/82/null,errorMsg,-,-]' ] );
 			} );
 
 			loader.load();
@@ -553,11 +702,11 @@
 
 			resumeAfter( loader, 'abort', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'abort[abort,name.png,0/41/82,-,-,-]',
-					'update[abort,name.png,0/41/82,-,-,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'abort[abort,name.png,0/41/82/null,-,-,-]',
+					'update[abort,name.png,0/41/82/null,-,-,-]' ] );
 			} );
 
 			loader.load();
@@ -575,11 +724,11 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'error[error,name.png,0/41/82,loadError,-,-]',
-					'update[error,name.png,0/41/82,loadError,-,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'error[error,name.png,0/41/82/null,loadError,-,-]',
+					'update[error,name.png,0/41/82/null,loadError,-,-]' ] );
 			} );
 
 			loader.load();
@@ -598,14 +747,14 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'uploading[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,0/82/82,-,result,-]',
-					'update[uploading,name.png,41/82/82,-,result,-]',
-					'error[error,name.png,41/82/82,networkError,result,-]',
-					'update[error,name.png,41/82/82,networkError,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'uploading[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,0/82/82/null,-,result,-]',
+					'update[uploading,name.png,41/82/82/100,-,result,-]',
+					'error[error,name.png,41/82/82/100,networkError,result,-]',
+					'update[error,name.png,41/82/82/100,networkError,result,-]' ] );
 			} );
 
 			loader.loadAndUpload( 'http:\/\/url\/' );
@@ -624,11 +773,11 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'loading[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/0/82,-,-,-]',
-					'update[loading,name.png,0/41/82,-,-,-]',
-					'error[error,name.png,0/82/82,noUrlError,result,-]',
-					'update[error,name.png,0/82/82,noUrlError,result,-]' ] );
+					'loading[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/0/82/null,-,-,-]',
+					'update[loading,name.png,0/41/82/null,-,-,-]',
+					'error[error,name.png,0/82/82/null,noUrlError,result,-]',
+					'update[error,name.png,0/82/82/null,noUrlError,result,-]' ] );
 			} );
 
 			loader.loadAndUpload();
@@ -646,11 +795,12 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'error[error,name.png,82/0/82,responseError,-,-]',
-					'update[error,name.png,82/0/82,responseError,-,-]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'error[error,name.png,100/0/82/100,responseError,-,-]',
+					'update[error,name.png,100/0/82/100,responseError,-,-]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -676,11 +826,12 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'error[error,name.png,82/0/82,errorFromServer,-,-]',
-					'update[error,name.png,82/0/82,errorFromServer,-,-]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'error[error,name.png,100/0/82/100,errorFromServer,-,-]',
+					'update[error,name.png,100/0/82/100,errorFromServer,-,-]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -706,11 +857,12 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'uploaded[uploaded,name2.png,82/0/82,messageFromServer,-,http://url/name2.png]',
-					'update[uploaded,name2.png,82/0/82,messageFromServer,-,http://url/name2.png]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'uploaded[uploaded,name2.png,100/0/82/100,messageFromServer,-,http://url/name2.png]',
+					'update[uploaded,name2.png,100/0/82/100,messageFromServer,-,http://url/name2.png]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -728,11 +880,12 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'error[error,name.png,82/0/82,httpError404,-,-]',
-					'update[error,name.png,82/0/82,httpError404,-,-]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'error[error,name.png,100/0/82/100,httpError404,-,-]',
+					'update[error,name.png,100/0/82/100,httpError404,-,-]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -750,11 +903,12 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'error[error,name.png,82/0/82,httpError 404,-,-]',
-					'update[error,name.png,82/0/82,httpError 404,-,-]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'error[error,name.png,100/0/82/100,httpError 404,-,-]',
+					'update[error,name.png,100/0/82/100,httpError 404,-,-]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -770,11 +924,12 @@
 
 			resumeAfter( loader, 'uploaded', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'uploaded[uploaded,name2.png,82/0/82,-,-,http://url/name2.png]',
-					'update[uploaded,name2.png,82/0/82,-,-,http://url/name2.png]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'uploaded[uploaded,name2.png,100/0/82/100,-,-,http://url/name2.png]',
+					'update[uploaded,name2.png,100/0/82/100,-,-,http://url/name2.png]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -795,18 +950,67 @@
 				// Wait for all update events.
 				wait( function() {
 					observer.assert( [
-						'update[created,name.png,0/0/82,-,-,-]',
-						'uploading[uploading,name.png,0/0/82,-,-,-]',
-						'update[uploading,name.png,0/0/82,-,-,-]',
-						'update[uploading,name.png,41/0/82,-,-,-]',
-						'update[uploading,name.png,41/0/82,-,-,-]',
-						'uploaded[uploaded,name2.png,82/0/82,-,-,http://url/name2.png]',
-						'update[uploaded,name2.png,82/0/82,-,-,http://url/name2.png]',
-						'update[uploaded,name2.png,82/0/82,-,-,http://url/name2.png]' ] );
+						'update[created,name.png,0/0/82/null,-,-,-]',
+						'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+						'update[uploading,name.png,0/0/82/null,-,-,-]',
+						'update[uploading,name.png,41/0/82/100,-,-,-]',
+						'update[uploading,name.png,41/0/82/100,-,-,-]',
+						'update[uploading,name.png,41/0/82/100,-,-,-]',
+						'uploaded[uploaded,name2.png,100/0/82/100,-,-,http://url/name2.png]',
+						'update[uploaded,name2.png,100/0/82/100,-,-,http://url/name2.png]',
+						'update[uploaded,name2.png,100/0/82/100,-,-,http://url/name2.png]' ] );
 				}, 5 );
 			} );
 
 			loader.update();
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test additional data passed to xhr via fileUploadRequest listener (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, testFile ),
+				file = new File( [], 'a' );
+
+			attachListener( editorMock, 'fileUploadRequest', function( evt ) {
+				var requestData = evt.data.requestData;
+
+				requestData.customField = 'test';
+				requestData.customFile = file;
+			} );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( 'test', lastFormData.get( 'customField' ) );
+				objectAssert.areEqual( file, lastFormData.get( 'customFile' ) );
+			} );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test additional data in fileUploadResponse (https://dev.ckeditor.com/ticket/13519)': function() {
+			var data,
+				loader = new FileLoader( editorMock, testFile );
+
+			createXMLHttpRequestMock( [ 'progress', 'load' ],
+				{ responseText: '{' +
+					'"fileName":"name2.png",' +
+					'"uploaded":1,' +
+					'"url":"http:\/\/url\/name2.png",' +
+					'"foo":"bar"' +
+				'}' } );
+
+			attachListener( editorMock, 'fileUploadResponse', function( evt ) {
+				data = evt.data;
+			} );
+
+			resumeAfter( editorMock, 'fileUploadResponse', function() {
+				assert.areSame( 'bar', data.foo );
+			} );
+
 			loader.upload( 'http:\/\/url\/' );
 
 			wait();
@@ -847,11 +1051,12 @@
 				assert.areSame( 'custom form', lastFormData );
 
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'uploaded[uploaded,customName.png,82/0/82,customMessage,-,customUrl]',
-					'update[uploaded,customName.png,82/0/82,customMessage,-,customUrl]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'uploaded[uploaded,customName.png,100/0/82/100,customMessage,-,customUrl]',
+					'update[uploaded,customName.png,100/0/82/100,customMessage,-,customUrl]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -891,11 +1096,12 @@
 
 			resumeAfter( loader, 'error', function() {
 				observer.assert( [
-					'uploading[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,0/0/82,-,-,-]',
-					'update[uploading,name.png,41/0/82,-,-,-]',
-					'error[error,name.png,82/0/82,-,-,-]',
-					'update[error,name.png,82/0/82,-,-,-]' ] );
+					'uploading[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,0/0/82/null,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'update[uploading,name.png,41/0/82/100,-,-,-]',
+					'error[error,name.png,100/0/82/100,-,-,-]',
+					'update[error,name.png,100/0/82/100,-,-,-]' ] );
 			} );
 
 			loader.upload( 'http:\/\/url\/' );
@@ -1008,6 +1214,23 @@
 			loader.status = 'abort';
 
 			assert.isTrue( loader.isFinished() );
+		},
+
+		'test custom XHR headers': function() {
+			var loader = new FileLoader( editorMock, pngBase64 );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+			loader.loadAndUpload( 'http://example.com' );
+
+			resumeAfter( loader, 'uploaded', function( evt ) {
+				var setRequestHeaderStub = evt.sender.xhr.setRequestHeader;
+
+				sinon.assert.calledWithExactly( setRequestHeaderStub, 'foo', 'bar' );
+				sinon.assert.calledWithExactly( setRequestHeaderStub, 'hello', 'world' );
+
+				assert.areSame( 2, setRequestHeaderStub.callCount, 'setRequestHeader call count' );
+			} );
+			wait();
 		}
 	} );
 } )();

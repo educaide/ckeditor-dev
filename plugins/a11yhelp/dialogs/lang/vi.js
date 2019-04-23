@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'vi', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'vi', {
 			{
 			name: 'Trợ giúp liên quan',
 			legend: 'Nhấn ${a11yHelp}'
+		},
+			{
+			name: ' Paste as plain text', // MISSING
+			legend: 'Press ${pastetext}', // MISSING
+			legendEdge: 'Press ${pastetext}, followed by ${paste}' // MISSING
 		}
 		]
 	}
 	],
-	backspace: 'Phím Backspace',
 	tab: 'Phím Tab',
-	enter: 'Phím Tab',
-	shift: 'Phím Shift',
-	ctrl: 'Phím Ctrl',
-	alt: 'Phím Alt',
 	pause: 'Phím Pause',
 	capslock: 'Phím Caps Lock',
 	escape: 'Phím Escape',
 	pageUp: 'Phím Page Up',
 	pageDown: 'Phím Page Down',
-	end: 'Phím End',
-	home: 'Phím Home',
 	leftArrow: 'Phím Left Arrow',
 	upArrow: 'Phím Up Arrow',
 	rightArrow: 'Phím Right Arrow',
 	downArrow: 'Phím Down Arrow',
 	insert: 'Chèn',
-	'delete': 'Xóa',
 	leftWindowKey: 'Phím Left Windows',
 	rightWindowKey: 'Phím Right Windows ',
 	selectKey: 'Chọn phím',

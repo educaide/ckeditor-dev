@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 /**
@@ -119,8 +119,8 @@ CKEDITOR.scriptLoader = ( function() {
 					} );
 
 					if ( callback ) {
-						if ( CKEDITOR.env.ie && CKEDITOR.env.version < 11 ) {
-							// FIXME: For IE, we are not able to return false on error (like 404).
+						// The onload or onerror event does not fire in IE8 and IE9 Quirks Mode (https://dev.ckeditor.com/ticket/14849).
+						if ( CKEDITOR.env.ie && ( CKEDITOR.env.version <= 8 || CKEDITOR.env.ie9Compat ) ) {
 							script.$.onreadystatechange = function() {
 								if ( script.$.readyState == 'loaded' || script.$.readyState == 'complete' ) {
 									script.$.onreadystatechange = null;
@@ -130,14 +130,15 @@ CKEDITOR.scriptLoader = ( function() {
 						} else {
 							script.$.onload = function() {
 								// Some browsers, such as Safari, may call the onLoad function
-								// immediately. Which will break the loading sequence. (#3661)
+								// immediately. Which will break the loading sequence. (https://dev.ckeditor.com/ticket/3661)
 								setTimeout( function() {
+									removeListeners( script );
 									onLoad( url, true );
 								}, 0 );
 							};
 
-							// FIXME: Opera and Safari will not fire onerror.
 							script.$.onerror = function() {
+								removeListeners( script );
 								onLoad( url, false );
 							};
 						}
@@ -147,11 +148,18 @@ CKEDITOR.scriptLoader = ( function() {
 					script.appendTo( CKEDITOR.document.getHead() );
 
 					CKEDITOR.fire( 'download', url ); // %REMOVE_LINE%
+
 				};
 
 			showBusy && CKEDITOR.document.getDocumentElement().setStyle( 'cursor', 'wait' );
 			for ( var i = 0; i < scriptCount; i++ ) {
 				loadScript( scriptUrl[ i ] );
+			}
+
+			function removeListeners( script ) {
+				// Once script loaded or failed remove listeners, which might lead to memory leaks (#589).
+				script.$.onload = null;
+				script.$.onerror = null;
 			}
 		},
 

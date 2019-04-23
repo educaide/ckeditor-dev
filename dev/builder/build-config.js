@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 /* exported CKBUILDER_CONFIG */
@@ -9,15 +9,18 @@ var CKBUILDER_CONFIG = {
 	skin: 'kama',
 	ignore: [
 		'bender.js',
+		'bender.ci.js',
 		'.bender',
 		'bender-err.log',
 		'bender-out.log',
+		'.travis.yml',
 		'dev',
 		'docs',
 		'.DS_Store',
 		'.editorconfig',
 		'.gitignore',
 		'.gitattributes',
+		'.github',
 		'gruntfile.js',
 		'.idea',
 		'.jscsrc',

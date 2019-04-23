@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'cs', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'cs', {
 			{
 			name: ' Nápověda přístupnosti',
 			legend: 'Stiskněte ${a11yHelp}'
+		},
+			{
+			name: 'Vložit jako čistý text',
+			legend: 'Stiskněte ${pastetext}',
+			legendEdge: 'Stiskněte ${pastetext} a pak ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tabulátor',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pauza',
 	capslock: 'Caps lock',
 	escape: 'Escape',
 	pageUp: 'Stránka nahoru',
 	pageDown: 'Stránka dolů',
-	end: 'Konec',
-	home: 'Domů',
 	leftArrow: 'Šipka vlevo',
 	upArrow: 'Šipka nahoru',
 	rightArrow: 'Šipka vpravo',
 	downArrow: 'Šipka dolů',
 	insert: 'Vložit',
-	'delete': 'Smazat',
 	leftWindowKey: 'Levá klávesa Windows',
 	rightWindowKey: 'Pravá klávesa Windows',
 	selectKey: 'Vyberte klávesu',

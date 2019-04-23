@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'el', {
@@ -18,7 +18,7 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'el', {
 			{
 			name: 'Παράθυρο Διαλόγου Επεξεργαστή',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'Μέσα σε έναν διάλογο, πιέσετε TAB για να πλοηγηθείτε στο επόμενο στοιχείο του διαλόγου, πιέστε SHIFT+TAB για αν πλοηγηθείτε στο προηγούμενο στοιχείο του διαλόγου, πιέστε ENTER για να υποβάλετε τον διάλογο, πιέστε ESC για να ακυρώσετε τον διάλογο. Όταν ένας διάλογος έχει πολλαπλές παραγράφους, η λίστα των παραγράφων μπορεί να προσπεραστεί είτε με ALT+F10 είτε με TAB σαν μέρος της σειράς παραγράφων του διαλόγου. Με την λίστα των παραγράφων επιλεγμένη, προχωρήστε στην επόμενη και προηγούμενη παράγραφο με τα βέλη ΔΕΞΙΑ και ΑΡΙΣΤΕΡΑ, αντίστοιχα.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'el', {
 			{
 			name: 'Βοήθεια Προσβασιμότητας',
 			legend: 'Πατήστε ${a11yHelp}'
+		},
+			{
+			name: 'Επικολλήστε ως απλό κείμενο.',
+			legend: 'Πιέστε $(pastetext)',
+			legendEdge: 'Πιέστε $(pastetext), ακολουθούμενο με (paste)_'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Αριστερό Βέλος',
 	upArrow: 'Πάνω Βέλος',
 	rightArrow: 'Δεξί Βέλος',
 	downArrow: 'Κάτω Βέλος',
 	insert: 'Insert ',
-	'delete': 'Delete',
 	leftWindowKey: 'Αριστερό Πλήκτρο Windows',
 	rightWindowKey: 'Δεξί Πλήκτρο Windows',
 	selectKey: 'Πλήκτρο Select',

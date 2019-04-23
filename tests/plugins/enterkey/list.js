@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,list */
+/* bender-tags: editor,list */
 
 ( function() {
 	'use strict';
@@ -38,6 +38,13 @@
 			name: 'enterBR',
 			config: {
 				enterMode: CKEDITOR.ENTER_BR
+			}
+		},
+		enterDIV: {
+			name: 'enterDIV',
+			config: {
+				enterMode: CKEDITOR.ENTER_P,
+				extraPlugins: 'div'
 			}
 		}
 	};
@@ -140,9 +147,9 @@
 				'</ol>',
 				true );
 		},
-		// End of #3165
+		// End of https://dev.ckeditor.com/ticket/3165
 
-		// #5460
+		// https://dev.ckeditor.com/ticket/5460
 		'test enterkey at the end of nested list item': function() {
 			assertEnter( 'enterP',
 				'<ul>' +
@@ -583,7 +590,7 @@
 
 				true, 'Dir change forces block.', true );
 		},
-		// #11982
+		// https://dev.ckeditor.com/ticket/11982
 		'test enterkey: nested empty list': function() {
 			assertEnter( 'enterP',
 				'<ul>' +
@@ -603,7 +610,7 @@
 				true, 'New item should be added to the list.', true );
 		},
 
-		// #11982
+		// https://dev.ckeditor.com/ticket/11982
 		'test enterkey: nested list with empty item': function() {
 			assertEnter( 'enterP',
 				'<ul>' +
@@ -622,6 +629,86 @@
 						'<ul>' +
 							'<li>bar</li>' +
 						'</ul>' +
+					'</li>' +
+					'<li>^&nbsp;</li>' +
+				'</ul>',
+
+				true, 'New item should be added to the list.', true );
+		},
+
+		// (#2205)
+		'test enterkey: block p placeholder at the end': function() {
+			assertEnter( 'enterP',
+				'<ul>' +
+					'<li>' +
+						'foo' +
+						'<p>^</p>' +
+					'</li>' +
+				'</ul>',
+
+				'<ul>' +
+					'<li>' +
+						'foo' +
+					'</li>' +
+					'<li>^&nbsp;</li>' +
+				'</ul>',
+
+				true, 'New item should be added to the list.', true );
+		},
+
+		// (#2205)
+		'test enterkey: block p placeholder at the beginning': function() {
+			assertEnter( 'enterP',
+				'<ul>' +
+					'<li>' +
+						'<p>^</p>' +
+						'foo' +
+					'</li>' +
+				'</ul>',
+
+				'<ul>' +
+					'<li>' +
+						'foo' +
+					'</li>' +
+					'<li>^&nbsp;</li>' +
+				'</ul>',
+
+				true, 'New item should be added to the list.', true );
+		},
+
+		// (#2205)
+		'test enterkey: block div placeholder at the beginning': function() {
+			assertEnter( 'enterP',
+				'<ul>' +
+					'<li>' +
+						'<div>^</div>' +
+						'foo' +
+					'</li>' +
+				'</ul>',
+
+				'<ul>' +
+					'<li>' +
+						'foo' +
+					'</li>' +
+					'<li>^&nbsp;</li>' +
+				'</ul>',
+
+				true, 'New item should be added to the list.', true );
+		},
+
+		// (#2205)
+		'test enterkey: block div placeholder at the end': function() {
+			assertEnter( 'enterP',
+				'<ul>' +
+					'<li>' +
+						'foo' +
+						'<div>^</div>' +
+					'</li>' +
+				'</ul>',
+
+				'<ul>' +
+					'<li>' +
+						'foo' +
 					'</li>' +
 					'<li>^&nbsp;</li>' +
 				'</ul>',

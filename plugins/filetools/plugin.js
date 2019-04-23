@@ -1,13 +1,13 @@
 ﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 'use strict';
 
 ( function() {
 	CKEDITOR.plugins.add( 'filetools', {
-		lang: 'cs,da,de,en,eo,fr,gl,it,ko,nb,nl,pl,pt-br,ru,sv,tr,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'az,bg,ca,cs,da,de,de-ch,en,en-au,eo,es,es-mx,et,eu,fa,fr,gl,hr,hu,id,it,ja,km,ko,ku,lv,nb,nl,oc,pl,pt,pt-br,ro,ru,sk,sq,sv,tr,ug,uk,zh,zh-cn', // %REMOVE_LINE_CORE%
 
 		beforeInit: function( editor ) {
 			/**
@@ -27,38 +27,64 @@
 			/**
 			 * Event fired when the {@link CKEDITOR.fileTools.fileLoader file loader} should send XHR. If the event is not
 			 * {@link CKEDITOR.eventInfo#stop stopped} or {@link CKEDITOR.eventInfo#cancel canceled}, the default request
-			 * will be sent. To learn more refer to the [Uploading Dropped or Pasted Files](#!/guide/dev_file_upload) article.
+			 * will be sent. Refer to the {@glink guide/dev_file_upload Uploading Dropped or Pasted Files} article for more information.
 			 *
 			 * @since 4.5
 			 * @event fileUploadRequest
 			 * @member CKEDITOR.editor
 			 * @param data
-			 * @param {CKEDITOR.fileTools.fileLoader} data.fileLoader File loader instance.
+			 * @param {CKEDITOR.fileTools.fileLoader} data.fileLoader A file loader instance.
+			 * @param {Object} data.requestData An object containing all data to be sent to the server.
 			 */
 			editor.on( 'fileUploadRequest', function( evt ) {
 				var fileLoader = evt.data.fileLoader;
 
 				fileLoader.xhr.open( 'POST', fileLoader.uploadUrl, true );
+
+				// Adding file to event's data by default - allows overwriting it by user's event listeners. (https://dev.ckeditor.com/ticket/13518)
+				evt.data.requestData.upload = { file: fileLoader.file, name: fileLoader.fileName };
 			}, null, null, 5 );
 
 			editor.on( 'fileUploadRequest', function( evt ) {
 				var fileLoader = evt.data.fileLoader,
-					formData = new FormData();
+					$formData = new FormData(),
+					requestData = evt.data.requestData,
+					configXhrHeaders = editor.config.fileTools_requestHeaders,
+					header;
 
-				formData.append( 'upload', fileLoader.file, fileLoader.fileName );
-				fileLoader.xhr.send( formData );
+				for ( var name in requestData ) {
+					var value = requestData[ name ];
+
+					// Treating files in special way
+					if ( typeof value === 'object' && value.file ) {
+						$formData.append( name, value.file, value.name );
+					}
+					else {
+						$formData.append( name, value );
+					}
+				}
+				// Append token preventing CSRF attacks.
+				$formData.append( 'ckCsrfToken', CKEDITOR.tools.getCsrfToken() );
+
+				if ( configXhrHeaders ) {
+					for ( header in configXhrHeaders ) {
+						fileLoader.xhr.setRequestHeader( header, configXhrHeaders[ header ] );
+					}
+				}
+
+				fileLoader.xhr.send( $formData );
 			}, null, null, 999 );
 
 			/**
 			 * Event fired when the {CKEDITOR.fileTools.fileLoader file upload} response is received and needs to be parsed.
 			 * If the event is not {@link CKEDITOR.eventInfo#stop stopped} or {@link CKEDITOR.eventInfo#cancel canceled},
-			 * the default response handler will be used. To learn more refer to the
-			 * [Uploading Dropped or Pasted Files](#!/guide/dev_file_upload) article.
+			 * the default response handler will be used. Refer to the
+			 * {@glink guide/dev_file_upload Uploading Dropped or Pasted Files} article for more information.
 			 *
 			 * @since 4.5
 			 * @event fileUploadResponse
 			 * @member CKEDITOR.editor
-			 * @param data
+			 * @param data All data will be passed to {@link CKEDITOR.fileTools.fileLoader#responseData}.
 			 * @param {CKEDITOR.fileTools.fileLoader} data.fileLoader A file loader instance.
 			 * @param {String} data.message The message from the server. Needs to be set in the listener &mdash; see the example above.
 			 * @param {String} data.fileName The file name on server. Needs to be set in the listener &mdash; see the example above.
@@ -82,13 +108,14 @@
 					if ( !response.uploaded ) {
 						evt.cancel();
 					} else {
-						data.fileName = response.fileName;
-						data.url = response.url;
+						for ( var i in response ) {
+							data[ i ] = response[ i ];
+						}
 					}
 				} catch ( err ) {
 					// Response parsing error.
 					data.message = fileLoader.lang.filetools.responseError;
-					window.console && window.console.log( xhr.responseText );
+					CKEDITOR.warn( 'filetools-response-error', { responseText: xhr.responseText } );
 
 					evt.cancel();
 				}
@@ -127,11 +154,15 @@
 		 *
 		 * @param {Blob/String} fileOrData See {@link CKEDITOR.fileTools.fileLoader}.
 		 * @param {String} fileName See {@link CKEDITOR.fileTools.fileLoader}.
+		 * @param {Function} [loaderType] Loader type to be created. If skipped, the default {@link CKEDITOR.fileTools.fileLoader}
+		 * type will be used.
 		 * @returns {CKEDITOR.fileTools.fileLoader} The created file loader instance.
 		 */
-		create: function( fileOrData, fileName ) {
+		create: function( fileOrData, fileName, loaderType ) {
+			loaderType = loaderType || FileLoader;
+
 			var id = this.loaders.length,
-				loader = new FileLoader( this.editor, fileOrData, fileName );
+				loader = new loaderType( this.editor, fileOrData, fileName );
 
 			loader.id = id;
 			this.loaders[ id ] = loader;
@@ -239,14 +270,17 @@
 	 * string encoded with Base64.
 	 * @param {String} [fileName] The file name. If not set and the second parameter is a file, then its name will be used.
 	 * If not set and the second parameter is a Base64 data string, then the file name will be created based on
-	 * the MIME type by replacing '/' with '.', for example for `image/png` the file name will be `image.png`.
+	 * the {@link CKEDITOR.config#fileTools_defaultFileName} option.
 	 */
 	function FileLoader( editor, fileOrData, fileName ) {
+		var mimeParts,
+			defaultFileName = editor.config.fileTools_defaultFileName;
+
 		this.editor = editor;
 		this.lang = editor.lang;
 
 		if ( typeof fileOrData === 'string' ) {
-			// Data are already loaded from disc.
+			// Data is already loaded from disc.
 			this.data = fileOrData;
 			this.file = dataToFile( this.data );
 			this.total = this.file.size;
@@ -263,11 +297,19 @@
 		} else if ( this.file.name ) {
 			this.fileName = this.file.name;
 		} else {
-			// If file has no name create a name based on the mime type.
-			this.fileName = this.file.type.replace( '/', '.' );
+			mimeParts = this.file.type.split( '/' );
+
+			if ( defaultFileName ) {
+				mimeParts[ 0 ] = defaultFileName;
+			}
+
+			this.fileName = mimeParts.join( '.' );
 		}
 
 		this.uploaded = 0;
+		this.uploadTotal = null;
+
+		this.responseData = null;
 
 		this.status = 'created';
 
@@ -306,8 +348,8 @@
 	 */
 
 	/**
-	 * The name of the file. If there is no file name, it is created from the MIME type.
-	 * For example for the `image/png` MIME type, the file name will be `image.png`.
+	 * The name of the file. If there is no file name, it is created by using the
+	 * {@link CKEDITOR.config#fileTools_defaultFileName} option.
 	 *
 	 * @readonly
 	 * @property {String} fileName
@@ -333,6 +375,33 @@
 	 *
 	 * @readonly
 	 * @property {Number} total
+	 */
+
+	/**
+	 * All data received in the response from the server. If the server returns additional data, it will be available
+	 * in this property.
+	 *
+	 * It contains all data set in the {@link CKEDITOR.editor#fileUploadResponse} event listener.
+	 *
+	 * @readonly
+	 * @property {Object} responseData
+	 */
+
+	/**
+	 * The total size of upload data in bytes.
+	 * If the `xhr.upload` object is present, this value will indicate the total size of the request payload, not only the file
+	 * size itself. If the `xhr.upload` object is not available and the real upload size cannot be obtained, this value will
+	 * be equal to {@link #total}. It has a `null` value until the upload size is known.
+	 *
+	 * 		loader.on( 'update', function() {
+	 * 			// Wait till uploadTotal is present.
+	 * 			if ( loader.uploadTotal ) {
+	 * 				console.log( 'uploadTotal: ' + loader.uploadTotal );
+	 * 			}
+	 * 		});
+	 *
+	 * @readonly
+	 * @property {Number} uploadTotal
 	 */
 
 	/**
@@ -404,8 +473,10 @@
 		 * * `uploaded`.
 		 *
 		 * @param {String} url The upload URL.
+		 * @param {Object} [additionalRequestParameters] Additional parameters that would be passed to
+	 	 * the {@link CKEDITOR.editor#fileUploadRequest} event.
 		 */
-		loadAndUpload: function( url ) {
+		loadAndUpload: function( url, additionalRequestParameters ) {
 			var loader = this;
 
 			this.once( 'loaded', function( evt ) {
@@ -418,7 +489,7 @@
 				}, null, null, 0 );
 
 				// Start uploading.
-				loader.upload( url );
+				loader.upload( url, additionalRequestParameters );
 			}, null, null, 0 );
 
 			this.load();
@@ -479,8 +550,12 @@
 		 * * `uploaded`.
 		 *
 		 * @param {String} url The upload URL.
+		 * @param {Object} [additionalRequestParameters] Additional data that would be passed to
+	 	 * the {@link CKEDITOR.editor#fileUploadRequest} event.
 		 */
-		upload: function( url ) {
+		upload: function( url, additionalRequestParameters ) {
+			var requestData = additionalRequestParameters || {};
+
 			if ( !url ) {
 				this.message = this.lang.filetools.noUrlError;
 				this.changeStatus( 'error' );
@@ -490,7 +565,7 @@
 				this.xhr = new XMLHttpRequest();
 				this.attachRequestListeners();
 
-				if ( this.editor.fire( 'fileUploadRequest', { fileLoader: this } ) ) {
+				if ( this.editor.fire( 'fileUploadRequest', { fileLoader: this, requestData: requestData } ) ) {
 					this.changeStatus( 'uploading' );
 				}
 			}
@@ -508,24 +583,46 @@
 
 			loader.abort = function() {
 				xhr.abort();
+				onAbort();
 			};
 
-			xhr.onabort = function() {
-				loader.changeStatus( 'abort' );
-			};
+			xhr.onerror = onError;
+			xhr.onabort = onAbort;
 
-			xhr.onerror = function() {
-				loader.message = loader.lang.filetools.networkError;
-				loader.changeStatus( 'error' );
-			};
+			// https://dev.ckeditor.com/ticket/13533 - When xhr.upload is present attach onprogress, onerror and onabort functions to get actual upload
+			// information.
+			if ( xhr.upload ) {
+				xhr.upload.onprogress = function( evt ) {
+					if ( evt.lengthComputable ) {
+						// Set uploadTotal with correct data.
+						if ( !loader.uploadTotal ) {
+							loader.uploadTotal = evt.total;
+						}
+						loader.uploaded = evt.loaded;
+						loader.update();
+					}
+				};
 
-			xhr.onprogress = function( evt ) {
-				loader.uploaded = evt.loaded;
+				xhr.upload.onerror = onError;
+				xhr.upload.onabort = onAbort;
+
+			} else {
+				// https://dev.ckeditor.com/ticket/13533 - If xhr.upload is not supported - fire update event anyway and set uploadTotal to file size.
+				loader.uploadTotal = loader.total;
 				loader.update();
-			};
+			}
 
 			xhr.onload = function() {
-				loader.uploaded = loader.total;
+				// https://dev.ckeditor.com/ticket/13433 - Call update at the end of the upload. When xhr.upload object is not supported there will be
+				// no update events fired during the whole process.
+				loader.update();
+
+				// https://dev.ckeditor.com/ticket/13433 - Check if loader was not aborted during last update.
+				if ( loader.status == 'abort' ) {
+					return;
+				}
+
+				loader.uploaded = loader.uploadTotal;
 
 				if ( xhr.status < 200 || xhr.status > 299 ) {
 					loader.message = loader.lang.filetools[ 'httpError' + xhr.status ];
@@ -548,6 +645,11 @@
 						}
 					}
 
+					// The whole response is also hold for use by uploadwidgets (https://dev.ckeditor.com/ticket/13519).
+					loader.responseData = data;
+					// But without reference to the loader itself.
+					delete loader.responseData.fileLoader;
+
 					if ( success === false ) {
 						loader.changeStatus( 'error' );
 					} else {
@@ -555,6 +657,24 @@
 					}
 				}
 			};
+
+			function onError() {
+				// Prevent changing status twice, when XHR.error and XHR.upload.onerror could be called together.
+				if ( loader.status == 'error' ) {
+					return;
+				}
+
+				loader.message = loader.lang.filetools.networkError;
+				loader.changeStatus( 'error' );
+			}
+
+			function onAbort() {
+				// Prevent changing status twice, when XHR.onabort and XHR.upload.onabort could be called together.
+				if ( loader.status == 'abort' ) {
+					return;
+				}
+				loader.changeStatus( 'abort' );
+			}
 		},
 
 		/**
@@ -748,7 +868,22 @@
 		 */
 		isTypeSupported: function( file, supportedTypes ) {
 			return !!file.type.match( supportedTypes );
-		}
+		},
+
+		/**
+		 * Feature detection indicating whether the current browser supports methods essential to send files over an XHR request.
+		 *
+		 * @since 4.9.0
+		 * @property {Boolean} isFileUploadSupported
+		 */
+		isFileUploadSupported: ( function() {
+			return typeof FileReader === 'function' &&
+				typeof ( new FileReader() ).readAsDataURL === 'function' &&
+				typeof FormData === 'function' &&
+				typeof ( new FormData() ).append === 'function' &&
+				typeof XMLHttpRequest === 'function' &&
+				typeof Blob === 'function';
+		} )()
 	} );
 } )();
 
@@ -759,5 +894,38 @@
  *
  * @since 4.5
  * @cfg {String} [uploadUrl='']
+ * @member CKEDITOR.config
+ */
+
+/**
+ * The default file name (without extension) that will be used for files created from a Base64 data string
+ * (for example for files pasted into the editor).
+ * This name will be combined with the MIME type to create the full file name with the extension.
+ *
+ * If `fileTools_defaultFileName` is set to `default-name` and data's MIME type is `image/png`,
+ * the resulting file name will be `default-name.png`.
+ *
+ * If `fileTools_defaultFileName` is not set, the file name will be created using only its MIME type.
+ * For example for `image/png` the file name will be `image.png`.
+ *
+ * @since 4.5.3
+ * @cfg {String} [fileTools_defaultFileName='']
+ * @member CKEDITOR.config
+ */
+
+/**
+ * Allows to add extra headers for every request made using the {@link CKEDITOR.fileTools} API.
+ *
+ * Note that headers can still be customized per a single request, using the
+ * [`fileUploadRequest`](https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_editor.html#event-fileUploadRequest)
+ * event.
+ *
+ *		config.fileTools_requestHeaders = {
+ *			'X-Requested-With': 'XMLHttpRequest',
+ *			'Custom-Header': 'header value'
+ *		};
+ *
+ * @since 4.9.0
+ * @cfg {Object} [fileTools_requestHeaders]
  * @member CKEDITOR.config
  */

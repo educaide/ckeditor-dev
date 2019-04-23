@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
@@ -18,7 +18,7 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
 			{
 			name: 'پنجره محاورهای ویرایشگر',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'در داخل یک پنجره محاوره‌ای، کلید Tab را بفشارید تا به پنجره‌ی بعدی بروید، Shift+Tab برای حرکت به فیلد قبلی، فشردن Enter برای ثبت اطلاعات پنجره‌، فشردن Esc برای لغو پنجره محاوره‌ای و برای پنجره‌هایی که چندین برگه دارند، فشردن Alt+F10 یا Tab برای حرکت در برگه ها. وقتی بر فهرست برگه ها هستید، به صفحه بعدی و قبلی با کلید های راستی و چپ حرکت کنید.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
 			{
 			name: 'راهنمای دسترسی',
 			legend: 'فشردن ${a11yHelp}'
+		},
+			{
+			name: 'چسباندن به عنوان متن ساده',
+			legend: 'فشردن ${pastetext}',
+			legendEdge: 'فشردن ${pastetext}، همراه با ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'عقبگرد',
 	tab: 'برگه',
-	enter: 'ورود',
-	shift: 'تعویض',
-	ctrl: 'کنترل',
-	alt: 'دگرساز',
 	pause: 'توقف',
 	capslock: 'Caps Lock',
 	escape: 'گریز',
 	pageUp: 'صفحه به بالا',
 	pageDown: 'صفحه به پایین',
-	end: 'پایان',
-	home: 'خانه',
 	leftArrow: 'پیکان چپ',
 	upArrow: 'پیکان بالا',
 	rightArrow: 'پیکان راست',
 	downArrow: 'پیکان پایین',
 	insert: 'ورود',
-	'delete': 'حذف',
 	leftWindowKey: 'کلید چپ ویندوز',
 	rightWindowKey: 'کلید راست ویندوز',
 	selectKey: 'انتخاب کلید',

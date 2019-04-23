@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'pl', {
@@ -69,39 +69,36 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'pl', {
 			legend: 'Naciśnij ${toolbarCollapse}'
 		},
 			{
-			name: ' Access previous focus space command', // MISSING
-			legend: 'Press ${accessPreviousSpace} to access the closest unreachable focus space before the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.' // MISSING
+			name: 'Przejdź do poprzedniego miejsca, w którym można ustawić focus',
+			legend: 'Naciśnij ${accessPreviousSpace}, aby przejść do najbliższego niedostępnego miejsca przed kursorem, w którym można ustawić focus. Przykład: dwa przylegające elementy HR. Powtórz ten skrót klawiaturowy, by dotrzeć do kolejnych takich miejsc.'
 		},
 			{
-			name: ' Access next focus space command', // MISSING
-			legend: 'Press ${accessNextSpace} to access the closest unreachable focus space after the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.' // MISSING
+			name: 'Przejdź do następnego miejsca, w którym można ustawić focus',
+			legend: 'Naciśnij ${accessNextSpace}, aby przejść do najbliższego niedostępnego miejsca po kursorze, w którym można ustawić focus. Przykład: dwa przylegające elementy HR. Powtórz ten skrót klawiaturowy, by dotrzeć do kolejnych takich miejsc.'
 		},
 			{
 			name: 'Pomoc dotycząca dostępności',
 			legend: 'Naciśnij ${a11yHelp}'
+		},
+			{
+			name: 'Wklej jako tekst',
+			legend: 'Naciśnij ${pastetext}',
+			legendEdge: 'Naciśnij ${pastetext}, a następnie ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Strzałka w lewo',
 	upArrow: 'Strzałka w górę',
 	rightArrow: 'Strzałka w prawo',
 	downArrow: 'Strzałka w dół',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: 'Lewy klawisz Windows',
 	rightWindowKey: 'Prawy klawisz Windows',
 	selectKey: 'Klawisz wyboru',

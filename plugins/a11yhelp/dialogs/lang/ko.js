@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'ko', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'ko', {
 			{
 			name: ' 접근성 도움말',
 			legend: '${a11yHelp} 누르시오'
+		},
+			{
+			name: ' Paste as plain text', // MISSING
+			legend: 'Press ${pastetext}', // MISSING
+			legendEdge: 'Press ${pastetext}, followed by ${paste}' // MISSING
 		}
 		]
 	}
 	],
-	backspace: 'Backspace 키',
 	tab: '탭 키',
-	enter: '엔터 키',
-	shift: '시프트 키',
-	ctrl: '컨트롤 키',
-	alt: '알트 키',
 	pause: '일시정지 키',
 	capslock: '캡스 록 키',
 	escape: '이스케이프 키',
 	pageUp: '페이지 업 키',
 	pageDown: '페이지 다운 키',
-	end: '엔드 키',
-	home: '홈 키',
 	leftArrow: '왼쪽 화살표 키',
 	upArrow: '위쪽 화살표 키',
 	rightArrow: '오른쪽 화살표 키',
 	downArrow: '아래쪽 화살표 키',
 	insert: '인서트 키',
-	'delete': '삭제 키',
 	leftWindowKey: '왼쪽 윈도우 키',
 	rightWindowKey: '오른쪽 윈도우 키',
 	selectKey: '셀렉트 키',

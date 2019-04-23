@@ -1,6 +1,6 @@
-﻿/**
- * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'nb', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'nb', {
 			{
 			name: 'Hjelp for tilgjengelighet',
 			legend: 'Trykk ${a11yHelp}'
+		},
+			{
+			name: 'Lim inn som ren tekst',
+			legend: 'Trykk ${pastetext}',
+			legendEdge: 'Trykk ${pastetext}, etterfulgt av ${past}'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tabulator',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Venstre piltast',
 	upArrow: 'Opp-piltast',
 	rightArrow: 'Høyre piltast',
 	downArrow: 'Ned-piltast',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: 'Venstre Windows-tast',
 	rightWindowKey: 'Høyre Windows-tast',
 	selectKey: 'Velg nøkkel',
