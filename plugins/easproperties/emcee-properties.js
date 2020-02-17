@@ -13,7 +13,7 @@ var texProperties =
 
 var texChoices =
 {
-  layout: [ "hidden", "cond", "vert", "opth", "optv", "below", "frame" ],
+  layout: [ "cond", "vert", "opth", "optv", "buttons" ],
   order:  [ "orig", "scramble", "reverse", "scrambleNone", "addNone", "makeNone" ]
 };
 
