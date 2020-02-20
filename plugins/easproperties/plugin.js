@@ -42,6 +42,10 @@
     return getElem(editor, "ol", "dragdroplist");
   }
 
+  function getOrderingList(editor) {
+    return getElem(editor, "ol", "orderinglist");
+  }
+
   function getDropdown(editor) {
     var spanElem = getElem(editor, "span");
     if (!spanElem) { return null }
@@ -276,6 +280,22 @@
         }
       );
 
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "ordering", "Ordering Items Advanced", this.path + 'orderinglist.html' + "?timestamp=" + CKEDITOR.timestamp, 300, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          setupInputs(iframe,getOrderingList(editor));
+          loadProperties(iframe,getOrderingList(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getOrderingList(editor));
+          }
+        }
+      );
+
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});
       command.modes = { wysiwyg:1, source:0 };
@@ -294,6 +314,10 @@
       command.canUndo = true;
 
       var command = editor.addCommand("dropzoneListProperties", {exec: function() { editor.openDialog(dialogName +  "dropzone"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("orderingListProperties", {exec: function() { editor.openDialog(dialogName +  "ordering"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -340,6 +364,12 @@
           dropzoneListProperties: {
             label:   "Dropzone Advanced...",
             command: "dropzoneListProperties",
+            group:   pluginName,
+            order:   1
+          },
+          orderingListProperties: {
+            label:   "Ordering Advanced...",
+            command: "orderingListProperties",
             group:   pluginName,
             order:   1
           },
@@ -426,6 +456,10 @@
 
           if (getDropzoneList(editor)) {
             properties.dropzoneListProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getOrderingList(editor)) {
+            properties.orderingListProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if ( Object.keys(properties).length > 0 ) {

@@ -81,6 +81,12 @@ ol.dragdroplist {
   list-style: upper-alpha;
 }
 
+ol.orderinglist {
+  background-color: #ff0000;
+  border: 1px solid #dd9;
+  list-style: upper-alpha;
+}
+
 ol.emcee li.correct,
 ol.emcee-multi-list li.correct {
     background-color: #cfc;

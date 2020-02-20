@@ -34,6 +34,11 @@ texGroups.push({
   ]
 });
 
-texChoices["mode"]   = [ "horiz", "vert", "wrap" ];
+//we assume texChoices has been initialized further up in the process - nasty code
+debugger
+if (!texChoices["mode"]) {
+  texChoices["mode"]   = [ "horiz", "vert", "wrap" ];
+}
+
 texChoices["align"]  = [ "none", "bottom", "top", "center" ];
 texChoices["border"] = [ "none", "single", "double", "shadow", "thick" ];
