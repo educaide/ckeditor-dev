@@ -82,9 +82,8 @@ ol.dragdroplist {
 }
 
 ol.orderinglist {
-  background-color: #ff0000;
+  background-color: #addd90;
   border: 1px solid #dd9;
-  list-style: upper-alpha;
 }
 
 ol.emcee li.correct,
@@ -768,7 +767,7 @@ h3{
 }
 
 span[eas-class=menu-dropdown] {
-  background-color: #dfddff;
+  background-color: #addd90;
   border: 1px solid #ccc;
   display: inline-block;
 }
