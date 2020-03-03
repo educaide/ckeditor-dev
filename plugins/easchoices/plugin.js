@@ -6,6 +6,10 @@
     {label: 'None',      className: 'menu-none', command: "dropdownNoneWordStyle"},
   ];
 
+  var easListBasedChoices = [
+    {label: 'Re-order items',  command: "orderinglist"},
+  ];
+
   function WordStyleCommand(styleObject) {
     this.styleObject = styleObject;
   };
@@ -75,10 +79,9 @@
    * Copied wholesale from the easlistplugin for the moment
    *
    */
-	function listCommand( name, style ) {
+	function listCommand(name) {
 		var command = new CKEDITOR.plugins.list.command( name, 'ol' );
-		command.easStyle = style;
-    console.log({command})
+		command.easStyle = name;
 
 		return command;
 	}
@@ -124,15 +127,16 @@
           command: styleObject.command
         };
       });
-      editor.addCommand( 'orderinglist', listCommand( 'orderinglist', 'orderinglist' ) );
 
-      uiMenuItems["orderinglist"] = {
-        label: 'Re-order items',
-        group: menuGroup,
-        command: 'orderinglist'
-      }
+      _.each(easListBasedChoices, function(listObject) {
+        editor.addCommand(listObject.command, listCommand(listObject.command));
 
-      console.log("about to add:", uiMenuItems)
+        uiMenuItems[listObject.command] = {
+          label: listObject.label,
+          group: menuGroup,
+          command: listObject.command
+        };
+      });
 
       editor.addMenuGroup(menuGroup);
       editor.addMenuItems(uiMenuItems);
@@ -150,11 +154,9 @@
         },
         onMenu: function() {
           var returnObject = {};
-          _.each(wordStyles, function(styleObject) {
-          returnObject[styleObject.command] = CKEDITOR.TRISTATE_OFF;
+          _.each(_.concat(wordStyles, easListBasedChoices), function(obj) {
+            returnObject[obj.command] = CKEDITOR.TRISTATE_OFF;
           });
-
-          returnObject.orderinglist = CKEDITOR.TRISTATE_OFF;
 
           return returnObject;
         }
