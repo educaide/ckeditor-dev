@@ -89,24 +89,36 @@
 		return command;
 	}
 
+  function isEASList(element) {
+    if (element.nodeName !== "OL") { return false }
+
+    var easClasses = _.map(easListBasedChoices, _.property("style"));
+
+    return _.includes(easClasses, element.className);
+  }
+
   function onSelectionChange(event) {
     // needs to do a whole lot more now
     if (event.editor.readOnly) {
       return;
     }
 
-    // TODO this code doesn't appear to do anything. look into it.
-    // highlight toolbar button if cursor is inside a word-styled span
+    // this code is ugly, currently we just use the dropdownNoneWordStyle as a _proxy_ for the entire
+    // menu. If this is set to active, then the parent "dropdown" will appear active.
+    //
+    // We want to ensure that if we are inside one of our "special lists" then our button will also appear active
+    // lets have a go eh :)
     var command = event.editor.getCommand('dropdownNoneWordStyle');
     var pathElements = event.data.path.elements;
     var i;
     for (i = 0; i < pathElements.length; i++) {
       var element = pathElements[i].$;
       var easClass = element.getAttribute('eas-class');
-      if (/^menu\-/.test(easClass) && !/\-none$/.test(easClass)) {
+      if ( isEASList(element) || (/^menu\-/.test(easClass) && !/\-none$/.test(easClass))) {
         command.setState(CKEDITOR.TRISTATE_ON);
         return;
       }
+
     }
 
     command.setState(CKEDITOR.TRISTATE_OFF);

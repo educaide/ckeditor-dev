@@ -35,7 +35,6 @@ texGroups.push({
 });
 
 //we assume texChoices has been initialized further up in the process - nasty code
-debugger
 if (!texChoices["mode"]) {
   texChoices["mode"]   = [ "horiz", "vert", "wrap" ];
 }
