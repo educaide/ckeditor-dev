@@ -22,7 +22,6 @@ function specialStyle(style) {
 			if(editor.config.easEditorType == undefined){
 				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
 				editor.addCommand( 'emceemultilist', listCommand( 'emceelist', 'emcee-multi-list' ) );
-        editor.addCommand( 'orderinglist', listCommand( 'orderinglist', 'orderinglist' ) );
         editor.addCommand( 'dragdroplist', listCommand( 'dragdroplist', 'dragdroplist' ) );
 			}
 			editor.addCommand( 'subpartlist', listCommand( 'subpartlist', 'subparts' ) );
@@ -79,12 +78,6 @@ function specialStyle(style) {
 					command: 'emceemultilist'
 				};
 
-				uiMenuItems.easOrdering = {
-					label: 'Re-order items',
-					group: menuGroup,
-					command: 'orderinglist'
-				};
-
 				uiMenuItems.easDragDrop = {
 					label: 'Drag-and-Drop Items',
 					group: menuGroup,
@@ -139,7 +132,6 @@ function specialStyle(style) {
 							easBullets: CKEDITOR.TRISTATE_OFF,
 							easEmcee: CKEDITOR.TRISTATE_OFF,
 							easMultiEmcee: CKEDITOR.TRISTATE_OFF,
-							easOrdering: CKEDITOR.TRISTATE_OFF,
 							easDragDrop: CKEDITOR.TRISTATE_OFF,
 							easSubparts: CKEDITOR.TRISTATE_OFF,
 							easNone: CKEDITOR.TRISTATE_OFF

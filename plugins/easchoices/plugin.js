@@ -71,7 +71,20 @@
     }
   };
 
+  /*
+   * Copied wholesale from the easlistplugin for the moment
+   *
+   */
+	function listCommand( name, style ) {
+		var command = new CKEDITOR.plugins.list.command( name, 'ol' );
+		command.easStyle = style;
+    console.log({command})
+
+		return command;
+	}
+
   function onSelectionChange(event) {
+    // needs to do a whole lot more now
     if (event.editor.readOnly) {
       return;
     }
@@ -94,7 +107,7 @@
   }
 
   CKEDITOR.plugins.add('easchoices', {
-    requires: 'menubutton,removeformat',
+    requires: 'menubutton,removeformat,list',
     icons: 'easdropdown',
 
     init: function(editor) {
@@ -111,6 +124,15 @@
           command: styleObject.command
         };
       });
+      editor.addCommand( 'orderinglist', listCommand( 'orderinglist', 'orderinglist' ) );
+
+      uiMenuItems["orderinglist"] = {
+        label: 'Re-order items',
+        group: menuGroup,
+        command: 'orderinglist'
+      }
+
+      console.log("about to add:", uiMenuItems)
 
       editor.addMenuGroup(menuGroup);
       editor.addMenuItems(uiMenuItems);
@@ -131,6 +153,9 @@
           _.each(wordStyles, function(styleObject) {
           returnObject[styleObject.command] = CKEDITOR.TRISTATE_OFF;
           });
+
+          returnObject.orderinglist = CKEDITOR.TRISTATE_OFF;
+
           return returnObject;
         }
       });
