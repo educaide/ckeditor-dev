@@ -7,7 +7,10 @@
   ];
 
   var easListBasedChoices = [
-    {label: 'Re-order items',  command: "orderinglist"},
+    {label: 'Multiple-Choice Block',  command: "emceelist", style: "emcee"},
+    {label: 'Multi-Select Block',  command: "emcee-multi-list", style: "emcee-multi-list"},
+    {label: 'Drag-and-Drop Items',  command: "dragdroplist", style: "dragdroplist"},
+    {label: 'Re-order items',  command: "orderinglist", style: "orderinglist"},
   ];
 
   function WordStyleCommand(styleObject) {
@@ -79,9 +82,9 @@
    * Copied wholesale from the easlistplugin for the moment
    *
    */
-	function listCommand(name) {
+	function listCommand( name, style ) {
 		var command = new CKEDITOR.plugins.list.command( name, 'ol' );
-		command.easStyle = name;
+		command.easStyle = style;
 
 		return command;
 	}
@@ -129,7 +132,7 @@
       });
 
       _.each(easListBasedChoices, function(listObject) {
-        editor.addCommand(listObject.command, listCommand(listObject.command));
+        editor.addCommand(listObject.command, listCommand(listObject.command, listObject.style));
 
         uiMenuItems[listObject.command] = {
           label: listObject.label,

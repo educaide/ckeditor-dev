@@ -18,12 +18,6 @@ function specialStyle(style) {
 			editor.addCommand( 'upperromanlist', listCommand( 'upperromanlist', 'upper-roman' ) );
 			editor.addCommand( 'lowerromanlist', listCommand( 'lowerromanlist', 'lower-roman' ) );
 			editor.addCommand( 'bulletslist', listCommand( 'bulletslist', 'disc' ) );
-
-			if(editor.config.easEditorType == undefined){
-				editor.addCommand( 'emceelist', listCommand( 'emceelist', 'emcee' ) );
-				editor.addCommand( 'emceemultilist', listCommand( 'emceelist', 'emcee-multi-list' ) );
-        editor.addCommand( 'dragdroplist', listCommand( 'dragdroplist', 'dragdroplist' ) );
-			}
 			editor.addCommand( 'subpartlist', listCommand( 'subpartlist', 'subparts' ) );
 			editor.addCommand( 'nolist', listCommand( 'nolist', 'none' ) );
 
@@ -66,24 +60,6 @@ function specialStyle(style) {
 			};
 
 			if(editor.config.easEditorType == undefined && /stem/.test(editor.element.getId())){
-				uiMenuItems.easEmcee = {
-					label: 'Multiple-Choice Block',
-					group: menuGroup,
-					command: 'emceelist'
-				};
-
-				uiMenuItems.easMultiEmcee = {
-					label: 'Multi-Select Block',
-					group: menuGroup,
-					command: 'emceemultilist'
-				};
-
-				uiMenuItems.easDragDrop = {
-					label: 'Drag-and-Drop Items',
-					group: menuGroup,
-					command: 'dragdroplist'
-				};
-
 				uiMenuItems.easSubparts = {
 					label: 'Subparts',
 					group: menuGroup,
@@ -130,9 +106,6 @@ function specialStyle(style) {
 							easUpperRoman: CKEDITOR.TRISTATE_OFF,
 							easLowerRoman: CKEDITOR.TRISTATE_OFF,
 							easBullets: CKEDITOR.TRISTATE_OFF,
-							easEmcee: CKEDITOR.TRISTATE_OFF,
-							easMultiEmcee: CKEDITOR.TRISTATE_OFF,
-							easDragDrop: CKEDITOR.TRISTATE_OFF,
 							easSubparts: CKEDITOR.TRISTATE_OFF,
 							easNone: CKEDITOR.TRISTATE_OFF
 						};
