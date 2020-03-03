@@ -93,14 +93,14 @@
     command.setState(CKEDITOR.TRISTATE_OFF);
   }
 
-  CKEDITOR.plugins.add('easdropdown', {
+  CKEDITOR.plugins.add('easchoices', {
     requires: 'menubutton,removeformat',
     icons: 'easdropdown',
 
     init: function(editor) {
       // register editor commands (vocabWordStyle, emphWordStyle, etc)
       // and define menubutton commands
-      var menuGroup = 'easdropdown';
+      var menuGroup = 'easchoices';
       var uiMenuItems = {};
 
       _.each(wordStyles, function(styleObject) {
@@ -117,7 +117,7 @@
 
       // add menubutton
       editor.ui.add('EASDropdown', CKEDITOR.UI_MENUBUTTON, {
-        label : "Drop Down",
+        label : "Choices",
         icon : 'easdropdown',
         modes : { wysiwyg : 1 },
         onRender: function() {

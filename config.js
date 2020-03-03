@@ -39,7 +39,7 @@
 		'eastable',
 		'eastabletoolscustom',
 		'easwordstyle',
-    'easdropdown'
+    'easchoices'
 	].join( ',' );
 
 	config.toolbar = [
