@@ -169,7 +169,7 @@
         },
         onMenu: function() {
           var returnObject = {};
-          _.each(_.concat(wordStyles, easListBasedChoices), function(obj) {
+          _.each(_.concat([wordStyles[0]], easListBasedChoices, [wordStyles[1]]), function(obj) {
             returnObject[obj.command] = CKEDITOR.TRISTATE_OFF;
           });
 
