@@ -46,10 +46,10 @@
 		[ 'Undo', 'Redo' ],
 		[ 'Bold','Italic','Underline', '-', 'Subscript', 'Superscript' ],
 		[ 'EASWordStyle' ],
-		[ 'EASDropdown' ],
 		[ 'EASFontSize' ],
 		[ 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Indent', 'Outdent' ],
 		[ 'EASList'],
+		[ 'EASChoices'],
 		[ 'EASTable', 'EASImage', 'EASSpecials', '-', 'EASIntro', 'EASParBox', 'EASMathImages' ],
 		[ 'mathQuill' ]
 	];

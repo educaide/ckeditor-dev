@@ -157,7 +157,7 @@
       editor.addMenuItems(uiMenuItems);
 
       // add menubutton
-      editor.ui.add('EASDropdown', CKEDITOR.UI_MENUBUTTON, {
+      editor.ui.add('EASChoices', CKEDITOR.UI_MENUBUTTON, {
         label : "Choices",
         icon : 'easdropdown',
         modes : { wysiwyg : 1 },
