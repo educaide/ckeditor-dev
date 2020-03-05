@@ -50,32 +50,42 @@
 
   WordStyleCommand.prototype = {
     exec: function(editor) {
-      editor.focus();
-      editor.fire( 'saveSnapshot' );
+      if (this.styleObject.className === "menu-none" && _.some(editor.elementPath().elements, function(e) {
+        return isEASList(e.$);
+      })) {
+        // HAAAAAACK. We know this is supposed to be used for clearing text. Instead we're going to manually set
+        // the list style to nolist.
+        //
+        // Please don't come running after me with pitchforks
+        editor.execCommand("nolist")
+      } else {
+          editor.focus();
+          editor.fire( 'saveSnapshot' );
 
-      // TODO CKEDITOR doesn't seem to like override definitions with attributes of 'class'.
-      // using eas-class as an attribute works around this, but we still end up
-      // with attribute-less spans that need to be stripped out:
-      //   <span eas-class="word-none"><span>blah</span></span>
-      var styleDefinition = {
-        element:    'span',
-        attributes: {
-          'eas-class': this.styleObject.className
-        },
-        overrides:  [{ element: 'span', attributes : { 'eas-class' : /^word\-/ } }]
-      };
+          // TODO CKEDITOR doesn't seem to like override definitions with attributes of 'class'.
+          // using eas-class as an attribute works around this, but we still end up
+          // with attribute-less spans that need to be stripped out:
+          //   <span eas-class="word-none"><span>blah</span></span>
+          var styleDefinition = {
+            element:    'span',
+            attributes: {
+              'eas-class': this.styleObject.className
+            },
+            overrides:  [{ element: 'span', attributes : { 'eas-class' : /^word\-/ } }]
+          };
 
-      addFormatFilter(editor);
-      // MRL: Mostly solves empty span issue
-      editor.execCommand('removeFormat', editor.selection);
-      removeFormatFilterFunction(editor);
+          addFormatFilter(editor);
+          // MRL: Mostly solves empty span issue
+          editor.execCommand('removeFormat', editor.selection);
+          removeFormatFilterFunction(editor);
 
-      // OPT remove span or class name if setting word style to 'none'
-      var ckStyle = new CKEDITOR.style(styleDefinition);
-      editor.applyStyle(ckStyle);
+          // OPT remove span or class name if setting word style to 'none'
+          var ckStyle = new CKEDITOR.style(styleDefinition);
+          editor.applyStyle(ckStyle);
 
-      editor.fire( 'saveSnapshot' );
-    }
+          editor.fire( 'saveSnapshot' );
+        }
+      }
   };
 
   /*
@@ -106,8 +116,6 @@
     // this code is ugly, currently we just use the dropdownNoneWordStyle as a _proxy_ for the entire
     // menu. If this is set to active, then the parent "dropdown" will appear active.
     //
-    // We want to ensure that if we are inside one of our "special lists" then our button will also appear active
-    // lets have a go eh :)
     var command = event.editor.getCommand('dropdownNoneWordStyle');
     var pathElements = event.data.path.elements;
     var i;
@@ -169,7 +177,7 @@
         },
         onMenu: function() {
           var returnObject = {};
-          _.each(_.concat([wordStyles[0]], easListBasedChoices, [wordStyles[1]]), function(obj) {
+          _.each(_.concat(easListBasedChoices, wordStyles), function(obj) {
             returnObject[obj.command] = CKEDITOR.TRISTATE_OFF;
           });
 
