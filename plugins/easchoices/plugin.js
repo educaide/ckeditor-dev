@@ -9,7 +9,6 @@
   var easListBasedChoices = [
     {label: 'Multiple-Choice Block',  command: "emceelist", style: "emcee"},
     {label: 'Multi-Select Block',  command: "emcee-multi-list", style: "emcee-multi-list"},
-    {label: 'Drag-and-Drop Items',  command: "dragdroplist", style: "dragdroplist"},
     {label: 'Re-order items',  command: "orderinglist", style: "orderinglist"},
   ];
 

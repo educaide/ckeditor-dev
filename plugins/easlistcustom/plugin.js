@@ -1,7 +1,7 @@
 'use strict';
 
 function specialStyle(style) {
-	return ( style == 'emcee' || style == 'subparts' || style == 'emcee-multi-list' || style == 'dragdroplist' || style == 'orderinglist' );
+	return ( style == 'emcee' || style == 'subparts' || style == 'emcee-multi-list' || style == 'orderinglist' );
 }
 
 ( function() {
