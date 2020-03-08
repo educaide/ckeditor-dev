@@ -120,6 +120,12 @@
     }
   }
 
+  function initializeApp(iframe,element, emcee) {
+    if (element) {
+      iframe.contentWindow.initializeApp(element, emcee);
+    }
+  }
+
   function saveProperties(args,element) {
     var iframe = $(args.sender.parts.dialog.$).find("iframe")[0]
 
@@ -296,12 +302,77 @@
         }
       );
 
+      // Register the dialog.
+      CKEDITOR.dialog.addIframe(dialogName + "ordering-properties", "Ordering Properties", this.path + 'ordering-properties.html' + "?timestamp=" + CKEDITOR.timestamp, 600, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          initializeApp(iframe,getOrderingList(editor));
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getOrderingList(editor));
+          }
+        }
+      );
+
+      CKEDITOR.dialog.addIframe(dialogName + "emcee-basic", "Multiple-Choice Properties", this.path + 'multiple-choice-properties.html' + "?timestamp=" + CKEDITOR.timestamp, 600, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          initializeApp(iframe,getEmcee(editor), true);
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getEmcee(editor));
+          }
+        }
+      );
+
+      CKEDITOR.dialog.addIframe(dialogName + "emcee-select-basic", "Multi-Select Properties", this.path + 'multiple-choice-properties.html' + "?timestamp=" + CKEDITOR.timestamp, 600, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          initializeApp(iframe,getEmceeMultiSelect(editor), false);
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getEmceeMultiSelect(editor));
+          }
+        }
+      );
+
+      CKEDITOR.dialog.addIframe(dialogName + "emcee-basic", "Multiple-Choice Properties", this.path + 'multiple-choice-properties.html' + "?timestamp=" + CKEDITOR.timestamp, 600, 400,
+        // onContentLoad
+        function() {
+          var iframe = $("#" + this.domId)[0];
+          initializeApp(iframe,getEmcee(editor), true);
+        },
+        {
+          resizable: CKEDITOR.DIALOG_RESIZE_NONE,
+          onOk: function(args) {
+            saveProperties(args,getEmcee(editor));
+          }
+        }
+      );
+
       // Register the command.
       var command = editor.addCommand("parboxProperties", {exec: function() { editor.openDialog(dialogName +  "parbox"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
       var command = editor.addCommand("emceeProperties", {exec: function() { editor.openDialog(dialogName +  "emcee"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("emceeBasicProperties", {exec: function() { editor.openDialog(dialogName +  "emcee-basic"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("emceeSelectBasicProperties", {exec: function() { editor.openDialog(dialogName +  "emcee-select-basic"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -318,6 +389,10 @@
       command.canUndo = true;
 
       var command = editor.addCommand("orderingListProperties", {exec: function() { editor.openDialog(dialogName +  "ordering"); }});
+      command.modes = { wysiwyg:1, source:0 };
+      command.canUndo = true;
+
+      var command = editor.addCommand("orderingProperties", {exec: function() { editor.openDialog(dialogName +  "ordering-properties"); }});
       command.modes = { wysiwyg:1, source:0 };
       command.canUndo = true;
 
@@ -343,15 +418,27 @@
       if ( editor.addMenuItems ) {
         editor.addMenuGroup(pluginName, 110);
         editor.addMenuItems({
+          emceeBasicProperties: {
+            label:   "Multiple-Choice Properties...",
+            command: "emceeBasicProperties",
+            group:   pluginName,
+            order:   1
+          },
           emceeProperties: {
             label:   "Multiple-Choice Advanced...",
             command: "emceeProperties",
             group:   pluginName,
-            order:   1
+            order:   2
           },
           emceeMultiSelectProperties: {
             label:   "Multi-Select Advanced...",
             command: "emceeMultiSelectProperties",
+            group:   pluginName,
+            order:   1
+          },
+          emceeMultiSelectBasicProperties: {
+            label:   "Multi-Select Properties...",
+            command: "emceeSelectBasicProperties",
             group:   pluginName,
             order:   1
           },
@@ -364,6 +451,12 @@
           dropzoneListProperties: {
             label:   "Dropzone Advanced...",
             command: "dropzoneListProperties",
+            group:   pluginName,
+            order:   1
+          },
+          orderingProperties: {
+            label:   "Ordering Properties...",
+            command: "orderingProperties",
             group:   pluginName,
             order:   1
           },
@@ -427,10 +520,12 @@
           }
 
           if (getEmcee(editor)) {
+            properties.emceeBasicProperties = CKEDITOR.TRISTATE_OFF;
             properties.emceeProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if (getEmceeMultiSelect(editor)) {
+            properties.emceeMultiSelectBasicProperties = CKEDITOR.TRISTATE_OFF;
             properties.emceeMultiSelectProperties = CKEDITOR.TRISTATE_OFF;
           }
 
@@ -456,6 +551,10 @@
 
           if (getDropzoneList(editor)) {
             properties.dropzoneListProperties = CKEDITOR.TRISTATE_OFF;
+          }
+
+          if (getOrderingList(editor)) {
+            properties.orderingProperties = CKEDITOR.TRISTATE_OFF;
           }
 
           if (getOrderingList(editor)) {
