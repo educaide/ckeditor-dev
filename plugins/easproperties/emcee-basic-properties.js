@@ -6,7 +6,7 @@
   function init(input, emcee) {
     var App = Vue.extend({
       props: ["element", "emcee"],
-      data () {
+      data: function () {
         return {
           mode: "normal",
           alignment: "top",
@@ -15,17 +15,17 @@
         }
       },
       methods: {
-        setNormal () {
+        setNormal: function () {
           this.mode = "normal";
         },
-        setButtons () {
+        setButtons: function () {
           this.mode = "buttons";
         },
-        saveToElement (element, args) {
+        saveToElement: function (element, args) {
         }
       },
 
-      mounted () {
+      mounted: function () {
       }
     })
 

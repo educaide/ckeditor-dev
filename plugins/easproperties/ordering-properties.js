@@ -1,16 +1,16 @@
 (function() {
   'use strict';
 
-  var EAS_PREFIX = "data-eas-"
-  var EAS_CORRECT = "correct"
-  var EAS_MODE = "mode"
-  var EAS_ALIGN = "align"
-  var EAS_DRAGLABELS = "draglabels"
+  var EAS_PREFIX = "data-eas-";
+  var EAS_CORRECT = "correct";
+  var EAS_MODE = "mode";
+  var EAS_ALIGN = "align";
+  var EAS_DRAGLABELS = "draglabels";
 
   function init(input) {
     var App = Vue.extend({
       props: ["element"],
-      data () {
+      data: function () {
         return {
           correctOrder: "",
           mode: "horz",
@@ -19,8 +19,7 @@
         }
       },
       methods: {
-        saveToElement (element, args) {
-          // element.setAttribute(EAS_PREFIX + "mode", value);
+        saveToElement: function (element, args) {
           element.setAttribute(EAS_PREFIX + EAS_CORRECT, this.correctOrder);
           element.setAttribute(EAS_PREFIX + EAS_MODE, this.mode);
           element.setAttribute(EAS_PREFIX + EAS_ALIGN, this.align);
@@ -28,7 +27,7 @@
         }
       },
 
-      mounted () {
+      mounted: function () {
         this.correctOrder = this.element.getAttribute(EAS_PREFIX + EAS_CORRECT);
         this.mode = this.element.getAttribute(EAS_PREFIX + EAS_MODE) || "horz";
         this.align = this.element.getAttribute(EAS_PREFIX + EAS_ALIGN) || "left";
