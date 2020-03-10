@@ -36,6 +36,12 @@
         } else {
           this.draglabels = false;
         }
+      },
+
+      watch: {
+        "correctOrder": function (value) {
+          this.correctOrder = value.replace(/[^A-Z0-9a-z, ]/, '');
+        }
       }
     })
 
