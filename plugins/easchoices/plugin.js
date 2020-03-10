@@ -109,12 +109,10 @@
   function onSelectionChange(event) {
     // needs to do a whole lot more now
     if (event.editor.readOnly) {
-      console.log("issareadonly")
       return;
     }
 
     // turn everything off
-    console.log("turning everything off")
     _.each(_.concat(easListBasedChoices, wordStyles), function(obj) {
       var command = event.editor.getCommand(obj.command);
         command.setState(CKEDITOR.TRISTATE_DISABLED);
@@ -122,38 +120,41 @@
 
     // this code is ugly, currently we just use the dropdownNoneWordStyle as a _proxy_ for the entire
     // menu. If this is set to active, then the parent "dropdown" will appear active.
-    //
-    var command = event.editor.getCommand('dropdownNoneWordStyle');
+
+    var noneCommand = event.editor.getCommand('dropdownNoneWordStyle');
     var pathElements = event.data.path.elements;
-    var i;
-    var executed = false;
-    for (i = 0; i < pathElements.length; i++) {
-      var element = pathElements[i].$;
+
+    var isEASListElement = _.some(pathElements, function(element){
+      return isEASList(element.$)
+    });
+
+    var isEASDropdownElement = _.some(pathElements, function(element){
       var easClass = element.getAttribute('eas-class');
+      return easClass === "menu-dropdown";
+    });
 
-      if (isEASList(element) || (/^menu\-/.test(easClass) && !/\-none$/.test(easClass))) {
-        command.setState(CKEDITOR.TRISTATE_ON);
-        executed = true;
-      }
-      if (isEASList(element)) {
-        _.each(_.concat(easListBasedChoices), function(obj) {
-          var command = event.editor.getCommand(obj.command);
-            console.log("turning command on", obj.command)
-            command.setState(CKEDITOR.TRISTATE_ON);
-        });
-        executed = true;
-      } else if (!/^menu\-/.test(easClass)) {
-        // then, it's probably nothing... and we should enable the lot
-        _.each(_.concat(easListBasedChoices, wordStyles), function(obj) {
-          var command = event.editor.getCommand(obj.command);
-            command.setState(CKEDITOR.TRISTATE_ON);
-        });
-        executed = true;
-      }
+    if (isEASListElement) {
+      _.each(_.concat(easListBasedChoices), function(obj) {
+        var command = event.editor.getCommand(obj.command);
+          command.setState(CKEDITOR.TRISTATE_ON);
+      });
+      noneCommand.setState(CKEDITOR.TRISTATE_ON);
+      return;
+
+    } else if (isEASDropdownElement) {
+      _.each(_.concat(wordStyles), function(obj) {
+        var command = event.editor.getCommand(obj.command);
+          command.setState(CKEDITOR.TRISTATE_ON);
+      });
+      return;
+    } else {
+      _.each(_.concat(easListBasedChoices, wordStyles), function(obj) {
+        var command = event.editor.getCommand(obj.command);
+          command.setState(CKEDITOR.TRISTATE_OFF);
+      });
+      noneCommand.setState(CKEDITOR.TRISTATE_OFF);
+      return;
     }
-    if (executed) { return }
-
-    command.setState(CKEDITOR.TRISTATE_DISABLED);
   }
 
   CKEDITOR.plugins.add('easchoices', {
