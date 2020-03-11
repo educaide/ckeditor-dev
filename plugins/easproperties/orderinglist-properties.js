@@ -15,7 +15,7 @@ var texChoices =
 {
   layout: [ "hidden", "cond", "vert", "opth", "optv", "below", "frame" ],
   order:  [ "orig", "scramble", "reverse", "scrambleNone", "addNone", "makeNone" ],
-  mode:  [ "horz", "vert" ]
+  mode:  [ "horiz", "vert" ]
 };
 
 var texGroups =

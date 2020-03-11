@@ -2,9 +2,9 @@
   'use strict';
 
   var EAS_PREFIX = "data-eas-";
-  var EAS_CORRECT = "correct";
+  var EAS_ANSWER = "answer";
   var EAS_MODE = "mode";
-  var EAS_ALIGN = "align";
+  var EAS_TEXT_ALIGN = "textalign";
   var EAS_DRAGLABELS = "draglabels";
 
   function init(input) {
@@ -12,25 +12,25 @@
       props: ["element"],
       data: function () {
         return {
-          correctOrder: "",
-          mode: "horz",
-          align: "left",
+          correctAnswer: "",
+          mode: "horiz",
+          textAlign: "left",
           draglabels: true,
         }
       },
       methods: {
         saveToElement: function (element, args) {
-          element.setAttribute(EAS_PREFIX + EAS_CORRECT, this.correctOrder);
+          element.setAttribute(EAS_PREFIX + EAS_ANSWER, this.correctAnswer);
           element.setAttribute(EAS_PREFIX + EAS_MODE, this.mode);
-          element.setAttribute(EAS_PREFIX + EAS_ALIGN, this.align);
+          element.setAttribute(EAS_PREFIX + EAS_TEXT_ALIGN, this.textAlign);
           element.setAttribute(EAS_PREFIX + EAS_DRAGLABELS, String(this.draglabels))
         }
       },
 
       mounted: function () {
-        this.correctOrder = this.element.getAttribute(EAS_PREFIX + EAS_CORRECT);
-        this.mode = this.element.getAttribute(EAS_PREFIX + EAS_MODE) || "horz";
-        this.align = this.element.getAttribute(EAS_PREFIX + EAS_ALIGN) || "left";
+        this.correctAnswer = this.element.getAttribute(EAS_PREFIX + EAS_ANSWER);
+        this.mode = this.element.getAttribute(EAS_PREFIX + EAS_MODE) || "horiz";
+        this.textAlign = this.element.getAttribute(EAS_PREFIX + EAS_TEXT_ALIGN) || "left";
         if (this.element.getAttribute(EAS_PREFIX + EAS_DRAGLABELS) === "true") {
           this.draglabels = true;
         } else {
@@ -39,8 +39,10 @@
       },
 
       watch: {
-        "correctOrder": function (value) {
-          this.correctOrder = value.replace(/[^A-Z0-9a-z, ]/, '');
+        "correctAnswer": function (value) {
+          if (value) {
+            this.correctAnswer = value.replace(/[^A-Z0-9a-z, ]/, '');
+          }
         }
       }
     })
