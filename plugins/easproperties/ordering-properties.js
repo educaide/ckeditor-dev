@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  var EAS_PREFIX = "data-eas-";
-  var SETTINGS = [
+  window.EAS_PREFIX = "data-eas-";
+  window.SETTINGS = [
     {
       easId: "answer",
       default: "",
@@ -23,6 +23,7 @@
 
   function init(input) {
     var App = Vue.extend({
+      mixins: [window.VUE_MIXIN],
       props: ["element"],
       data: function () {
         return {
@@ -32,28 +33,6 @@
           draglabels: "true",
         }
       },
-      methods: {
-        saveToElement: function (element, args) {
-          var that = this;
-          console.log(this.$data)
-          _.each(SETTINGS, function(setting){
-            if (that.$data[setting.easId] !== setting.default) {
-              element.setAttribute(EAS_PREFIX + setting.easId, String(that.$data[setting.easId]));
-            } else {
-              element.removeAttribute(EAS_PREFIX + setting.easId);
-            }
-          })
-        }
-      },
-
-      mounted: function () {
-        var that = this;
-        _.each(SETTINGS, function(setting){
-          var value = that.element.getAttribute(EAS_PREFIX + setting.easId);
-          that.$data[setting.easId] = that.element.getAttribute(EAS_PREFIX + setting.easId) || setting.default;
-        })
-      },
-
       watch: {
         "answer": function (value) {
           if (value) {

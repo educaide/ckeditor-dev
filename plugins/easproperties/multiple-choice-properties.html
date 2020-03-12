@@ -2,6 +2,7 @@
 <html>
   <head>
     <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <style type="text/css">
@@ -28,12 +29,12 @@
                 </label>
               </div>
               <div class="form-group">
-                <label for="alignment" class="col-xs-2 col-xs-offset-1 control-label">Alignment:</label>
+                <label for="align" class="col-xs-2 col-xs-offset-1 control-label">Alignment:</label>
                 <div class="col-xs-6">
-                  <select class="form-control" @focus="setNormal" v-model="alignment">
-                    <option :selected="alignment === 'top'" value="top">Top</option>
-                    <option :selected="alignment === 'center'" value="center">Center</option>
-                    <option :selected="alignment === 'bottom'" value="bottom">Bottom</option>
+                  <select class="form-control" @focus="setNormal" v-model="align">
+                    <option :selected="align === 'top'" value="top">Top</option>
+                    <option :selected="align === 'center'" value="center">Center</option>
+                    <option :selected="align === 'bottom'" value="bottom">Bottom</option>
                   </select>
                 </div>
               </div>
@@ -55,7 +56,7 @@
               </div>
               <div v-if="emcee" class="checkbox">
                  <label>
-                   <input v-model="hiding" type="checkbox"> Allow choices to be hidden
+                   <input v-model="hiding" true-value="true" false-value="false" type="checkbox"> Allow choices to be hidden
                  </label>
                </div>
              </div>
@@ -64,6 +65,7 @@
         </div>
       </div>
     </script>
+    <script src="./vue-common.js"></script>
     <script src="./emcee-basic-properties.js"></script>
   </body>
 </html>
