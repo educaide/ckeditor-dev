@@ -21,9 +21,22 @@
       methods: {
         saveToElement: function (element, args) {
           element.setAttribute(EAS_PREFIX + EAS_ANSWER, this.correctAnswer);
-          element.setAttribute(EAS_PREFIX + EAS_MODE, this.mode);
-          element.setAttribute(EAS_PREFIX + EAS_TEXT_ALIGN, this.textAlign);
-          element.setAttribute(EAS_PREFIX + EAS_DRAGLABELS, String(this.draglabels))
+
+          if (this.mode !== "horiz") {
+            element.setAttribute(EAS_PREFIX + EAS_MODE, this.mode);
+          } else {
+            element.removeAttribute(EAS_PREFIX + EAS_MODE);
+          }
+          if (this.textAlign !== "left") {
+            element.setAttribute(EAS_PREFIX + EAS_TEXT_ALIGN, this.textAlign);
+          } else {
+            element.removeAttribute(EAS_PREFIX + EAS_TEXT_ALIGN);
+          }
+          if (this.draglabels === false) {
+            element.removeAttribute(EAS_PREFIX + EAS_DRAGLABELS);
+          } else {
+            element.setAttribute(EAS_PREFIX + EAS_DRAGLABELS, "true");
+          }
         }
       },
 
