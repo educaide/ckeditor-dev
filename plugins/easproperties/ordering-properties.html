@@ -2,6 +2,7 @@
 <html>
   <head>
     <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <style type="text/css">
@@ -24,7 +25,7 @@
               <div class="form-group">
                 <label for="correct" class="col-xs-4 control-label">Correct order for scoring:</label>
                 <div class="col-xs-6">
-                  <input class="form-control" v-model="correctAnswer" />
+                  <input class="form-control" v-model="answer" />
                 </div>
               </div>
               <div class="form-group">
@@ -39,18 +40,18 @@
               <div class="form-group">
                 <label for="align" class="col-xs-4 control-label">Text Alignment:</label>
                 <div class="col-xs-6">
-                  <select class="form-control" v-model="textAlign">
-                    <option :selected="textAlign === 'none'" value="none">None</option>
-                    <option :selected="textAlign === 'center'" value="center">Center</option>
-                    <option :selected="textAlign === 'left'" value="left">Left</option>
-                    <option :selected="textAlign === 'right'" value="right">Right</option>
-                    <option :selected="textAlign === 'full'" value="full">Full</option>
+                  <select class="form-control" v-model="textalign">
+                    <option :selected="textalign === 'none'" value="none">None</option>
+                    <option :selected="textalign === 'center'" value="center">Center</option>
+                    <option :selected="textalign === 'left'" value="left">Left</option>
+                    <option :selected="textalign === 'right'" value="right">Right</option>
+                    <option :selected="textalign === 'full'" value="full">Full</option>
                   </select>
                 </div>
               </div>
               <div class="checkbox">
                  <label>
-                   <input v-model="draglabels" type="checkbox"> Include lettered tabs (when non-interactive)
+                   <input v-model="draglabels" true-value="true" false-value="false" type="checkbox"> Include lettered tabs (when non-interactive)
                  </label>
                </div>
              </div>

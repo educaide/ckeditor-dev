@@ -2,59 +2,62 @@
   'use strict';
 
   var EAS_PREFIX = "data-eas-";
-  var EAS_ANSWER = "answer";
-  var EAS_MODE = "mode";
-  var EAS_TEXT_ALIGN = "textalign";
-  var EAS_DRAGLABELS = "draglabels";
+  var SETTINGS = [
+    {
+      easId: "answer",
+      default: "",
+    },
+    {
+      easId: "mode",
+      default: "horiz",
+    },
+    {
+      easId: "textalign",
+      default: "left",
+    },
+    {
+      easId: "draglabels",
+      default: "false",
+    },
+  ]
 
   function init(input) {
     var App = Vue.extend({
       props: ["element"],
       data: function () {
         return {
-          correctAnswer: "",
+          answer: "",
           mode: "horiz",
-          textAlign: "left",
-          draglabels: true,
+          textalign: "left",
+          draglabels: "true",
         }
       },
       methods: {
         saveToElement: function (element, args) {
-          element.setAttribute(EAS_PREFIX + EAS_ANSWER, this.correctAnswer);
-
-          if (this.mode !== "horiz") {
-            element.setAttribute(EAS_PREFIX + EAS_MODE, this.mode);
-          } else {
-            element.removeAttribute(EAS_PREFIX + EAS_MODE);
-          }
-          if (this.textAlign !== "left") {
-            element.setAttribute(EAS_PREFIX + EAS_TEXT_ALIGN, this.textAlign);
-          } else {
-            element.removeAttribute(EAS_PREFIX + EAS_TEXT_ALIGN);
-          }
-          if (this.draglabels === false) {
-            element.removeAttribute(EAS_PREFIX + EAS_DRAGLABELS);
-          } else {
-            element.setAttribute(EAS_PREFIX + EAS_DRAGLABELS, "true");
-          }
+          var that = this;
+          console.log(this.$data)
+          _.each(SETTINGS, function(setting){
+            if (that.$data[setting.easId] !== setting.default) {
+              element.setAttribute(EAS_PREFIX + setting.easId, String(that.$data[setting.easId]));
+            } else {
+              element.removeAttribute(EAS_PREFIX + setting.easId);
+            }
+          })
         }
       },
 
       mounted: function () {
-        this.correctAnswer = this.element.getAttribute(EAS_PREFIX + EAS_ANSWER);
-        this.mode = this.element.getAttribute(EAS_PREFIX + EAS_MODE) || "horiz";
-        this.textAlign = this.element.getAttribute(EAS_PREFIX + EAS_TEXT_ALIGN) || "left";
-        if (this.element.getAttribute(EAS_PREFIX + EAS_DRAGLABELS) === "true") {
-          this.draglabels = true;
-        } else {
-          this.draglabels = false;
-        }
+        var that = this;
+        _.each(SETTINGS, function(setting){
+          var value = that.element.getAttribute(EAS_PREFIX + setting.easId);
+          that.$data[setting.easId] = that.element.getAttribute(EAS_PREFIX + setting.easId) || setting.default;
+        })
       },
 
       watch: {
-        "correctAnswer": function (value) {
+        "answer": function (value) {
           if (value) {
-            this.correctAnswer = value.replace(/[^A-Z0-9a-z, ]/, '');
+            this.answer = value.replace(/[^A-Z0-9a-z, ]/, '');
           }
         }
       }
